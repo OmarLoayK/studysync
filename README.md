@@ -6,7 +6,7 @@ A modern student productivity dashboard built to help you stay organized, manage
 
 ## 🚀 Live Demo
 
-👉 https://your-vercel-link.vercel.app
+👉 [https://your-vercel-link.vercel.app](https://studysync-pearl.vercel.app/)
 
 ---
 
