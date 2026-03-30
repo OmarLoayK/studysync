@@ -6,6 +6,9 @@ import { useAuth } from "../contexts/AuthContext";
 
 const LandingPage = lazy(() => import("../pages/LandingPage"));
 const PricingPage = lazy(() => import("../pages/PricingPage"));
+const TermsPage = lazy(() => import("../pages/TermsPage"));
+const PrivacyPage = lazy(() => import("../pages/PrivacyPage"));
+const SupportPage = lazy(() => import("../pages/SupportPage"));
 const AuthPage = lazy(() => import("../pages/AuthPage"));
 const DashboardPage = lazy(() => import("../pages/DashboardPage"));
 const AiToolsPage = lazy(() => import("../pages/AiToolsPage"));
@@ -19,6 +22,9 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/support" element={<SupportPage />} />
         <Route
           path="/login"
           element={

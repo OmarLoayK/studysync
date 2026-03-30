@@ -311,7 +311,7 @@ function CompletionModal({
             placeholder="https://docs.google.com/document/d/..."
             value={proofState.proofLink}
             onChange={(event) => setProofState((current) => ({ ...current, proofLink: event.target.value }))}
-            hint="Use a public Google Doc. StudySync reads the doc and checks whether the proof matches the task subject before completing it."
+            hint="Use a public Google Doc that includes a picture or screenshot tied to the subject. StudySync checks the document content against the task subject before completing it."
             required={requireProof}
           />
         )}
@@ -321,8 +321,8 @@ function CompletionModal({
               ? "Premium users must upload an image proof before the task can be completed."
               : "Premium users can add an image proof here before completing the task."
             : requireProof
-              ? "Free users must submit a Google Doc proof link before the task can be completed."
-              : "Free users can optionally submit a Google Doc proof link here before completing the task."}
+              ? "Free users must submit a public Google Doc with subject-related proof before the task can be completed."
+              : "Free users can optionally submit a public Google Doc with subject-related proof before completing the task."}
         </div>
         {error ? (
           <p className="rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">

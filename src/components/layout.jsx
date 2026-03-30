@@ -56,6 +56,9 @@ export function PublicHeader() {
           <Link to="/pricing" className="transition hover:text-white">
             Pricing
           </Link>
+          <Link to="/support" className="transition hover:text-white">
+            Support
+          </Link>
           <a href="#features" className="transition hover:text-white">
             Features
           </a>
@@ -88,11 +91,23 @@ export function PublicHeader() {
 export function PublicFooter() {
   return (
     <footer className="border-t border-white/10 bg-slate-950/80">
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-8 text-sm text-slate-500 md:flex-row md:items-center md:justify-between">
-        <p>{APP_NAME} helps students plan better, study with consistency, and upgrade into AI-assisted momentum.</p>
-        <div className="flex gap-4">
+      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-8 text-sm text-slate-500 md:flex-row md:items-center md:justify-between">
+        <div className="max-w-2xl">
+          <p>{APP_NAME} helps students plan better, study with consistency, and upgrade into AI-assisted momentum.</p>
+          <p className="mt-2 text-xs text-slate-600">Support: omarkhalafbusiness@gmail.com</p>
+        </div>
+        <div className="flex flex-wrap gap-4">
           <Link to="/pricing" className="transition hover:text-slate-200">
             Pricing
+          </Link>
+          <Link to="/terms" className="transition hover:text-slate-200">
+            Terms
+          </Link>
+          <Link to="/privacy" className="transition hover:text-slate-200">
+            Privacy
+          </Link>
+          <Link to="/support" className="transition hover:text-slate-200">
+            Support
           </Link>
           <Link to="/login" className="transition hover:text-slate-200">
             Login
