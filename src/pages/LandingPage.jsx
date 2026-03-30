@@ -1,4 +1,4 @@
-import { FEATURE_PILLARS, MARKETING_METRICS, PLAN_DETAILS, APP_NAME, APP_TAGLINE } from "../lib/constants";
+import { FEATURE_PILLARS, MARKETING_METRICS, PLAN_DETAILS, APP_NAME, APP_TAGLINE, PLAN_ORDER } from "../lib/constants";
 import { PublicFooter, PublicHeader } from "../components/layout";
 import { Badge, Card, LinkButton, SectionHeading } from "../components/ui";
 
@@ -14,7 +14,7 @@ export default function LandingPage() {
           <div className="mx-auto grid max-w-7xl gap-14 px-6 py-20 md:py-28 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
             <div>
               <Badge className="bg-sky-500/12 text-sky-200 ring-sky-400/20">
-                Free core productivity. Premium AI for $5/month.
+                Free core productivity. Premium AI for $5/month. Power AI for $20/month.
               </Badge>
               <h1 className="mt-6 max-w-4xl text-5xl font-bold leading-tight text-white md:text-6xl lg:text-7xl">
                 {APP_NAME} turns chaotic school weeks into a clean system you can actually trust.
@@ -56,7 +56,7 @@ export default function LandingPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-lg font-semibold text-white">Physics lab report</p>
-                      <p className="mt-1 text-sm text-slate-400">Due today • Medium priority • Proof ready</p>
+                      <p className="mt-1 text-sm text-slate-400">Due today - Medium priority - Proof ready</p>
                     </div>
                     <Badge className="bg-amber-500/15 text-amber-200 ring-amber-400/25">Due today</Badge>
                   </div>
@@ -82,9 +82,9 @@ export default function LandingPage() {
                 </div>
 
                 <div className="rounded-[24px] border border-white/10 bg-gradient-to-br from-sky-500/10 via-slate-950 to-teal-400/10 p-5">
-                  <p className="text-sm font-semibold uppercase tracking-[0.24em] text-sky-300/80">Premium AI tools</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.24em] text-sky-300/80">Paid AI tiers</p>
                   <p className="mt-3 text-slate-300">
-                    Generate flashcards, quizzes, explainers, study schedules, and assignment breakdowns inside the same workspace.
+                    Start with affordable premium AI, then move into the power tier if you want the best models and heavier study sessions.
                   </p>
                 </div>
               </div>
@@ -95,7 +95,7 @@ export default function LandingPage() {
         <section id="features" className="mx-auto max-w-7xl px-6 py-20">
           <SectionHeading
             eyebrow="Built for serious students"
-            title="Your tasks, focus windows, and premium tools live in one system."
+            title="Your tasks, focus windows, and paid tools live in one system."
             description="StudySync is designed to feel like a startup-grade productivity product with a student-first workflow."
           />
 
@@ -113,10 +113,10 @@ export default function LandingPage() {
           <Card className="overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-sky-950">
             <div className="grid gap-10 lg:grid-cols-[1fr_0.95fr] lg:items-center">
               <div>
-                <Badge className="bg-sky-500/12 text-sky-200 ring-sky-400/20">Premium AI</Badge>
-                <h2 className="mt-5 text-4xl font-bold text-white">Five AI tools students will actually use, with pricing that stays believable.</h2>
+                <Badge className="bg-sky-500/12 text-sky-200 ring-sky-400/20">Paid AI tiers</Badge>
+                <h2 className="mt-5 text-4xl font-bold text-white">AI plans for both lightweight and heavy study workflows.</h2>
                 <p className="mt-4 max-w-2xl text-lg text-slate-300">
-                  Premium is intentionally priced at $5/month, so StudySync uses monthly AI credits and lean prompt design to keep the unit economics sane.
+                  Premium is intentionally priced at $5/month for everyday use, while Power at $20/month gives serious users the best model routing and bigger limits without making the whole product expensive for everyone.
                 </p>
                 <div className="mt-8 flex flex-wrap gap-3">
                   <LinkButton to="/pricing" variant="primary">
@@ -135,7 +135,7 @@ export default function LandingPage() {
                   "AI Flashcard Generator",
                   "AI Topic Explainer",
                   "AI Study Breakdown",
-                  "Billing and usage controls",
+                  "Power tier for best-model AI",
                 ].map((item) => (
                   <div key={item} className="rounded-[24px] border border-white/10 bg-slate-950/70 p-5 text-slate-200">
                     {item}
@@ -149,30 +149,33 @@ export default function LandingPage() {
         <section className="mx-auto max-w-7xl px-6 py-20">
           <SectionHeading
             eyebrow="Simple pricing"
-            title="A free core plan with a lightweight premium upgrade."
-            description="Start free for task and dashboard management, then unlock the AI layer when you need deeper planning leverage."
+            title="A free core plan, an affordable AI tier, and one higher-end power tier."
+            description="Start free for task and dashboard management, unlock everyday AI with Premium, and reserve Power for users who need the strongest model and higher limits."
           />
 
-          <div className="mt-10 grid gap-6 lg:grid-cols-2">
-            {Object.values(PLAN_DETAILS).map((plan) => (
-              <Card key={plan.name} className={plan.name === "Premium" ? "border-sky-400/30 bg-slate-900" : "bg-slate-900/70"}>
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h3 className="text-2xl font-bold text-white">{plan.name}</h3>
-                    <p className="mt-2 text-slate-400">{plan.badge}</p>
+          <div className="mt-10 grid gap-6 xl:grid-cols-3">
+            {PLAN_ORDER.map((key) => {
+              const plan = PLAN_DETAILS[key];
+              return (
+                <Card key={plan.name} className={key === "power" ? "border-amber-400/25 bg-gradient-to-br from-slate-900 via-slate-900 to-amber-950/30" : key === "premium" ? "border-sky-400/30 bg-slate-900" : "bg-slate-900/70"}>
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <h3 className="text-2xl font-bold text-white">{plan.name}</h3>
+                      <p className="mt-2 text-slate-400">{plan.badge}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-4xl font-bold text-white">{plan.priceLabel}</p>
+                      <p className="text-slate-400">{plan.cadence}</p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-4xl font-bold text-white">{plan.priceLabel}</p>
-                    <p className="text-slate-400">{plan.cadence}</p>
+                  <div className="mt-6 grid gap-3 text-slate-300">
+                    {plan.features.map((feature) => (
+                      <p key={feature}>- {feature}</p>
+                    ))}
                   </div>
-                </div>
-                <div className="mt-6 grid gap-3 text-slate-300">
-                  {plan.features.map((feature) => (
-                    <p key={feature}>• {feature}</p>
-                  ))}
-                </div>
-              </Card>
-            ))}
+                </Card>
+              );
+            })}
           </div>
         </section>
       </main>

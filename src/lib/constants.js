@@ -32,10 +32,12 @@ export const FEATURE_PILLARS = [
 
 export const PLAN_DETAILS = {
   free: {
+    key: "free",
     name: "Free",
     priceLabel: "$0",
     cadence: "/month",
     badge: "Starter",
+    monthlyAiLimit: 0,
     features: [
       "Unlimited personal tasks",
       "Due today, overdue, upcoming, and completed tracking",
@@ -43,24 +45,47 @@ export const PLAN_DETAILS = {
       "Dashboard analytics and streak tracking",
       "Account, settings, and core study management",
     ],
+    cta: "Open free workspace",
   },
   premium: {
+    key: "premium",
     name: "Premium",
     priceLabel: "$5",
     cadence: "/month",
     badge: "Best value",
+    monthlyAiLimit: 60,
     features: [
       "Everything in Free",
       "AI study planner, quiz, flashcards, explainer, and breakdown tools",
-      "Advanced analytics and smarter planning insights",
-      "Premium proof architecture and future image-proof readiness",
+      "Interactive quizzes, better study plans, and proof image uploads",
+      "Core analytics and smarter planning insights",
       "Stripe billing portal and subscription controls",
     ],
+    cta: "Unlock premium",
+  },
+  power: {
+    key: "power",
+    name: "Power",
+    priceLabel: "$20",
+    cadence: "/month",
+    badge: "Flagship AI",
+    monthlyAiLimit: 240,
+    features: [
+      "Everything in Premium",
+      "Best available AI model routing for deeper explanations and plans",
+      "Higher monthly AI credits for heavy study sessions",
+      "Longer quizzes, larger flashcard sets, and richer breakdowns",
+      "Priority access to future advanced coaching features",
+    ],
+    cta: "Go power",
   },
 };
 
+export const PLAN_ORDER = ["free", "premium", "power"];
+export const PAID_PLAN_KEYS = ["premium", "power"];
 export const PREMIUM_PRICE_DOLLARS = 5;
-export const DEFAULT_MONTHLY_AI_LIMIT = 60;
+export const POWER_PRICE_DOLLARS = 20;
+export const DEFAULT_MONTHLY_AI_LIMIT = PLAN_DETAILS.premium.monthlyAiLimit;
 
 export const AI_TOOLS = [
   {
@@ -132,6 +157,65 @@ export const AI_TOOLS = [
       { name: "goal", label: "Assignment or exam goal", type: "text", placeholder: "Prepare for organic chemistry final" },
       { name: "constraints", label: "Constraints", type: "textarea", placeholder: "Only 6 days left, soccer practice on Tuesday..." },
     ],
+  },
+];
+
+export const TASK_TEMPLATES = [
+  {
+    key: "homework",
+    label: "Homework",
+    description: "Fast capture for smaller assignments and practice sets.",
+    values: {
+      title: "Homework set",
+      course: "",
+      description: "List the key questions or problems you need to finish.",
+      priority: "Medium",
+      estimatedMinutes: 60,
+      proofLink: "",
+      completionNote: "",
+    },
+  },
+  {
+    key: "essay",
+    label: "Essay draft",
+    description: "Break a writing assignment into a clear deliverable.",
+    values: {
+      title: "Essay draft",
+      course: "",
+      description: "Outline thesis, evidence, and the next writing checkpoint.",
+      priority: "High",
+      estimatedMinutes: 120,
+      proofLink: "",
+      completionNote: "",
+    },
+  },
+  {
+    key: "exam",
+    label: "Exam prep",
+    description: "Set up a focused revision block with proof and notes.",
+    values: {
+      title: "Exam prep session",
+      course: "",
+      description: "Define the topics, chapters, or problem types you will cover.",
+      priority: "High",
+      estimatedMinutes: 90,
+      proofLink: "",
+      completionNote: "",
+    },
+  },
+  {
+    key: "review",
+    label: "Reading review",
+    description: "Capture reading and revision tasks without filling every field from scratch.",
+    values: {
+      title: "Reading review",
+      course: "",
+      description: "Summarize the chapter or reading target and what proof you will leave.",
+      priority: "Low",
+      estimatedMinutes: 45,
+      proofLink: "",
+      completionNote: "",
+    },
   },
 ];
 

@@ -43,7 +43,15 @@ function parseJsonText(text) {
   return JSON.parse(text.slice(start, end + 1));
 }
 
-export async function generateStudyArtifact(tool, payload) {
+function getModelForTier(tier) {
+  if (tier === "power") {
+    return process.env.OPENAI_POWER_MODEL || process.env.OPENAI_MODEL || "gpt-4.1";
+  }
+
+  return process.env.OPENAI_MODEL || "gpt-4.1-mini";
+}
+
+export async function generateStudyArtifact(tool, payload, options = {}) {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error("Missing OPENAI_API_KEY.");
   }
@@ -60,8 +68,8 @@ export async function generateStudyArtifact(tool, payload) {
       Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
     },
     body: JSON.stringify({
-      model: process.env.OPENAI_MODEL || "gpt-4.1-mini",
-      max_output_tokens: 1200,
+      model: getModelForTier(options.tier),
+      max_output_tokens: options.tier === "power" ? 1800 : 1200,
       instructions: `${prompt.instructions} Use compact, startup-grade output quality. JSON schema: ${prompt.schema}`,
       input: JSON.stringify(payload),
     }),

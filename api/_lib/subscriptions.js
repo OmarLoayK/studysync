@@ -1,3 +1,36 @@
+const paidPlanConfig = {
+  premium: {
+    priceId: () => process.env.STRIPE_PREMIUM_PRICE_ID,
+    aiLimit: () => Number(process.env.PREMIUM_AI_MONTHLY_LIMIT || 60),
+  },
+  power: {
+    priceId: () => process.env.STRIPE_POWER_PRICE_ID,
+    aiLimit: () => Number(process.env.POWER_AI_MONTHLY_LIMIT || 240),
+  },
+};
+
+export function getPlanTierFromPriceId(priceId) {
+  if (!priceId) return "free";
+
+  for (const [tier, config] of Object.entries(paidPlanConfig)) {
+    if (config.priceId() && config.priceId() === priceId) {
+      return tier;
+    }
+  }
+
+  return "premium";
+}
+
+export function getStripePriceIdForTier(tier) {
+  return paidPlanConfig[tier]?.priceId?.() || "";
+}
+
+export function getAiLimitForTier(tier) {
+  if (tier === "power") return paidPlanConfig.power.aiLimit();
+  if (tier === "premium") return paidPlanConfig.premium.aiLimit();
+  return 0;
+}
+
 export function getSubscriptionPeriodEnd(subscription) {
   if (subscription.current_period_end) {
     return subscription.current_period_end;
@@ -7,19 +40,28 @@ export function getSubscriptionPeriodEnd(subscription) {
   return itemPeriodEnd || null;
 }
 
-export function buildPlanFromSubscription(subscription, existingPlan = {}) {
+export function buildPlanFromSubscription(subscription, existingPlan = {}, existingUsage = {}) {
   const active = ["active", "trialing"].includes(subscription.status);
+  const priceId = subscription.items?.data?.[0]?.price?.id || existingPlan.stripePriceId || "";
+  const tier = active ? getPlanTierFromPriceId(priceId) : "free";
   const periodEnd = getSubscriptionPeriodEnd(subscription);
 
   return {
-    ...existingPlan,
-    tier: active ? "premium" : "free",
-    status: subscription.status,
-    stripeCustomerId: subscription.customer,
-    stripeSubscriptionId: subscription.id,
-    stripePriceId: subscription.items?.data?.[0]?.price?.id || existingPlan.stripePriceId || "",
-    currentPeriodEnd: periodEnd ? new Date(periodEnd * 1000).toISOString() : "",
-    cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
+    plan: {
+      ...existingPlan,
+      tier,
+      badgeLabel: tier === "power" ? "Flagship AI" : tier === "premium" ? "Best value" : "Starter",
+      status: subscription.status,
+      stripeCustomerId: subscription.customer,
+      stripeSubscriptionId: subscription.id,
+      stripePriceId: priceId,
+      currentPeriodEnd: periodEnd ? new Date(periodEnd * 1000).toISOString() : "",
+      cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
+    },
+    usage: {
+      ...existingUsage,
+      aiGenerationsLimit: getAiLimitForTier(tier),
+    },
   };
 }
 

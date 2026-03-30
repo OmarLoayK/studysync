@@ -2,11 +2,12 @@ import { useState } from "react";
 import { updateProfile as updateFirebaseProfile } from "firebase/auth";
 import { auth } from "../firebase/config";
 import { useAuth } from "../contexts/AuthContext";
-import { formatDateTime } from "../lib/utils";
+import { formatDateTime, isPremiumPlan } from "../lib/utils";
 import { Badge, Button, Card, SectionHeading, TextInput } from "../components/ui";
 
 export default function AccountPage() {
   const { profile, refreshProfile, saveProfile, signOutUser } = useAuth();
+  const hasPaidPlan = isPremiumPlan(profile);
   const [displayName, setDisplayName] = useState(profile?.displayName || "");
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -47,7 +48,7 @@ export default function AccountPage() {
           <h2 className="mt-2 text-3xl font-bold text-white">{profile?.displayName || "StudySync Student"}</h2>
           <div className="mt-5 grid gap-3 text-slate-300">
             <p>Email: {profile?.email}</p>
-            <p>Plan: {profile?.plan?.tier === "premium" ? "Premium" : "Free"}</p>
+            <p>Plan: {hasPaidPlan ? profile?.plan?.tier?.[0]?.toUpperCase() + profile?.plan?.tier?.slice(1) : "Free"}</p>
             <p>Joined: {formatDateTime(profile?.createdAt)}</p>
             <p>Current streak: {profile?.stats?.currentStreak ?? 0} days</p>
             <p>Perfect quiz runs: {profile?.stats?.perfectQuizRuns ?? 0}</p>

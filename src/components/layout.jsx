@@ -1,6 +1,6 @@
 import { Outlet, Navigate, NavLink, Link, useLocation, useNavigate } from "react-router-dom";
 import { APP_NAME, APP_NAV_ITEMS, PLAN_DETAILS } from "../lib/constants";
-import { cn, getInitials } from "../lib/utils";
+import { cn, getInitials, isPremiumPlan } from "../lib/utils";
 import { useAuth } from "../contexts/AuthContext";
 import { useStudyReminders } from "../hooks/useStudyReminders";
 import { Badge, Button, LinkButton } from "./ui";
@@ -113,7 +113,8 @@ export function AppShell() {
     navigate("/");
   }
 
-  const plan = profile?.plan?.tier === "premium" ? PLAN_DETAILS.premium : PLAN_DETAILS.free;
+  const hasPaidPlan = isPremiumPlan(profile);
+  const plan = hasPaidPlan ? (PLAN_DETAILS[profile?.plan?.tier] || PLAN_DETAILS.premium) : PLAN_DETAILS.free;
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
@@ -152,16 +153,16 @@ export function AppShell() {
           <div className="mt-10 rounded-[28px] border border-sky-400/15 bg-gradient-to-br from-sky-500/12 via-slate-900 to-teal-400/10 p-5">
             <Badge className="bg-slate-900/70 text-sky-200 ring-sky-400/20">{plan.badge}</Badge>
             <h3 className="mt-4 text-xl font-bold text-white">
-              {profile?.plan?.tier === "premium" ? "Premium AI is unlocked" : "Upgrade when you want more leverage"}
+              {hasPaidPlan ? `${plan.name} AI is unlocked` : "Upgrade when you want more leverage"}
             </h3>
             <p className="mt-3 text-sm text-slate-400">
-              {profile?.plan?.tier === "premium"
-                ? "Use your monthly AI credits for planning, quizzes, flashcards, and explainers."
+              {hasPaidPlan
+                ? `Use your monthly AI credits for planning, quizzes, flashcards, and explainers with the ${plan.name} tier.`
                 : "Move into AI planning, better analytics, and premium workflows for $5/month."}
             </p>
             <div className="mt-5">
               <LinkButton to="/app/billing" variant="secondary" size="sm">
-                {profile?.plan?.tier === "premium" ? "Manage plan" : "View plans"}
+                {hasPaidPlan ? "Manage plan" : "View plans"}
               </LinkButton>
             </div>
           </div>
@@ -199,7 +200,7 @@ export function AppShell() {
 
               <div className="flex items-center gap-3">
                 <Badge className="bg-slate-900/80 text-sky-200 ring-sky-400/20">
-                  {profile?.plan?.tier === "premium" ? "Premium" : "Free"}
+                  {hasPaidPlan ? plan.name : "Free"}
                 </Badge>
               </div>
             </div>

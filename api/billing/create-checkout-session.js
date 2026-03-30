@@ -1,5 +1,5 @@
 import { requireUser, sendError, sendJson } from "../_lib/auth.js";
-import { buildPlanFromSubscription, pickBestSubscription } from "../_lib/subscriptions.js";
+import { buildPlanFromSubscription, getStripePriceIdForTier, pickBestSubscription } from "../_lib/subscriptions.js";
 import { getStripe, getAppUrl } from "../_lib/stripe.js";
 
 export default async function handler(req, res) {
@@ -10,13 +10,15 @@ export default async function handler(req, res) {
   try {
     const stripe = getStripe();
     const { userRef, decoded, profile } = await requireUser(req);
+    const requestedTier = req.body?.tier === "power" ? "power" : "premium";
+    const requestedPriceId = getStripePriceIdForTier(requestedTier);
 
-    if (profile.plan?.tier === "premium" && ["active", "trialing"].includes(profile.plan?.status)) {
-      return sendJson(res, 400, { error: "Premium is already active on this account." });
+    if (!requestedPriceId) {
+      return sendJson(res, 500, { error: `Missing Stripe price for ${requestedTier}.` });
     }
 
-    if (!process.env.STRIPE_PREMIUM_PRICE_ID) {
-      return sendJson(res, 500, { error: "Missing STRIPE_PREMIUM_PRICE_ID." });
+    if (profile.plan?.tier === requestedTier && ["active", "trialing"].includes(profile.plan?.status)) {
+      return sendJson(res, 400, { error: `${requestedTier === "power" ? "Power" : "Premium"} is already active on this account.` });
     }
 
     let stripeCustomerId = profile.plan?.stripeCustomerId;
@@ -49,15 +51,16 @@ export default async function handler(req, res) {
     const bestExisting = pickBestSubscription(existingSubscriptions.data);
 
     if (bestExisting && ["active", "trialing"].includes(bestExisting.status)) {
+      const nextState = buildPlanFromSubscription(bestExisting, profile.plan, profile.usage);
       await userRef.set(
         {
-          plan: buildPlanFromSubscription(bestExisting, profile.plan),
+          ...nextState,
         },
         { merge: true },
       );
 
       return sendJson(res, 409, {
-        error: "Premium is already active on this account. Use the billing portal to manage it.",
+        error: "A paid plan is already active on this account. Use the billing portal to switch plans.",
       });
     }
 
@@ -68,7 +71,7 @@ export default async function handler(req, res) {
       customer: stripeCustomerId,
       line_items: [
         {
-          price: process.env.STRIPE_PREMIUM_PRICE_ID,
+          price: requestedPriceId,
           quantity: 1,
         },
       ],
@@ -78,6 +81,7 @@ export default async function handler(req, res) {
       cancel_url: `${baseUrl}/pricing?checkout=cancelled`,
       metadata: {
         firebaseUid: decoded.uid,
+        requestedTier,
       },
     });
 

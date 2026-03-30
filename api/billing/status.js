@@ -18,17 +18,17 @@ async function syncPlanFromStripe({ stripe, profile, userRef }) {
     return profile.plan;
   }
 
-  const nextPlan = buildPlanFromSubscription(bestSubscription, profile.plan);
+  const nextState = buildPlanFromSubscription(bestSubscription, profile.plan, profile.usage);
 
   await userRef.set(
     {
-      plan: nextPlan,
+      ...nextState,
       updatedAt: new Date().toISOString(),
     },
     { merge: true },
   );
 
-  return nextPlan;
+  return nextState.plan;
 }
 
 export default async function handler(req, res) {

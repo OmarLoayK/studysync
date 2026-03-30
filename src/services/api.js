@@ -24,8 +24,8 @@ async function request(path, { body, method = "POST", user } = {}) {
   return payload;
 }
 
-export function createCheckoutSession(user) {
-  return request("/api/billing/create-checkout-session", { user });
+export function createCheckoutSession(user, tier = "premium") {
+  return request("/api/billing/create-checkout-session", { user, body: { tier } });
 }
 
 export function createPortalSession(user) {

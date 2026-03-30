@@ -1,6 +1,7 @@
 import { HttpError, requireUser, sendError, sendJson } from "../_lib/auth.js";
 import { admin } from "../_lib/firebaseAdmin.js";
 import { generateStudyArtifact } from "../_lib/openai.js";
+import { getAiLimitForTier } from "../_lib/subscriptions.js";
 
 function monthKey() {
   return new Date().toISOString().slice(0, 7);
@@ -14,15 +15,20 @@ function getCollectionName(tool) {
 }
 
 async function reserveAiUsage(userRef, profile) {
-  if (profile.plan?.tier !== "premium" || !["active", "trialing"].includes(profile.plan?.status)) {
-    throw new HttpError(403, "Premium is required to use AI tools.");
+  const tier = profile.plan?.tier;
+  if (!["premium", "power"].includes(tier) || !["active", "trialing"].includes(profile.plan?.status)) {
+    throw new HttpError(403, "A paid AI plan is required to use AI tools.");
   }
 
   const db = userRef.firestore;
-  const limit = Number(process.env.PREMIUM_AI_MONTHLY_LIMIT || 60);
+  const limit = getAiLimitForTier(tier);
   const currentMonth = monthKey();
   const currentWindow = new Date().toISOString().slice(0, 16);
-  const perMinuteLimit = Number(process.env.PREMIUM_AI_PER_MINUTE_LIMIT || 6);
+  const perMinuteLimit = Number(
+    tier === "power"
+      ? process.env.POWER_AI_PER_MINUTE_LIMIT || 12
+      : process.env.PREMIUM_AI_PER_MINUTE_LIMIT || 6,
+  );
 
   return db.runTransaction(async (transaction) => {
     const snapshot = await transaction.get(userRef);
@@ -32,7 +38,7 @@ async function reserveAiUsage(userRef, profile) {
     const minuteUsed = usage.aiWindowKey === currentWindow ? usage.aiRequestsInWindow || 0 : 0;
 
     if (used >= limit) {
-      throw new HttpError(402, "You have used all premium AI credits for this month.");
+      throw new HttpError(402, "You have used all AI credits for this month.");
     }
 
     if (minuteUsed >= perMinuteLimit) {
@@ -101,7 +107,7 @@ export default async function handler(req, res) {
         availableStudyHours: profile.settings?.availableStudyHours,
         weeklyGoalHours: profile.settings?.weeklyGoalHours,
       },
-    });
+    }, { tier: profile.plan?.tier });
 
     const sharedPayload = {
       tool,

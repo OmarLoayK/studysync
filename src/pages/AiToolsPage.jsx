@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AI_TOOLS } from "../lib/constants";
 import { useAuth } from "../contexts/AuthContext";
 import { generateAiResult } from "../services/api";
+import { isPremiumPlan } from "../lib/utils";
 import { Badge, Button, Card, EmptyState, ProgressBar, SectionHeading, Select, TextArea, TextInput } from "../components/ui";
 
 function normalizeAnswer(value = "") {
@@ -265,7 +266,8 @@ export default function AiToolsPage() {
   const [rewardingPerfectRun, setRewardingPerfectRun] = useState(false);
 
   const activeTool = useMemo(() => AI_TOOLS.find((tool) => tool.key === selectedTool), [selectedTool]);
-  const isPremium = profile?.plan?.tier === "premium";
+  const isPremium = isPremiumPlan(profile);
+  const planLabel = isPremium ? `${profile?.plan?.tier?.[0]?.toUpperCase() || "P"}${profile?.plan?.tier?.slice(1) || "remium"}` : "Free";
 
   useEffect(() => {
     setFormState((current) => {
@@ -318,14 +320,14 @@ export default function AiToolsPage() {
 
   return (
     <div className="space-y-8">
-      <SectionHeading eyebrow="Premium AI" title="Lean, useful AI tools for real study work" description="StudySync keeps prompts tight, usage capped, and outputs structured so the premium tier can survive at $5/month." />
+      <SectionHeading eyebrow="Premium AI" title="Lean, useful AI tools for real study work" description="StudySync keeps prompts tight, usage capped, and outputs structured so the paid AI tiers can stay believable." />
       <div className="grid gap-6 xl:grid-cols-[0.78fr_1.22fr]">
         <div className="space-y-6">
           <Card>
             <p className="text-sm uppercase tracking-[0.24em] text-sky-300/80">Plan status</p>
-            <h2 className="mt-2 text-2xl font-bold text-white">{isPremium ? "Premium AI is active" : "Premium required for AI tools"}</h2>
+            <h2 className="mt-2 text-2xl font-bold text-white">{isPremium ? `${planLabel} AI is active` : "Paid AI required for these tools"}</h2>
             <p className="mt-3 text-slate-400">
-              {isPremium ? "Your account can generate study plans, quizzes, flashcards, explainers, and breakdowns." : "Upgrade in Billing to unlock premium AI tools, smarter planning, and advanced study leverage."}
+              {isPremium ? "Your account can generate study plans, quizzes, flashcards, explainers, and breakdowns." : "Upgrade in Billing to unlock AI tools, smarter planning, and advanced study leverage."}
             </p>
             <div className="mt-6">
               <ProgressBar label="Monthly AI credits" value={profile?.usage?.aiGenerationsUsed ?? 0} max={profile?.usage?.aiGenerationsLimit ?? 60} helper={isPremium ? "Credits reset monthly. Use them on the tools that unblock you most." : "Free plan keeps AI disabled."} />
@@ -361,14 +363,14 @@ export default function AiToolsPage() {
                 <h2 className="mt-2 text-2xl font-bold text-white">{activeTool.label}</h2>
               </div>
               <Badge className={isPremium ? "bg-emerald-500/15 text-emerald-200 ring-emerald-400/25" : "bg-rose-500/15 text-rose-200 ring-rose-400/25"}>
-                {isPremium ? "Premium unlocked" : "Locked"}
+                {isPremium ? `${planLabel} unlocked` : "Locked"}
               </Badge>
             </div>
 
             {!isPremium ? (
               <div className="mt-6">
                 <EmptyState
-                  title="Upgrade to use premium AI"
+                  title="Upgrade to use paid AI"
                   copy="The AI layer is gated by active Stripe subscription status, then rate-limited through monthly usage credits to keep costs controlled."
                   action={<Button as="a" href="/app/billing">Open billing</Button>}
                 />

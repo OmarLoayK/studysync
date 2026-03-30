@@ -168,5 +168,5 @@ export function getInitials(name = "") {
 }
 
 export function isPremiumPlan(profile) {
-  return profile?.plan?.tier === "premium" && ["active", "trialing"].includes(profile?.plan?.status);
+  return ["premium", "power"].includes(profile?.plan?.tier) && ["active", "trialing"].includes(profile?.plan?.status);
 }

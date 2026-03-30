@@ -23,9 +23,10 @@ async function syncUserPlanByCustomer(customerId, subscription) {
   if (snapshot.empty) return;
   const userDoc = snapshot.docs[0];
   const current = userDoc.data();
+  const nextState = buildPlanFromSubscription(subscription, current.plan, current.usage);
   await userDoc.ref.set(
     {
-      plan: buildPlanFromSubscription(subscription, current.plan),
+      ...nextState,
       updatedAt: new Date().toISOString(),
     },
     { merge: true },
