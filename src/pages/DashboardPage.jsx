@@ -1,6 +1,5 @@
 import { startTransition, useCallback, useDeferredValue, useEffect, useMemo, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { useStudyReminders } from "../hooks/useStudyReminders";
 import { DEFAULT_SETTINGS, PLAN_DETAILS, TASK_TEMPLATES } from "../lib/constants";
 import {
   buildAgenda,
@@ -559,7 +558,6 @@ function UpsellCard({ profile }) {
 
 export default function DashboardPage() {
   const { user, profile, loading: authLoading } = useAuth();
-  useStudyReminders({ user, profile });
 
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -4,13 +4,14 @@ import { cn, getInitials, isPremiumPlan } from "../lib/utils";
 import { useAuth } from "../contexts/AuthContext";
 import { useStudyReminders } from "../hooks/useStudyReminders";
 import { Badge, Button, LinkButton } from "./ui";
+import { BrandLockup, BrandMark } from "./brand";
 
 export function LoadingScreen({ label }) {
   return (
     <div className="grid min-h-screen place-items-center bg-slate-950 px-6">
       <div className="text-center">
-        <div className="mx-auto h-14 w-14 rounded-2xl border border-sky-400/20 bg-sky-500/10 p-3 text-sky-200 shadow-lg shadow-sky-950/40">
-          <div className="h-full w-full animate-pulse rounded-xl bg-gradient-to-br from-sky-400 to-teal-300" />
+        <div className="mx-auto w-fit animate-[pulse_2.2s_ease-in-out_infinite]">
+          <BrandMark size="lg" />
         </div>
         <p className="mt-6 text-sm font-semibold uppercase tracking-[0.24em] text-sky-300/80">{APP_NAME}</p>
         <p className="mt-3 text-slate-400">{label}</p>
@@ -42,15 +43,7 @@ export function PublicHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <Link to="/" className="flex items-center gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-sky-400 to-teal-300 text-slate-950">
-            <span className="font-black">S</span>
-          </div>
-          <div>
-            <p className="font-bold text-white">{APP_NAME}</p>
-            <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Study operating system</p>
-          </div>
-        </Link>
+        <BrandLockup to="/" compact subtitle="Study operating system" />
 
         <nav className="hidden items-center gap-6 text-sm text-slate-300 md:flex">
           <Link to="/pricing" className="transition hover:text-white">
@@ -135,15 +128,7 @@ export function AppShell() {
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <div className="mx-auto flex min-h-screen max-w-[1600px]">
         <aside className="hidden w-[290px] shrink-0 border-r border-white/10 bg-slate-950/80 p-6 lg:flex lg:flex-col">
-          <Link to="/app" className="flex items-center gap-3">
-            <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-sky-400 to-teal-300 text-slate-950 shadow-lg shadow-sky-950/40">
-              <span className="font-black">S</span>
-            </div>
-            <div>
-              <p className="font-bold text-white">{APP_NAME}</p>
-              <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Built for focused students</p>
-            </div>
-          </Link>
+          <BrandLockup to="/app" subtitle="Built for focused students" />
 
           <nav className="mt-10 grid gap-2">
             {APP_NAV_ITEMS.map((item) => (

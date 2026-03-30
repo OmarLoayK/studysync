@@ -1,4 +1,4 @@
-import { createContext, startTransition, useContext, useEffect, useState } from "react";
+import { createContext, startTransition, useContext, useEffect, useRef, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../firebase/config";
 import { ensureUserProfile, getUserProfile, updateUserProfile } from "../services/firestore";
@@ -9,12 +9,17 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const initializedRef = useRef(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      const isFirstLoad = !initializedRef.current;
+
       startTransition(() => {
         setUser(currentUser);
-        setLoading(true);
+        if (isFirstLoad) {
+          setLoading(true);
+        }
       });
 
       (async () => {
@@ -24,6 +29,7 @@ export function AuthProvider({ children }) {
               setProfile(null);
               setLoading(false);
             });
+            initializedRef.current = true;
             return;
           }
 
@@ -34,12 +40,16 @@ export function AuthProvider({ children }) {
             setProfile(nextProfile);
             setLoading(false);
           });
+          initializedRef.current = true;
         } catch (error) {
           console.error("Failed to load profile", error);
           startTransition(() => {
-            setProfile(null);
+            if (!initializedRef.current) {
+              setProfile(null);
+            }
             setLoading(false);
           });
+          initializedRef.current = true;
         }
       })();
     });
