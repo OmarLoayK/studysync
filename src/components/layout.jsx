@@ -2,6 +2,7 @@ import { Outlet, Navigate, NavLink, Link, useLocation, useNavigate } from "react
 import { APP_NAME, APP_NAV_ITEMS, PLAN_DETAILS } from "../lib/constants";
 import { cn, getInitials } from "../lib/utils";
 import { useAuth } from "../contexts/AuthContext";
+import { useStudyReminders } from "../hooks/useStudyReminders";
 import { Badge, Button, LinkButton } from "./ui";
 
 export function LoadingScreen({ label }) {
@@ -103,8 +104,9 @@ export function PublicFooter() {
 }
 
 export function AppShell() {
-  const { profile, signOutUser } = useAuth();
+  const { user, profile, signOutUser } = useAuth();
   const navigate = useNavigate();
+  useStudyReminders({ user, profile });
 
   async function handleSignOut() {
     await signOutUser();
@@ -169,9 +171,9 @@ export function AppShell() {
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-slate-800 text-sm font-bold text-white">
                 {getInitials(profile?.displayName || profile?.email)}
               </div>
-              <div>
+              <div className="min-w-0 flex-1">
                 <p className="font-semibold text-white">{profile?.displayName || "StudySync Student"}</p>
-                <p className="text-sm text-slate-400">{profile?.email}</p>
+                <p className="break-all text-xs leading-5 text-slate-400">{profile?.email}</p>
               </div>
             </div>
             <div className="mt-5 flex gap-3">
@@ -191,7 +193,7 @@ export function AppShell() {
               <div>
                 <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Workspace</p>
                 <p className="text-lg font-semibold text-white">
-                  {profile?.displayName || "Student"} • {plan.name}
+                  {profile?.displayName || "Student"} - {plan.name}
                 </p>
               </div>
 

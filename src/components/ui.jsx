@@ -144,7 +144,7 @@ export function Field({ label, hint, children }) {
 
 function inputBase(className = "") {
   return cn(
-    "min-h-12 rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-slate-100 outline-none transition focus:border-sky-400/50 focus:ring-2 focus:ring-sky-400/20 placeholder:text-slate-500",
+    "min-h-12 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-slate-100 outline-none transition focus:border-sky-400/50 focus:ring-2 focus:ring-sky-400/20 placeholder:text-slate-500",
     className,
   );
 }

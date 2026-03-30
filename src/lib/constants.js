@@ -22,7 +22,7 @@ export const FEATURE_PILLARS = [
   },
   {
     title: "Proof-backed accountability",
-    copy: "Require a completion note or proof link before tasks can be finished, with room for premium image proof workflows later.",
+    copy: "Require a completion note, proof link, or premium image proof before tasks can be finished, with clearer proof logic across the app.",
   },
   {
     title: "Premium AI study engine",
@@ -81,6 +81,25 @@ export const AI_TOOLS = [
     description: "Generate practice questions from notes, a lecture summary, or any study topic.",
     fields: [
       { name: "topic", label: "Topic", type: "text", placeholder: "Cellular respiration" },
+      {
+        name: "questionCount",
+        label: "Number of questions",
+        type: "number",
+        min: 3,
+        max: 12,
+        placeholder: "5",
+        defaultValue: "5",
+      },
+      {
+        name: "format",
+        label: "Question type",
+        type: "select",
+        defaultValue: "multiple-choice",
+        options: [
+          { value: "multiple-choice", label: "Multiple choice" },
+          { value: "true-false", label: "True or false" },
+        ],
+      },
       { name: "notes", label: "Notes or source material", type: "textarea", placeholder: "Paste your notes, lecture recap, or chapter summary..." },
     ],
   },
@@ -121,6 +140,8 @@ export const DEFAULT_SETTINGS = {
   preferredStudyWindow: "18:00-20:00",
   availableStudyHours: "Mon 2h, Tue 2h, Wed 1h, Thu 2h, Fri 1h, Sat 2h",
   reminderStyle: "focus-first",
+  browserReminders: false,
+  deadlineReminderDays: 1,
   requireProofBeforeCompletion: true,
 };
 

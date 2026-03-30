@@ -9,6 +9,7 @@ import {
   getCompletionRate,
   getPriorityTone,
   getTaskBadges,
+  hasTaskProof,
   isPremiumPlan,
   sortTasks,
   toDateKey,
@@ -94,6 +95,11 @@ function TaskForm({ form, setForm, onSubmit, onCancel, busy, editing, proofImage
       <div className="md:col-span-2">
         <ProofUploader fileName={proofImageName} previewUrl={previewUrl} onChange={onProofImageChange} disabled={busy} isPremium={isPremium} />
       </div>
+      <p className="md:col-span-2 text-sm text-slate-400">
+        {isPremium
+          ? "Completion unlocks when at least one proof signal is present: a proof link, a completion note, or a premium image proof."
+          : "Completion unlocks when at least one proof signal is present: a proof link or a completion note. Premium adds image proof too."}
+      </p>
       <div className="md:col-span-2 flex flex-wrap justify-end gap-3">
         <Button variant="ghost" onClick={onCancel}>Cancel</Button>
         <Button type="submit" disabled={busy}>{busy ? "Saving..." : editing ? "Save changes" : "Create task"}</Button>
@@ -102,9 +108,9 @@ function TaskForm({ form, setForm, onSubmit, onCancel, busy, editing, proofImage
   );
 }
 
-function TaskCard({ task, onEdit, onDelete, onToggleComplete }) {
-  const badges = getTaskBadges(task);
-  const canComplete = Boolean(task.proofLink?.trim() || task.completionNote?.trim() || task.imageProofUrl?.trim());
+function TaskCard({ task, onEdit, onDelete, onToggleComplete, requireProof }) {
+  const badges = getTaskBadges(task, requireProof);
+  const canComplete = !requireProof || hasTaskProof(task);
 
   return (
     <Card className={task.completed ? "border-emerald-400/20 bg-emerald-500/5" : "bg-slate-900/80"}>
@@ -114,7 +120,7 @@ function TaskCard({ task, onEdit, onDelete, onToggleComplete }) {
             <h3 className={`text-xl font-bold ${task.completed ? "text-slate-400 line-through" : "text-white"}`}>{task.title}</h3>
             <Badge className={`ring-1 ${getPriorityTone(task.priority)}`}>{task.priority}</Badge>
           </div>
-          <p className="mt-2 text-sm text-slate-400">{task.course} • Due {formatDateLabel(task.dueDate, { month: "short", day: "numeric", weekday: "short" })}</p>
+          <p className="mt-2 text-sm text-slate-400">{task.course} - Due {formatDateLabel(task.dueDate, { month: "short", day: "numeric", weekday: "short" })}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {badges.map((badge) => <Badge key={badge.label} className={`ring-1 ${badge.tone}`}>{badge.label}</Badge>)}
@@ -160,6 +166,7 @@ export default function DashboardPage() {
   const [error, setError] = useState("");
   const deferredSearch = useDeferredValue(search);
   const hasPremium = isPremiumPlan(profile);
+  const requireProof = profile?.settings?.requireProofBeforeCompletion ?? true;
 
   const loadTasks = useCallback(async () => {
     if (!user) return;
@@ -293,8 +300,7 @@ export default function DashboardPage() {
   }
 
   async function handleToggleComplete(task) {
-    const hasProof = Boolean(task.proofLink?.trim() || task.completionNote?.trim() || task.imageProofUrl?.trim());
-    if (!task.completed && !hasProof) {
+    if (requireProof && !task.completed && !hasTaskProof(task)) {
       setError("Add a proof link, image proof, or completion note before marking a task complete.");
       return;
     }
@@ -353,7 +359,7 @@ export default function DashboardPage() {
                   {section.items.length === 0 ? <p className="text-sm text-slate-500">Nothing here.</p> : section.items.map((task) => (
                     <div key={task.id} className="rounded-2xl border border-white/8 bg-white/4 p-3">
                       <p className="font-semibold text-white">{task.title}</p>
-                      <p className="mt-1 text-sm text-slate-400">{task.course} • {formatDateLabel(task.dueDate)}</p>
+                      <p className="mt-1 text-sm text-slate-400">{task.course} - {formatDateLabel(task.dueDate)}</p>
                     </div>
                   ))}
                 </div>
@@ -387,11 +393,11 @@ export default function DashboardPage() {
               <p className="text-sm uppercase tracking-[0.24em] text-sky-300/80">Task command center</p>
               <h2 className="mt-2 text-2xl font-bold text-white">Sort, filter, and finish work cleanly</h2>
             </div>
-            <div className="flex flex-wrap gap-3">
-              <div className="w-44"><TextInput label="Search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search tasks..." /></div>
-              <div className="w-40"><Select label="Status" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}><option value="all">All</option><option value="open">Open</option><option value="today">Due today</option><option value="overdue">Overdue</option><option value="completed">Completed</option></Select></div>
-              <div className="w-40"><Select label="Priority" value={priorityFilter} onChange={(event) => setPriorityFilter(event.target.value)}><option value="all">All</option><option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option></Select></div>
-              <div className="w-40"><Select label="Sort by" value={sortBy} onChange={(event) => setSortBy(event.target.value)}><option value="due">Due date</option><option value="priority">Priority</option><option value="recent">Recently updated</option><option value="title">Title</option></Select></div>
+            <div className="grid w-full gap-3 md:grid-cols-2 xl:w-auto xl:grid-cols-4">
+              <div className="min-w-0 xl:w-56"><TextInput label="Search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search tasks..." /></div>
+              <div className="min-w-0 xl:w-44"><Select label="Status" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}><option value="all">All</option><option value="open">Open</option><option value="today">Due today</option><option value="overdue">Overdue</option><option value="completed">Completed</option></Select></div>
+              <div className="min-w-0 xl:w-44"><Select label="Priority" value={priorityFilter} onChange={(event) => setPriorityFilter(event.target.value)}><option value="all">All</option><option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option></Select></div>
+              <div className="min-w-0 xl:w-44"><Select label="Sort by" value={sortBy} onChange={(event) => setSortBy(event.target.value)}><option value="due">Due date</option><option value="priority">Priority</option><option value="recent">Recently updated</option><option value="title">Title</option></Select></div>
             </div>
           </div>
 
@@ -401,7 +407,7 @@ export default function DashboardPage() {
             ) : filteredTasks.length === 0 ? (
               <EmptyState title="Your task list is quiet." copy="Create a task with a due date, study estimate, and proof expectation so the dashboard can start guiding your week." action={<Button onClick={openNewTaskModal}>Create your first task</Button>} />
             ) : (
-              filteredTasks.map((task) => <TaskCard key={task.id} task={task} onEdit={openEditTaskModal} onDelete={handleDelete} onToggleComplete={handleToggleComplete} />)
+              filteredTasks.map((task) => <TaskCard key={task.id} task={task} onEdit={openEditTaskModal} onDelete={handleDelete} onToggleComplete={handleToggleComplete} requireProof={requireProof} />)
             )}
           </div>
         </Card>
@@ -414,7 +420,7 @@ export default function DashboardPage() {
               {agenda.map((entry) => (
                 <div key={entry.key} className="flex items-center justify-between rounded-[22px] border border-white/10 bg-slate-950/60 px-4 py-4">
                   <div>
-                    <p className="font-semibold text-white">{entry.label} • {entry.dayLabel}</p>
+                    <p className="font-semibold text-white">{entry.label} - {entry.dayLabel}</p>
                     <p className="text-sm text-slate-400">{entry.count === 0 ? "No tasks due" : `${entry.count} task${entry.count > 1 ? "s" : ""} due`}</p>
                   </div>
                   <div className="text-right">

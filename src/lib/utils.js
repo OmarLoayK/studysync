@@ -46,10 +46,14 @@ export function getPriorityTone(priority) {
   return "bg-emerald-500/15 text-emerald-200 ring-emerald-400/25";
 }
 
-export function getTaskBadges(task) {
+export function hasTaskProof(task) {
+  return Boolean(task?.proofLink?.trim() || task?.completionNote?.trim() || task?.imageProofUrl?.trim());
+}
+
+export function getTaskBadges(task, requireProof = true) {
   const today = toDateKey();
   const completed = Boolean(task.completed);
-  const hasProof = Boolean(task.proofLink?.trim() || task.completionNote?.trim() || task.imageProofUrl?.trim());
+  const hasProof = hasTaskProof(task);
   const badges = [];
 
   if (completed) {
@@ -60,8 +64,8 @@ export function getTaskBadges(task) {
 
   if (!completed) {
     badges.push({
-      label: hasProof ? "Ready to Complete" : "Proof Needed",
-      tone: hasProof
+      label: !requireProof || hasProof ? "Ready to Complete" : "Proof Needed",
+      tone: !requireProof || hasProof
         ? "bg-sky-500/15 text-sky-200 ring-sky-400/25"
         : "bg-violet-500/15 text-violet-200 ring-violet-400/25",
     });

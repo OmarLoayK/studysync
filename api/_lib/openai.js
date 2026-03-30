@@ -5,9 +5,9 @@ const toolPrompts = {
       "Create a realistic study schedule. Keep it concise, practical, and specific. Return only JSON.",
   },
   quiz: {
-    schema: `{"title":"string","summary":"string","questions":[{"question":"string","options":["string","string","string","string"],"answer":"string","explanation":"string"}]}`,
+    schema: `{"title":"string","summary":"string","questions":[{"question":"string","type":"multiple-choice | true-false","options":["string"],"answer":"string","explanation":"string"}]}`,
     instructions:
-      "Create a short multiple-choice quiz based on the study material. Return only JSON.",
+      "Create a quiz based on the study material. Use the requested number of questions and requested format exactly. For true-false questions, the options must be ['True','False']. For multiple-choice questions, provide four plausible options. Return only JSON.",
   },
   flashcards: {
     schema: `{"title":"string","summary":"string","cards":[{"front":"string","back":"string"}]}`,

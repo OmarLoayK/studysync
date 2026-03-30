@@ -55,14 +55,14 @@ async function reserveAiUsage(userRef, profile) {
       { merge: true },
     );
 
-      return {
-        used: used + 1,
-        limit,
-        windowUsed: minuteUsed + 1,
-        windowLimit: perMinuteLimit,
-      };
-    });
-  }
+    return {
+      used: used + 1,
+      limit,
+      windowUsed: minuteUsed + 1,
+      windowLimit: perMinuteLimit,
+    };
+  });
+}
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -82,6 +82,14 @@ export default async function handler(req, res) {
     const normalizedPayload = Object.fromEntries(
       Object.entries(payload).map(([key, value]) => [key, `${value ?? ""}`.trim().slice(0, 6000)]),
     );
+
+    if (tool === "quiz") {
+      const requestedCount = Number.parseInt(normalizedPayload.questionCount || "5", 10);
+      normalizedPayload.questionCount = `${Math.min(12, Math.max(3, Number.isNaN(requestedCount) ? 5 : requestedCount))}`;
+      normalizedPayload.format = ["multiple-choice", "true-false"].includes(normalizedPayload.format)
+        ? normalizedPayload.format
+        : "multiple-choice";
+    }
 
     const { db, decoded, userRef, profile } = await requireUser(req);
     const usage = await reserveAiUsage(userRef, profile);

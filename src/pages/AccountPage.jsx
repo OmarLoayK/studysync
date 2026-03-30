@@ -50,6 +50,7 @@ export default function AccountPage() {
             <p>Plan: {profile?.plan?.tier === "premium" ? "Premium" : "Free"}</p>
             <p>Joined: {formatDateTime(profile?.createdAt)}</p>
             <p>Current streak: {profile?.stats?.currentStreak ?? 0} days</p>
+            <p>Perfect quiz runs: {profile?.stats?.perfectQuizRuns ?? 0}</p>
           </div>
           <div className="mt-6 flex flex-wrap gap-3">
             <Badge className="bg-slate-950 text-slate-300 ring-white/10">{profile?.plan?.status || "inactive"}</Badge>

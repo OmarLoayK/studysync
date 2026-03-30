@@ -48,6 +48,7 @@ function mergeDefaults(user, profile = {}) {
       longestStreak: profile.stats?.longestStreak ?? 0,
       tasksCompleted: profile.stats?.tasksCompleted ?? 0,
       focusHoursThisWeek: profile.stats?.focusHoursThisWeek ?? 0,
+      perfectQuizRuns: profile.stats?.perfectQuizRuns ?? 0,
     },
     settings: {
       ...DEFAULT_SETTINGS,
