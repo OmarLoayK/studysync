@@ -139,4 +139,6 @@ export const DEFAULT_USAGE = {
   aiMonthKey: "",
   aiGenerationsUsed: 0,
   aiGenerationsLimit: DEFAULT_MONTHLY_AI_LIMIT,
+  aiWindowKey: "",
+  aiRequestsInWindow: 0,
 };

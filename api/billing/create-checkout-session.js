@@ -1,4 +1,5 @@
 import { requireUser, sendError, sendJson } from "../_lib/auth.js";
+import { buildPlanFromSubscription, pickBestSubscription } from "../_lib/subscriptions.js";
 import { getStripe, getAppUrl } from "../_lib/stripe.js";
 
 export default async function handler(req, res) {
@@ -38,6 +39,26 @@ export default async function handler(req, res) {
         },
         { merge: true },
       );
+    }
+
+    const existingSubscriptions = await stripe.subscriptions.list({
+      customer: stripeCustomerId,
+      status: "all",
+      limit: 10,
+    });
+    const bestExisting = pickBestSubscription(existingSubscriptions.data);
+
+    if (bestExisting && ["active", "trialing"].includes(bestExisting.status)) {
+      await userRef.set(
+        {
+          plan: buildPlanFromSubscription(bestExisting, profile.plan),
+        },
+        { merge: true },
+      );
+
+      return sendJson(res, 409, {
+        error: "Premium is already active on this account. Use the billing portal to manage it.",
+      });
     }
 
     const baseUrl = getAppUrl(req);

@@ -1,5 +1,6 @@
 import { sendError, sendJson } from "../_lib/auth.js";
 import { getAdminDb } from "../_lib/firebaseAdmin.js";
+import { buildPlanFromSubscription } from "../_lib/subscriptions.js";
 import { getStripe } from "../_lib/stripe.js";
 
 export const config = {
@@ -16,20 +17,6 @@ async function readRawBody(req) {
   return Buffer.concat(chunks);
 }
 
-function subscriptionData(subscription, existingPlan = {}) {
-  const active = ["active", "trialing"].includes(subscription.status);
-  return {
-    ...existingPlan,
-    tier: active ? "premium" : "free",
-    status: subscription.status,
-    stripeCustomerId: subscription.customer,
-    stripeSubscriptionId: subscription.id,
-    stripePriceId: subscription.items?.data?.[0]?.price?.id || existingPlan.stripePriceId || "",
-    currentPeriodEnd: subscription.current_period_end ? new Date(subscription.current_period_end * 1000).toISOString() : "",
-    cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
-  };
-}
-
 async function syncUserPlanByCustomer(customerId, subscription) {
   const db = getAdminDb();
   const snapshot = await db.collection("users").where("plan.stripeCustomerId", "==", customerId).limit(1).get();
@@ -38,7 +25,7 @@ async function syncUserPlanByCustomer(customerId, subscription) {
   const current = userDoc.data();
   await userDoc.ref.set(
     {
-      plan: subscriptionData(subscription, current.plan),
+      plan: buildPlanFromSubscription(subscription, current.plan),
       updatedAt: new Date().toISOString(),
     },
     { merge: true },

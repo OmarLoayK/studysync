@@ -32,6 +32,10 @@ export function createPortalSession(user) {
   return request("/api/billing/create-portal-session", { user });
 }
 
+export function syncBillingStatus(user) {
+  return request("/api/billing/status", { user });
+}
+
 export function generateAiResult(user, body) {
   return request("/api/ai/generate", { user, body });
 }

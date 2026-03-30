@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   updateProfile as updateFirebaseProfile,
 } from "firebase/auth";
@@ -39,7 +40,9 @@ export default function AuthPage({ mode }) {
     password: "",
   });
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [sendingReset, setSendingReset] = useState(false);
 
   const from = useMemo(() => location.state?.from || "/app", [location.state]);
 
@@ -47,6 +50,7 @@ export default function AuthPage({ mode }) {
     event.preventDefault();
     setSubmitting(true);
     setError("");
+    setNotice("");
 
     try {
       if (mode === "signup") {
@@ -66,6 +70,26 @@ export default function AuthPage({ mode }) {
       setError(caughtError.message || "We could not complete that request.");
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handlePasswordReset() {
+    if (!form.email.trim()) {
+      setError("Enter your email first, then request a password reset.");
+      return;
+    }
+
+    setSendingReset(true);
+    setError("");
+    setNotice("");
+
+    try {
+      await sendPasswordResetEmail(auth, form.email.trim());
+      setNotice("Password reset email sent. Check your inbox and spam folder.");
+    } catch (caughtError) {
+      setError(caughtError.message || "We could not send a reset email.");
+    } finally {
+      setSendingReset(false);
     }
   }
 
@@ -115,11 +139,23 @@ export default function AuthPage({ mode }) {
             />
 
             {error ? <p className="rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">{error}</p> : null}
+            {notice ? <p className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">{notice}</p> : null}
 
             <Button variant="primary" size="lg" type="submit" disabled={submitting}>
               {submitting ? "Working..." : content.button}
             </Button>
           </form>
+
+          {mode === "login" ? (
+            <button
+              type="button"
+              className="mt-4 text-sm font-semibold text-sky-300 transition hover:text-sky-200"
+              onClick={handlePasswordReset}
+              disabled={sendingReset}
+            >
+              {sendingReset ? "Sending reset..." : "Forgot password?"}
+            </button>
+          ) : null}
 
           <p className="mt-6 text-sm text-slate-400">
             {content.alternate}{" "}

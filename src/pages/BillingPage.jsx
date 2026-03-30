@@ -1,15 +1,44 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { createCheckoutSession, createPortalSession } from "../services/api";
+import { createCheckoutSession, createPortalSession, syncBillingStatus } from "../services/api";
 import { formatDateTime } from "../lib/utils";
 import { Badge, Button, Card, ProgressBar, SectionHeading } from "../components/ui";
 
 export default function BillingPage() {
-  const { user, profile } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
   const [loadingAction, setLoadingAction] = useState("");
   const [error, setError] = useState("");
+  const [syncing, setSyncing] = useState(false);
 
   const isPremium = profile?.plan?.tier === "premium";
+
+  useEffect(() => {
+    let active = true;
+
+    async function syncPlan() {
+      if (!user) return;
+      setSyncing(true);
+      try {
+        await syncBillingStatus(user);
+        if (active) {
+          await refreshProfile();
+        }
+      } catch (caughtError) {
+        if (active) {
+          setError(caughtError.message || "Could not refresh billing status.");
+        }
+      } finally {
+        if (active) {
+          setSyncing(false);
+        }
+      }
+    }
+
+    void syncPlan();
+    return () => {
+      active = false;
+    };
+  }, [refreshProfile, user]);
 
   async function handleCheckout() {
     setLoadingAction("checkout");
@@ -60,9 +89,9 @@ export default function BillingPage() {
           </div>
 
           <div className="mt-6 grid gap-3 text-slate-300">
-            <p>• Free gives you the full task dashboard, analytics snapshots, and account controls.</p>
-            <p>• Premium unlocks all AI tools, smarter planning, richer analytics, and advanced proof architecture.</p>
-            <p>• Subscription status syncs back through Stripe webhooks into Firestore for feature gating.</p>
+            <p>- Free gives you the full task dashboard, analytics snapshots, and account controls.</p>
+            <p>- Premium unlocks all AI tools, smarter planning, richer analytics, and advanced proof architecture.</p>
+            <p>- Subscription status syncs back through Stripe webhooks into Firestore for feature gating.</p>
           </div>
 
           <div className="mt-6 grid gap-3 text-sm text-slate-400">
@@ -70,6 +99,8 @@ export default function BillingPage() {
               Billing cycle end:{" "}
               {profile?.plan?.currentPeriodEnd ? formatDateTime(profile.plan.currentPeriodEnd) : "Will appear after Stripe syncs the billing period."}
             </p>
+            {profile?.plan?.cancelAtPeriodEnd ? <p>Your premium access is set to end at the current billing period.</p> : null}
+            {syncing ? <p>Refreshing Stripe status...</p> : null}
           </div>
 
           <div className="mt-8 flex flex-wrap gap-3">

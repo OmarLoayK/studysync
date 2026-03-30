@@ -8,6 +8,7 @@
     "dev:full": "vercel dev",
     "build": "vite build",
     "lint": "eslint .",
+    "migrate:legacy-tasks": "node scripts/migrate-legacy-tasks.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
