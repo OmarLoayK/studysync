@@ -47,7 +47,7 @@ export function getPriorityTone(priority) {
 }
 
 export function hasTaskProof(task) {
-  return Boolean(task?.proofLink?.trim() || task?.completionNote?.trim() || task?.imageProofUrl?.trim());
+  return Boolean(task?.proofLink?.trim() || task?.imageProofUrl?.trim());
 }
 
 export function getTaskBadges(task, requireProof = true) {

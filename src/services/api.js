@@ -39,3 +39,7 @@ export function syncBillingStatus(user) {
 export function generateAiResult(user, body) {
   return request("/api/ai/generate", { user, body });
 }
+
+export function verifyTaskProof(user, body) {
+  return request("/api/tasks/verify-proof", { user, body });
+}

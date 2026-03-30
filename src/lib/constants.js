@@ -171,8 +171,6 @@ export const TASK_TEMPLATES = [
       description: "List the key questions or problems you need to finish.",
       priority: "Medium",
       estimatedMinutes: 60,
-      proofLink: "",
-      completionNote: "",
     },
   },
   {
@@ -185,8 +183,6 @@ export const TASK_TEMPLATES = [
       description: "Outline thesis, evidence, and the next writing checkpoint.",
       priority: "High",
       estimatedMinutes: 120,
-      proofLink: "",
-      completionNote: "",
     },
   },
   {
@@ -199,8 +195,6 @@ export const TASK_TEMPLATES = [
       description: "Define the topics, chapters, or problem types you will cover.",
       priority: "High",
       estimatedMinutes: 90,
-      proofLink: "",
-      completionNote: "",
     },
   },
   {
@@ -213,8 +207,6 @@ export const TASK_TEMPLATES = [
       description: "Summarize the chapter or reading target and what proof you will leave.",
       priority: "Low",
       estimatedMinutes: 45,
-      proofLink: "",
-      completionNote: "",
     },
   },
 ];

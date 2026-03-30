@@ -147,7 +147,7 @@ export default function SettingsPage() {
             <p className="text-sm uppercase tracking-[0.24em] text-sky-300/80">Proof workflow</p>
             <h2 className="mt-2 text-3xl font-bold text-white">Completion remains accountable</h2>
             <p className="mt-3 text-slate-400">
-              A task becomes ready to complete when it has at least one proof signal: a proof link, a completion note, or a premium image proof upload.
+              Proof is now collected when the task is finished. Free users verify a Google Doc, while paid plans can upload image proof directly.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Badge className="bg-violet-500/15 text-violet-200 ring-violet-400/25">

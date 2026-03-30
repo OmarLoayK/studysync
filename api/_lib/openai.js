@@ -51,6 +51,24 @@ function getModelForTier(tier) {
   return process.env.OPENAI_MODEL || "gpt-4.1-mini";
 }
 
+async function requestOpenAi(body) {
+  const response = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`OpenAI request failed: ${errorText}`);
+  }
+
+  return response.json();
+}
+
 export async function generateStudyArtifact(tool, payload, options = {}) {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error("Missing OPENAI_API_KEY.");
@@ -61,25 +79,55 @@ export async function generateStudyArtifact(tool, payload, options = {}) {
     throw new Error("Unsupported AI tool.");
   }
 
-  const response = await fetch("https://api.openai.com/v1/responses", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-    },
-    body: JSON.stringify({
+  const result = await requestOpenAi({
       model: getModelForTier(options.tier),
       max_output_tokens: options.tier === "power" ? 1800 : 1200,
       instructions: `${prompt.instructions} Use compact, startup-grade output quality. JSON schema: ${prompt.schema}`,
       input: JSON.stringify(payload),
-    }),
   });
+  return parseJsonText(extractText(result));
+}
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`OpenAI request failed: ${errorText}`);
+export async function verifyTaskProofMatch(payload, options = {}) {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error("Missing OPENAI_API_KEY.");
   }
 
-  const result = await response.json();
+  const result = await requestOpenAi({
+      model: getModelForTier(options.tier),
+      max_output_tokens: 500,
+      instructions:
+        "Decide whether the supplied study proof is relevant to the task and course. Return only JSON with schema: {\"matches\":boolean,\"confidence\":\"low | medium | high\",\"reason\":\"string\",\"matchedSubject\":\"string\"}. Be strict about subject mismatch, but allow minor wording differences.",
+      input: JSON.stringify(payload),
+  });
+  return parseJsonText(extractText(result));
+}
+
+export async function verifyTaskProofImageMatch(payload, options = {}) {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error("Missing OPENAI_API_KEY.");
+  }
+
+  const result = await requestOpenAi({
+    model: getModelForTier(options.tier),
+    max_output_tokens: 500,
+    instructions:
+      "Decide whether the supplied study-proof image is relevant to the task and course. Return only JSON with schema: {\"matches\":boolean,\"confidence\":\"low | medium | high\",\"reason\":\"string\",\"matchedSubject\":\"string\"}. Be strict about subject mismatch, but allow minor wording differences and typical student-work screenshots.",
+    input: [
+      {
+        role: "user",
+        content: [
+          {
+            type: "input_text",
+            text: `Task title: ${payload.taskTitle || ""}\nCourse: ${payload.course || ""}\nDescription: ${payload.description || ""}\nJudge whether the image looks like proof for this subject.`,
+          },
+          {
+            type: "input_image",
+            image_url: payload.imageUrl,
+          },
+        ],
+      },
+    ],
+  });
   return parseJsonText(extractText(result));
 }
