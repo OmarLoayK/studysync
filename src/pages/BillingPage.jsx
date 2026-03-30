@@ -66,9 +66,10 @@ export default function BillingPage() {
           </div>
 
           <div className="mt-6 grid gap-3 text-sm text-slate-400">
-            <p>Stripe customer: {profile?.plan?.stripeCustomerId || "Will be created on first upgrade"}</p>
-            <p>Subscription: {profile?.plan?.stripeSubscriptionId || "None yet"}</p>
-            <p>Current period end: {formatDateTime(profile?.plan?.currentPeriodEnd)}</p>
+            <p>
+              Billing cycle end:{" "}
+              {profile?.plan?.currentPeriodEnd ? formatDateTime(profile.plan.currentPeriodEnd) : "Will appear after Stripe syncs the billing period."}
+            </p>
           </div>
 
           <div className="mt-8 flex flex-wrap gap-3">
