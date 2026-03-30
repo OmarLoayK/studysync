@@ -1,5 +1,5 @@
-import { lazy, Suspense } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { lazy, Suspense, useEffect } from "react";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import "../App.css";
 import { AppShell, LoadingScreen, ProtectedRoute, PublicOnlyRoute } from "../components/layout";
 import { useAuth } from "../contexts/AuthContext";
@@ -16,9 +16,32 @@ const BillingPage = lazy(() => import("../pages/BillingPage"));
 const AccountPage = lazy(() => import("../pages/AccountPage"));
 const SettingsPage = lazy(() => import("../pages/SettingsPage"));
 
+function HashScrollManager() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!location.hash) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    const id = location.hash.replace("#", "");
+
+    window.requestAnimationFrame(() => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  }, [location.hash, location.pathname]);
+
+  return null;
+}
+
 function AppRoutes() {
   return (
     <Suspense fallback={<LoadingScreen label="Loading page..." />}>
+      <HashScrollManager />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/pricing" element={<PricingPage />} />

@@ -52,12 +52,12 @@ export function PublicHeader() {
           <Link to="/support" className="transition hover:text-white">
             Support
           </Link>
-          <a href="#features" className="transition hover:text-white">
+          <Link to="/#features" className="transition hover:text-white">
             Features
-          </a>
-          <a href="#premium" className="transition hover:text-white">
+          </Link>
+          <Link to="/#premium" className="transition hover:text-white">
             Premium AI
-          </a>
+          </Link>
         </nav>
 
         <div className="flex items-center gap-3">
