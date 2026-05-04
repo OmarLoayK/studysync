@@ -1,5 +1,9 @@
 import { HttpError, requireUser, sendError, sendJson } from "../_lib/auth.js";
+import { getAdminDb } from "../_lib/firebaseAdmin.js";
 import { verifyTaskProofImageMatch, verifyTaskProofMatch } from "../_lib/openai.js";
+import { admin } from "../_lib/firebaseAdmin.js";
+
+const PROOF_HOURLY_LIMIT = 10;
 
 function extractGoogleDocId(url) {
   const match = url.match(/docs\.google\.com\/document\/d\/([a-zA-Z0-9_-]+)/);
@@ -60,18 +64,49 @@ function extractImageUrlsFromHtml(html) {
     .filter((value) => value?.startsWith("http"));
 }
 
+async function checkAndIncrementProofRateLimit(userRef) {
+  const db = getAdminDb();
+  const hourKey = new Date().toISOString().slice(0, 13);
+
+  return db.runTransaction(async (transaction) => {
+    const snapshot = await transaction.get(userRef);
+    const data = snapshot.data() || {};
+    const proofUsage = data.proofUsage || {};
+
+    const used = proofUsage.hourKey === hourKey ? proofUsage.verificationsInHour || 0 : 0;
+
+    if (used >= PROOF_HOURLY_LIMIT) {
+      throw new HttpError(429, `Proof verification limit reached (${PROOF_HOURLY_LIMIT} per hour). Try again shortly.`);
+    }
+
+    transaction.set(
+      userRef,
+      {
+        proofUsage: {
+          hourKey,
+          verificationsInHour: used + 1,
+        },
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
+  });
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return sendJson(res, 405, { error: "Method not allowed." });
   }
 
   try {
-    const { profile } = await requireUser(req);
+    const { profile, userRef } = await requireUser(req);
     const { taskTitle, course, description, proofLink } = req.body || {};
 
     if (!proofLink?.trim()) {
       throw new HttpError(400, "A Google Docs proof link is required.");
     }
+
+    await checkAndIncrementProofRateLimit(userRef);
 
     const trimmedLink = proofLink.trim();
     const html = await fetchGoogleDocHtml(trimmedLink);
