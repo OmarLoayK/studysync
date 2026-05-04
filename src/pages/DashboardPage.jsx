@@ -1,4 +1,24 @@
 import { startTransition, useCallback, useDeferredValue, useEffect, useMemo, useState } from "react";
+import {
+  Plus,
+  Search,
+  SlidersHorizontal,
+  CheckCircle2,
+  Circle,
+  AlertTriangle,
+  Clock,
+  Flame,
+  Target,
+  CalendarDays,
+  BarChart3,
+  Upload,
+  FileText,
+  Trash2,
+  Pencil,
+  ArrowRight,
+  Sparkles,
+  ChevronRight,
+} from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { DEFAULT_SETTINGS, PLAN_DETAILS, TASK_TEMPLATES } from "../lib/constants";
 import {
@@ -17,6 +37,7 @@ import { createTask, listTasks, removeTask, updateTask } from "../services/fires
 import { verifyTaskProof } from "../services/api";
 import { uploadTaskProofImage } from "../services/storage";
 import {
+  AlertBox,
   Badge,
   Button,
   Card,
@@ -77,7 +98,7 @@ function formatSlotLabel(startMinutes, duration) {
     new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(
       new Date(2026, 0, 1, Math.floor(minutes / 60), minutes % 60),
     );
-  return `${format(startMinutes)} - ${format(startMinutes + duration)}`;
+  return `${format(startMinutes)} – ${format(startMinutes + duration)}`;
 }
 
 function buildTodayPlan(tasks, preferredStudyWindow) {
@@ -102,11 +123,11 @@ function buildTodayPlan(tasks, preferredStudyWindow) {
     const duration = Number(task.estimatedMinutes || 45);
     const reason =
       task.dueDate < todayKey
-        ? "This is overdue, so clearing it reduces stress fastest."
+        ? "Overdue — clearing this reduces stress fastest."
         : task.dueDate === todayKey
-          ? "This is due today, so it belongs at the front of your plan."
+          ? "Due today — belongs at the front of your plan."
           : task.priority === "High"
-            ? "High-priority work deserves a protected block before lighter tasks."
+            ? "High priority — deserves a protected block before lighter tasks."
             : "Keep momentum with an upcoming task.";
 
     const next = {
@@ -140,25 +161,25 @@ function formatMinutesAsHours(totalMinutes) {
   return `${hours.toFixed(1)}h`;
 }
 
+/* ─── Sub-components ─── */
+
 function TaskTemplatePicker({ onApplyTemplate }) {
   return (
-    <div className="grid gap-3">
+    <div className="space-y-3">
       <div>
-        <p className="text-sm font-semibold text-slate-200">Start from a quick template</p>
-        <p className="mt-1 text-xs text-slate-500">
-          This keeps task creation fast instead of making you fill every field from scratch.
-        </p>
+        <p className="text-sm font-semibold text-slate-200">Quick templates</p>
+        <p className="mt-0.5 text-xs text-slate-500">Pick one to pre-fill the form.</p>
       </div>
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid gap-2 sm:grid-cols-2">
         {TASK_TEMPLATES.map((template) => (
           <button
             key={template.key}
             type="button"
             onClick={() => onApplyTemplate(template)}
-            className="rounded-[22px] border border-white/10 bg-slate-950/70 p-4 text-left transition hover:border-sky-400/30 hover:bg-white/5"
+            className="rounded-xl border border-white/8 bg-white/[0.03] p-4 text-left transition hover:border-sky-400/25 hover:bg-white/5"
           >
-            <p className="font-semibold text-white">{template.label}</p>
-            <p className="mt-2 text-sm text-slate-400">{template.description}</p>
+            <p className="text-sm font-semibold text-white">{template.label}</p>
+            <p className="mt-1 text-xs text-slate-500">{template.description}</p>
           </button>
         ))}
       </div>
@@ -167,67 +188,34 @@ function TaskTemplatePicker({ onApplyTemplate }) {
 }
 
 function TaskForm({ form, setForm, onSubmit, onCancel, busy, editing, onApplyTemplate }) {
+  function setField(field) {
+    return (event) => setForm((current) => ({ ...current, [field]: event.target.value }));
+  }
+
   return (
     <form className="grid gap-5 md:grid-cols-2" onSubmit={onSubmit}>
-      {!editing ? (
+      {!editing && (
         <div className="md:col-span-2">
           <TaskTemplatePicker onApplyTemplate={onApplyTemplate} />
         </div>
-      ) : null}
-      <TextInput
-        label="Task title"
-        placeholder="Finish calculus problem set"
-        value={form.title}
-        onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
-        required
-      />
-      <TextInput
-        label="Course"
-        placeholder="Math 212"
-        value={form.course}
-        onChange={(event) => setForm((current) => ({ ...current, course: event.target.value }))}
-        required
-      />
-      <TextInput
-        label="Due date"
-        type="date"
-        value={form.dueDate}
-        onChange={(event) => setForm((current) => ({ ...current, dueDate: event.target.value }))}
-        required
-      />
-      <Select
-        label="Priority"
-        value={form.priority}
-        onChange={(event) => setForm((current) => ({ ...current, priority: event.target.value }))}
-      >
+      )}
+      <TextInput label="Task title" placeholder="Finish calculus problem set" value={form.title} onChange={setField("title")} required />
+      <TextInput label="Course" placeholder="Math 212" value={form.course} onChange={setField("course")} required />
+      <TextInput label="Due date" type="date" value={form.dueDate} onChange={setField("dueDate")} required />
+      <Select label="Priority" value={form.priority} onChange={setField("priority")}>
         <option value="High">High</option>
         <option value="Medium">Medium</option>
         <option value="Low">Low</option>
       </Select>
-      <TextInput
-        label="Estimated study time (minutes)"
-        type="number"
-        min="15"
-        step="15"
-        value={form.estimatedMinutes}
-        onChange={(event) => setForm((current) => ({ ...current, estimatedMinutes: event.target.value }))}
-      />
+      <TextInput label="Estimated time (minutes)" type="number" min="15" step="15" value={form.estimatedMinutes} onChange={setField("estimatedMinutes")} />
       <div className="md:col-span-2">
-        <TextArea
-          label="Description"
-          placeholder="Add details, acceptance criteria, or study checklist..."
-          value={form.description}
-          onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
-        />
+        <TextArea label="Description" placeholder="Add details, acceptance criteria, or study checklist..." value={form.description} onChange={setField("description")} />
       </div>
-      <p className="md:col-span-2 text-sm text-slate-400">
-        Proof is submitted when you finish the task. That keeps capture fast and puts verification at the right
-        moment.
+      <p className="md:col-span-2 text-xs text-slate-500">
+        Proof is submitted when you finish the task — keeps capture fast.
       </p>
-      <div className="md:col-span-2 flex flex-wrap justify-end gap-3">
-        <Button variant="ghost" onClick={onCancel}>
-          Cancel
-        </Button>
+      <div className="md:col-span-2 flex flex-wrap justify-end gap-2">
+        <Button variant="ghost" onClick={onCancel}>Cancel</Button>
         <Button type="submit" disabled={busy}>
           {busy ? "Saving..." : editing ? "Save changes" : "Create task"}
         </Button>
@@ -238,65 +226,53 @@ function TaskForm({ form, setForm, onSubmit, onCancel, busy, editing, onApplyTem
 
 function ProofUploader({ fileName, previewUrl, onChange, disabled }) {
   return (
-    <div className="grid gap-3 rounded-[24px] border border-white/10 bg-slate-950/40 p-4">
-      <div>
-        <p className="text-sm font-semibold text-slate-200">Premium image proof</p>
-        <p className="text-xs text-slate-500">
-          Upload a screenshot or photo and StudySync will attach it as the proof for completion.
-        </p>
+    <div className="space-y-3 rounded-xl border border-white/8 bg-white/[0.03] p-4">
+      <div className="flex items-center gap-2">
+        <Upload className="h-4 w-4 text-sky-400" />
+        <div>
+          <p className="text-sm font-semibold text-slate-200">Premium image proof</p>
+          <p className="text-xs text-slate-500">Upload a screenshot or photo as proof of completion.</p>
+        </div>
       </div>
       {previewUrl ? (
-        <img src={previewUrl} alt="Proof preview" className="max-h-52 rounded-2xl border border-white/10 object-cover" />
+        <img src={previewUrl} alt="Proof preview" className="max-h-52 w-full rounded-xl border border-white/8 object-cover" />
       ) : (
-        <div className="rounded-2xl border border-dashed border-white/10 px-4 py-6 text-sm text-slate-500">
-          No image selected yet.
+        <div className="flex items-center justify-center rounded-xl border border-dashed border-white/10 py-8 text-sm text-slate-600">
+          No image selected yet
         </div>
       )}
-      <label className="inline-flex w-fit cursor-pointer items-center justify-center rounded-2xl bg-slate-800 px-4 py-3 text-sm font-semibold text-slate-100 transition hover:bg-slate-700">
+      <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-white/6 px-4 py-2.5 text-sm font-semibold text-slate-200 ring-1 ring-inset ring-white/10 transition hover:bg-white/10">
         <input type="file" accept="image/*" className="hidden" disabled={disabled} onChange={onChange} />
-        {fileName ? `Selected: ${fileName}` : "Choose image"}
+        {fileName ? `✓ ${fileName}` : "Choose image"}
       </label>
     </div>
   );
 }
 
 function CompletionModal({
-  open,
-  task,
-  onClose,
-  onSubmit,
-  busy,
-  error,
-  proofState,
-  setProofState,
-  isPremium,
-  requireProof,
-  proofImageFileName,
-  proofPreviewUrl,
-  onProofImageChange,
+  open, task, onClose, onSubmit, busy, error,
+  proofState, setProofState, isPremium, requireProof,
+  proofImageFileName, proofPreviewUrl, onProofImageChange,
 }) {
   if (!task) return null;
 
   return (
-    <Modal
-      open={open}
-      title={`Complete ${task.title}`}
-      description="Submit proof now so the task can be verified and finished cleanly."
-      onClose={onClose}
-    >
+    <Modal open={open} title={`Complete: ${task.title}`} description="Submit proof now so the task can be verified and finished cleanly." onClose={onClose}>
       <form className="grid gap-5" onSubmit={onSubmit}>
-        <Card className="bg-slate-950/60">
-          <p className="text-sm uppercase tracking-[0.18em] text-sky-300/80">Task subject</p>
-          <h3 className="mt-2 text-xl font-bold text-white">{task.course}</h3>
-          <p className="mt-2 text-sm text-slate-400">{task.description || "No extra description on this task."}</p>
-        </Card>
+        <div className="rounded-xl border border-white/8 bg-white/[0.03] p-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-400/70">Task subject</p>
+          <h3 className="mt-1.5 text-lg font-bold text-white">{task.course}</h3>
+          <p className="mt-1 text-sm text-slate-400">{task.description || "No extra description on this task."}</p>
+        </div>
+
         <TextArea
           label="Completion note"
-          hint="Optional context about what you finished. This is stored with the completion."
+          hint="Optional — stored with the completion record."
           placeholder="What did you finish, review, or turn in?"
           value={proofState.completionNote}
           onChange={(event) => setProofState((current) => ({ ...current, completionNote: event.target.value }))}
         />
+
         {isPremium ? (
           <ProofUploader
             fileName={proofImageFileName}
@@ -310,28 +286,25 @@ function CompletionModal({
             placeholder="https://docs.google.com/document/d/..."
             value={proofState.proofLink}
             onChange={(event) => setProofState((current) => ({ ...current, proofLink: event.target.value }))}
-            hint="Use a public Google Doc that includes a picture or screenshot tied to the subject. StudySync checks the document content against the task subject before completing it."
+            hint="Must be a public Google Doc that includes a picture or screenshot tied to the task subject. StudySync checks the content before completing."
             required={requireProof}
           />
         )}
-        <div className="rounded-[24px] border border-white/10 bg-slate-950/40 p-4 text-sm text-slate-400">
+
+        <div className="rounded-xl border border-white/7 bg-white/[0.02] p-3.5 text-xs leading-5 text-slate-500">
           {isPremium
             ? requireProof
-              ? "Premium users must upload an image proof before the task can be completed."
-              : "Premium users can add an image proof here before completing the task."
+              ? "Premium: image proof required before completion."
+              : "Premium: add an image proof before completing the task."
             : requireProof
-              ? "Free users must submit a public Google Doc with subject-related proof before the task can be completed."
-              : "Free users can optionally submit a public Google Doc with subject-related proof before completing the task."}
+              ? "Free: a public Google Doc with subject-related proof is required."
+              : "Free: optionally submit a public Google Doc proof before completing."}
         </div>
-        {error ? (
-          <p className="rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
-            {error}
-          </p>
-        ) : null}
-        <div className="flex flex-wrap justify-end gap-3">
-          <Button variant="ghost" onClick={onClose}>
-            Cancel
-          </Button>
+
+        {error && <AlertBox variant="error">{error}</AlertBox>}
+
+        <div className="flex flex-wrap justify-end gap-2">
+          <Button variant="ghost" onClick={onClose}>Cancel</Button>
           <Button type="submit" disabled={busy}>
             {busy ? "Verifying..." : "Finish task"}
           </Button>
@@ -341,120 +314,187 @@ function CompletionModal({
   );
 }
 
+const PRIORITY_CONFIG = {
+  High: { dot: "bg-rose-400", text: "text-rose-300", badge: "bg-rose-500/12 text-rose-200 ring-rose-400/20" },
+  Medium: { dot: "bg-amber-400", text: "text-amber-300", badge: "bg-amber-500/12 text-amber-200 ring-amber-400/20" },
+  Low: { dot: "bg-slate-500", text: "text-slate-400", badge: "bg-white/6 text-slate-400 ring-white/10" },
+};
+
 function TaskCard({ task, onEdit, onDelete, onOpenCompletion, onMarkIncomplete, requireProof }) {
   const badges = getTaskBadges(task, requireProof);
+  const priorityCfg = PRIORITY_CONFIG[task.priority] || PRIORITY_CONFIG.Medium;
 
   return (
-    <Card className={task.completed ? "border-emerald-400/20 bg-emerald-500/5" : "bg-slate-900/80"}>
+    <div className={`group rounded-2xl border p-5 transition-all duration-200 ${task.completed ? "border-emerald-400/15 bg-emerald-500/[0.04]" : "border-white/8 bg-white/[0.03] hover:border-white/12 hover:bg-white/[0.05]"}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className={`text-xl font-bold ${task.completed ? "text-slate-400 line-through" : "text-white"}`}>
+        <div className="flex items-start gap-3">
+          <div className="mt-0.5 shrink-0">
+            {task.completed
+              ? <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+              : <Circle className="h-5 w-5 text-slate-600" />
+            }
+          </div>
+          <div>
+            <h3 className={`text-base font-semibold leading-snug ${task.completed ? "text-slate-500 line-through" : "text-white"}`}>
               {task.title}
             </h3>
-            <Badge className={`ring-1 ${getPriorityTone(task.priority)}`}>{task.priority}</Badge>
+            <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+              <span>{task.course}</span>
+              <span>·</span>
+              <span>Due {formatDateLabel(task.dueDate, { month: "short", day: "numeric", weekday: "short" })}</span>
+              <span>·</span>
+              <span>{task.estimatedMinutes || 0} min</span>
+            </div>
           </div>
-          <p className="mt-2 text-sm text-slate-400">
-            {task.course} - Due {formatDateLabel(task.dueDate, { month: "short", day: "numeric", weekday: "short" })}
-          </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {badges.map((badge) => (
-            <Badge key={badge.label} className={`ring-1 ${badge.tone}`}>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <div className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset ${priorityCfg.badge}`}>
+            <div className={`h-1.5 w-1.5 rounded-full ${priorityCfg.dot}`} />
+            {task.priority}
+          </div>
+          {badges.slice(0, 2).map((badge) => (
+            <Badge key={badge.label} className={`ring-1 text-[11px] ${badge.tone}`}>
               {badge.label}
             </Badge>
           ))}
         </div>
       </div>
-      {task.description ? <p className="mt-4 text-slate-300">{task.description}</p> : null}
-      <div className="mt-4 grid gap-2 text-sm text-slate-400">
-        <p>Estimated focus: {task.estimatedMinutes || 0} minutes</p>
-        {task.proofLink ? (
-          <a href={task.proofLink} target="_blank" rel="noreferrer" className="text-sky-300 transition hover:text-sky-200">
-            Open Google Doc proof
-          </a>
-        ) : null}
-        {task.imageProofUrl ? (
-          <a href={task.imageProofUrl} target="_blank" rel="noreferrer" className="text-sky-300 transition hover:text-sky-200">
-            Open image proof
-          </a>
-        ) : null}
-        {task.completionNote ? <p className="text-slate-300">Completion note: {task.completionNote}</p> : null}
-      </div>
-      {task.imageProofUrl ? (
-        <img src={task.imageProofUrl} alt={`${task.title} proof`} className="mt-4 max-h-52 rounded-2xl border border-white/10 object-cover" />
-      ) : null}
-      <div className="mt-5 flex flex-wrap gap-3">
+
+      {task.description && (
+        <p className="mt-3 pl-8 text-sm leading-6 text-slate-400">{task.description}</p>
+      )}
+
+      {(task.proofLink || task.completionNote) && (
+        <div className="mt-3 pl-8 space-y-1">
+          {task.proofLink && (
+            <a href={task.proofLink} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-xs text-sky-400 hover:text-sky-300 transition">
+              <FileText className="h-3.5 w-3.5" />
+              Open Google Doc proof
+            </a>
+          )}
+          {task.imageProofUrl && (
+            <a href={task.imageProofUrl} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-xs text-sky-400 hover:text-sky-300 transition">
+              <Upload className="h-3.5 w-3.5" />
+              Open image proof
+            </a>
+          )}
+          {task.completionNote && (
+            <p className="text-xs text-slate-400">Note: {task.completionNote}</p>
+          )}
+        </div>
+      )}
+
+      {task.imageProofUrl && (
+        <img src={task.imageProofUrl} alt={`${task.title} proof`} className="mt-3 ml-8 max-h-44 rounded-xl border border-white/8 object-cover" />
+      )}
+
+      <div className="mt-4 flex flex-wrap gap-2 pl-8">
         {task.completed ? (
-          <Button variant="secondary" onClick={() => onMarkIncomplete(task)}>
+          <Button variant="secondary" size="sm" onClick={() => onMarkIncomplete(task)}>
             Mark incomplete
           </Button>
         ) : (
-          <Button onClick={() => onOpenCompletion(task)}>Submit proof</Button>
+          <Button size="sm" onClick={() => onOpenCompletion(task)}>
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            Submit proof
+          </Button>
         )}
-        <Button variant="secondary" onClick={() => onEdit(task)}>
+        <Button variant="ghost" size="sm" onClick={() => onEdit(task)}>
+          <Pencil className="h-3.5 w-3.5" />
           Edit
         </Button>
-        <Button variant="danger" onClick={() => onDelete(task.id)}>
+        <Button variant="danger" size="sm" onClick={() => onDelete(task.id)}>
+          <Trash2 className="h-3.5 w-3.5" />
           Delete
         </Button>
       </div>
-    </Card>
+    </div>
   );
 }
 
 function GuidedEmptyState({ hasPremium, onCreateTask }) {
+  const steps = [
+    {
+      number: "01",
+      title: "Create your first task",
+      desc: "Add one real assignment with a due date and estimated minutes.",
+      action: <Button onClick={onCreateTask} size="sm"><Plus className="h-4 w-4" />Create task</Button>,
+    },
+    {
+      number: "02",
+      title: "Set your study window",
+      desc: "Tell StudySync when you usually study so today's plan feels personal.",
+      action: <LinkButton to="/app/settings" variant="secondary" size="sm"><ArrowRight className="h-4 w-4" />Open settings</LinkButton>,
+    },
+    {
+      number: "03",
+      title: hasPremium ? "Use an AI tool" : "Unlock AI when ready",
+      desc: hasPremium
+        ? "Generate a study plan or quiz once you have real work in the system."
+        : "Premium turns your workload into plans, quizzes, and flashcards for $5/month.",
+      action: <LinkButton to={hasPremium ? "/app/ai" : "/app/billing"} variant={hasPremium ? "secondary" : "primary"} size="sm">
+        <Sparkles className="h-4 w-4" />
+        {hasPremium ? "Open AI tools" : "View plans"}
+      </LinkButton>,
+    },
+  ];
+
   return (
-    <Card className="border-dashed border-white/12 bg-slate-950/60">
-      <p className="text-sm font-semibold uppercase tracking-[0.24em] text-sky-300/80">First three moves</p>
-      <h3 className="mt-4 text-3xl font-bold text-white">Start your system, not just a list.</h3>
-      <p className="mt-3 max-w-2xl text-slate-400">
-        The fastest way to make StudySync useful is to set up one real task, shape your study window, and then let
-        the dashboard plan the next move.
-      </p>
-      <div className="mt-8 grid gap-4 lg:grid-cols-3">
-        <div className="rounded-[24px] border border-white/10 bg-slate-900/80 p-5">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-300/80">Step 1</p>
-          <h4 className="mt-3 text-xl font-bold text-white">Create your first task</h4>
-          <p className="mt-2 text-sm text-slate-400">Add one real assignment with a due date and estimated minutes.</p>
-          <div className="mt-5"><Button onClick={onCreateTask}>Create task</Button></div>
+    <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] p-8">
+      <div className="text-center">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-white/8 bg-white/[0.04]">
+          <Target className="h-6 w-6 text-slate-500" />
         </div>
-        <div className="rounded-[24px] border border-white/10 bg-slate-900/80 p-5">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-300/80">Step 2</p>
-          <h4 className="mt-3 text-xl font-bold text-white">Set your study window</h4>
-          <p className="mt-2 text-sm text-slate-400">Tell StudySync when you usually study so today&apos;s plan feels personal.</p>
-          <div className="mt-5"><LinkButton to="/app/settings" variant="secondary">Open settings</LinkButton></div>
-        </div>
-        <div className="rounded-[24px] border border-white/10 bg-slate-900/80 p-5">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-300/80">Step 3</p>
-          <h4 className="mt-3 text-xl font-bold text-white">{hasPremium ? "Use an AI tool" : "Unlock AI when you need leverage"}</h4>
-          <p className="mt-2 text-sm text-slate-400">{hasPremium ? "Generate a study plan or quiz once you have real work in the system." : "Free stays strong, but premium turns your workload into plans, quizzes, and flashcards."}</p>
-          <div className="mt-5"><LinkButton to={hasPremium ? "/app/ai" : "/app/billing"} variant={hasPremium ? "secondary" : "primary"}>{hasPremium ? "Open AI tools" : "View plans"}</LinkButton></div>
-        </div>
+        <h3 className="mt-4 text-2xl font-bold text-white">Start your system, not just a list.</h3>
+        <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-slate-400">
+          The fastest way to make StudySync useful is to set up one real task, shape your study window, and let the dashboard plan the next move.
+        </p>
       </div>
-    </Card>
+      <div className="mt-8 grid gap-4 lg:grid-cols-3">
+        {steps.map((step) => (
+          <div key={step.number} className="rounded-xl border border-white/8 bg-white/[0.03] p-5">
+            <p className="text-xs font-bold tracking-[0.2em] text-sky-400/60">{step.number}</p>
+            <h4 className="mt-3 text-base font-bold text-white">{step.title}</h4>
+            <p className="mt-1.5 text-sm text-slate-400">{step.desc}</p>
+            <div className="mt-4">{step.action}</div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
 function TodayPlanCard({ tasks }) {
+  const priorityCfg = PRIORITY_CONFIG;
+
   return (
     <Card>
-      <p className="text-sm uppercase tracking-[0.24em] text-sky-300/80">Today&apos;s plan</p>
-      <h3 className="mt-2 text-2xl font-bold text-white">What to study next</h3>
+      <div className="flex items-center gap-2">
+        <Clock className="h-4 w-4 text-sky-400" />
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-400/70">Today's plan</p>
+      </div>
+      <h3 className="mt-2 text-xl font-bold text-white">What to study next</h3>
+
       {tasks.length === 0 ? (
-        <p className="mt-4 text-slate-400">No urgent blocks yet. Add a task and StudySync will build today&apos;s plan.</p>
+        <p className="mt-4 text-sm text-slate-500">
+          No urgent blocks yet. Add a task and StudySync will build today's plan.
+        </p>
       ) : (
-        <div className="mt-6 grid gap-4">
+        <div className="mt-5 space-y-3">
           {tasks.map((task) => (
-            <div key={task.id} className="rounded-[24px] border border-white/10 bg-slate-950/60 p-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.18em] text-sky-300/80">{task.orderLabel}</p>
-                  <h4 className="mt-2 text-lg font-semibold text-white">{task.title}</h4>
+            <div key={task.id} className="rounded-xl border border-white/8 bg-white/[0.03] p-4">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <div className={`h-2 w-2 shrink-0 rounded-full ${(priorityCfg[task.priority] || priorityCfg.Medium).dot}`} />
+                  <p className="text-xs font-semibold text-slate-400">{task.orderLabel}</p>
                 </div>
-                <Badge className={`ring-1 ${getPriorityTone(task.priority)}`}>{task.slot}</Badge>
+                <span className="rounded-lg bg-sky-500/10 px-2 py-0.5 text-xs font-medium text-sky-300 ring-1 ring-inset ring-sky-400/20">
+                  {task.slot}
+                </span>
               </div>
-              <p className="mt-3 text-sm text-slate-300">{task.reason}</p>
+              <h4 className="mt-2.5 text-sm font-semibold text-white">{task.title}</h4>
+              <p className="mt-1 text-xs leading-5 text-slate-500">{task.reason}</p>
             </div>
           ))}
         </div>
@@ -466,26 +506,40 @@ function TodayPlanCard({ tasks }) {
 function WeeklyMomentumCard({ tasks, weeklyGoalHours }) {
   const trend = buildWeeklyTrend(tasks);
   const completedThisWeek = trend.reduce((sum, item) => sum + item.completed, 0);
+  const maxBar = Math.max(...trend.map((item) => item.completed), 1);
 
   return (
     <Card>
-      <p className="text-sm uppercase tracking-[0.24em] text-sky-300/80">Weekly momentum</p>
-      <h3 className="mt-2 text-2xl font-bold text-white">Recent completions</h3>
-      <div className="mt-6 flex items-end gap-3">
-        {trend.map((item) => (
-          <div key={item.key} className="flex flex-1 flex-col items-center gap-2">
-            <div className="flex h-36 w-full items-end rounded-2xl bg-slate-950/60 p-2">
-              <div
-                className="w-full rounded-xl bg-gradient-to-t from-sky-400 to-teal-300"
-                style={{ height: `${Math.max(12, item.completed * 24)}px` }}
-              />
-            </div>
-            <p className="text-xs text-slate-500">{item.label}</p>
-          </div>
-        ))}
+      <div className="flex items-center gap-2">
+        <BarChart3 className="h-4 w-4 text-sky-400" />
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-400/70">Weekly momentum</p>
       </div>
-      <p className="mt-4 text-sm text-slate-400">
-        {completedThisWeek} completed this week against a {weeklyGoalHours}-hour goal.
+      <h3 className="mt-2 text-xl font-bold text-white">Recent completions</h3>
+
+      <div className="mt-5 flex items-end gap-2">
+        {trend.map((item) => {
+          const height = Math.max(8, Math.round((item.completed / maxBar) * 80));
+          return (
+            <div key={item.key} className="group flex flex-1 flex-col items-center gap-2">
+              <div className="relative flex h-24 w-full items-end">
+                <div
+                  className={`w-full rounded-lg transition-all duration-500 ${item.completed > 0 ? "bg-gradient-to-t from-sky-500 to-teal-400" : "bg-white/5"}`}
+                  style={{ height: `${height}px` }}
+                />
+                {item.completed > 0 && (
+                  <div className="absolute inset-x-0 -top-6 hidden text-center text-xs font-semibold text-sky-300 group-hover:block">
+                    {item.completed}
+                  </div>
+                )}
+              </div>
+              <p className="text-[10px] font-medium text-slate-600">{item.label}</p>
+            </div>
+          );
+        })}
+      </div>
+
+      <p className="mt-4 text-xs text-slate-500">
+        {completedThisWeek} completed this week · {weeklyGoalHours}h weekly goal
       </p>
     </Card>
   );
@@ -494,21 +548,27 @@ function WeeklyMomentumCard({ tasks, weeklyGoalHours }) {
 function CalendarCard({ agenda }) {
   return (
     <Card>
-      <p className="text-sm uppercase tracking-[0.24em] text-sky-300/80">Calendar view</p>
-      <h3 className="mt-2 text-2xl font-bold text-white">Next seven days</h3>
-      <div className="mt-6 grid gap-3">
+      <div className="flex items-center gap-2">
+        <CalendarDays className="h-4 w-4 text-sky-400" />
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-400/70">7-day calendar</p>
+      </div>
+      <h3 className="mt-2 text-xl font-bold text-white">Next seven days</h3>
+
+      <div className="mt-5 space-y-2">
         {agenda.map((day) => (
           <div
             key={day.key}
-            className="flex items-center justify-between rounded-[22px] border border-white/10 bg-slate-950/60 px-4 py-3"
+            className="flex items-center justify-between rounded-xl border border-white/7 bg-white/[0.02] px-4 py-3"
           >
             <div>
               <p className="text-sm font-semibold text-white">{day.label}</p>
-              <p className="text-xs text-slate-500">{day.dayLabel}</p>
+              <p className="text-xs text-slate-600">{day.dayLabel}</p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-slate-200">{day.count} due</p>
-              <p className="text-xs text-slate-500">{day.priorities} high priority</p>
+              <p className="text-sm font-medium text-slate-300">{day.count} due</p>
+              {day.priorities > 0 && (
+                <p className="text-xs text-rose-400">{day.priorities} high priority</p>
+              )}
             </div>
           </div>
         ))}
@@ -524,37 +584,42 @@ function UpsellCard({ profile }) {
 
   if (isPower) {
     return (
-      <Card>
-        <p className="text-sm uppercase tracking-[0.24em] text-sky-300/80">Power workspace</p>
-        <h3 className="mt-2 text-2xl font-bold text-white">Best-model AI is already unlocked</h3>
-        <p className="mt-3 text-slate-400">
-          You are on the highest StudySync tier, so keep using AI planning, quizzes, and richer breakdowns.
-        </p>
-        <div className="mt-5">
-          <LinkButton to="/app/ai" variant="secondary">
+      <div className="rounded-2xl border border-amber-400/15 bg-gradient-to-br from-amber-500/8 via-white/[0.02] to-orange-400/5 p-5">
+        <div className="flex items-center gap-2">
+          <Flame className="h-4 w-4 text-amber-400" />
+          <p className="text-xs font-semibold text-amber-400/80">Power workspace</p>
+        </div>
+        <h3 className="mt-2 text-base font-bold text-white">Best-model AI is active</h3>
+        <p className="mt-1.5 text-sm text-slate-400">You're on the highest StudySync tier. Use AI planning, quizzes, and richer breakdowns.</p>
+        <div className="mt-4">
+          <LinkButton to="/app/ai" variant="secondary" size="sm" className="w-full justify-center">
             Open AI tools
+            <ChevronRight className="h-3.5 w-3.5" />
           </LinkButton>
         </div>
-      </Card>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <Badge className="bg-sky-500/15 text-sky-200 ring-sky-400/25">{nextPlan.badge}</Badge>
-      <h3 className="mt-4 text-2xl font-bold text-white">{nextPlan.name} unlocks stronger proof and AI</h3>
-      <p className="mt-3 text-slate-400">
-        Move up when you want cleaner proof uploads, more study generations, and better planning help.
-      </p>
-      <div className="mt-5 flex flex-wrap gap-3">
-        <LinkButton to="/app/billing">View billing</LinkButton>
-        <LinkButton to="/pricing" variant="secondary">
-          Compare plans
-        </LinkButton>
+    <div className="rounded-2xl border border-sky-400/15 bg-gradient-to-br from-sky-500/8 via-white/[0.02] to-teal-400/5 p-5">
+      <div className="flex items-center gap-2">
+        <Sparkles className="h-4 w-4 text-sky-400" />
+        <Badge className="bg-sky-500/15 text-sky-200 ring-sky-400/25 text-[10px]">{nextPlan.badge}</Badge>
       </div>
-    </Card>
+      <h3 className="mt-2 text-base font-bold text-white">{nextPlan.name} unlocks stronger proof and AI</h3>
+      <p className="mt-1.5 text-sm text-slate-400">
+        Cleaner proof uploads, more AI generations, and smarter planning help.
+      </p>
+      <div className="mt-4 flex gap-2">
+        <LinkButton to="/app/billing" size="sm" className="flex-1 justify-center">View billing</LinkButton>
+        <LinkButton to="/pricing" variant="secondary" size="sm" className="flex-1 justify-center">Compare</LinkButton>
+      </div>
+    </div>
   );
 }
+
+/* ─── Main page ─── */
 
 export default function DashboardPage() {
   const { user, profile, loading: authLoading } = useAuth();
@@ -597,23 +662,17 @@ export default function DashboardPage() {
 
     try {
       const nextTasks = await listTasks(user.uid);
-      startTransition(() => {
-        setTasks(nextTasks.map(normalizeLoadedTask));
-      });
+      startTransition(() => setTasks(nextTasks.map(normalizeLoadedTask)));
     } finally {
       setLoading(false);
     }
   }, [user?.uid]);
 
-  useEffect(() => {
-    void loadTasks();
-  }, [loadTasks]);
+  useEffect(() => { void loadTasks(); }, [loadTasks]);
 
   useEffect(() => {
     return () => {
-      if (completionProofPreview) {
-        URL.revokeObjectURL(completionProofPreview);
-      }
+      if (completionProofPreview) URL.revokeObjectURL(completionProofPreview);
     };
   }, [completionProofPreview]);
 
@@ -649,7 +708,6 @@ export default function DashboardPage() {
       if (!query) return true;
       return [task.title, task.course, task.description].join(" ").toLowerCase().includes(query);
     });
-
     return sortTasks(nextTasks, sortBy);
   }, [deferredSearch, priorityFilter, sortBy, statusFilter, tasks]);
 
@@ -662,9 +720,7 @@ export default function DashboardPage() {
   function resetCompletionComposer() {
     setCompletionProof(emptyCompletionProof);
     setCompletionProofImage(null);
-    if (completionProofPreview) {
-      URL.revokeObjectURL(completionProofPreview);
-    }
+    if (completionProofPreview) URL.revokeObjectURL(completionProofPreview);
     setCompletionProofPreview("");
     setCompletionTask(null);
     setCompletionError("");
@@ -691,14 +747,9 @@ export default function DashboardPage() {
 
   function openCompletionModal(task) {
     setCompletionTask(task);
-    setCompletionProof({
-      proofLink: task.proofLink || "",
-      completionNote: task.completionNote || "",
-    });
+    setCompletionProof({ proofLink: task.proofLink || "", completionNote: task.completionNote || "" });
     setCompletionProofImage(null);
-    if (completionProofPreview) {
-      URL.revokeObjectURL(completionProofPreview);
-    }
+    if (completionProofPreview) URL.revokeObjectURL(completionProofPreview);
     setCompletionProofPreview(task.imageProofUrl || "");
     setCompletionError("");
     setCompletionModalOpen(true);
@@ -723,7 +774,6 @@ export default function DashboardPage() {
       } else {
         await createTask(user.uid, payload);
       }
-
       setTaskModalOpen(false);
       resetTaskComposer();
       await loadTasks();
@@ -743,10 +793,7 @@ export default function DashboardPage() {
 
   async function handleMarkIncomplete(task) {
     if (!user?.uid) return;
-    await updateTask(user.uid, task.id, {
-      completed: false,
-      completedAt: "",
-    });
+    await updateTask(user.uid, task.id, { completed: false, completedAt: "" });
     await loadTasks();
   }
 
@@ -757,9 +804,7 @@ export default function DashboardPage() {
       URL.revokeObjectURL(completionProofPreview);
       setCompletionProofPreview("");
     }
-    if (file) {
-      setCompletionProofPreview(URL.createObjectURL(file));
-    }
+    if (file) setCompletionProofPreview(URL.createObjectURL(file));
   }
 
   async function handleCompletionSubmit(event) {
@@ -777,7 +822,6 @@ export default function DashboardPage() {
         if (requireProof && !completionProofImage && !imageProofUrl) {
           throw new Error("Upload an image proof before completing this task.");
         }
-
         if (completionProofImage) {
           imageProofUrl = await uploadTaskProofImage(user.uid, completionProofImage);
         }
@@ -818,123 +862,138 @@ export default function DashboardPage() {
 
   if (authLoading) {
     return (
-      <Card>
-        <p className="text-slate-300">Loading your workspace...</p>
-      </Card>
+      <div className="flex h-64 items-center justify-center">
+        <p className="text-sm text-slate-500">Loading your workspace...</p>
+      </div>
     );
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-7">
       <SectionHeading
         eyebrow="Task command center"
         title="Sort, filter, and finish work cleanly"
-        description="Capture quickly, let the dashboard suggest the next move, and submit proof only when the work is actually done."
-        action={<Button onClick={openNewTaskModal}>Create task</Button>}
+        description="Capture quickly, let the dashboard suggest what's next, and submit proof only when the work is actually done."
+        action={
+          <Button onClick={openNewTaskModal}>
+            <Plus className="h-4 w-4" />
+            Create task
+          </Button>
+        }
       />
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-        <StatCard label="Due today" value={stats.dueToday} helper="Work that needs attention before tonight." />
-        <StatCard label="Overdue" value={stats.overdue} helper="Backlog that should be cleared first." accent="rose" />
-        <StatCard
-          label="Completed"
-          value={stats.completed}
-          helper={`${stats.completionRate}% of all tracked tasks`}
-          accent="emerald"
-        />
-        <StatCard
-          label="Streak"
-          value={`${stats.streak} day${stats.streak === 1 ? "" : "s"}`}
-          helper="Days with at least one completion."
-          accent="amber"
-        />
-        <StatCard
-          label="Focus this week"
-          value={formatMinutesAsHours(stats.focusMinutes)}
-          helper={`${weeklyGoalHours}h weekly goal`}
-          accent="violet"
-        />
+      {/* Stats row */}
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        <StatCard label="Due today" value={stats.dueToday} helper="Needs attention before tonight." accent="sky" icon={Clock} />
+        <StatCard label="Overdue" value={stats.overdue} helper="Backlog to clear first." accent="rose" icon={AlertTriangle} />
+        <StatCard label="Completed" value={stats.completed} helper={`${stats.completionRate}% of all tasks`} accent="emerald" icon={CheckCircle2} />
+        <StatCard label="Streak" value={`${stats.streak}d`} helper="Days with at least one completion." accent="amber" icon={Flame} />
+        <StatCard label="Focus this week" value={formatMinutesAsHours(stats.focusMinutes)} helper={`${weeklyGoalHours}h weekly goal`} accent="violet" icon={Target} />
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1.3fr_1fr]">
+      {/* Plan + momentum row */}
+      <div className="grid gap-5 xl:grid-cols-[1.3fr_1fr]">
         <TodayPlanCard tasks={todayPlan} />
         <WeeklyMomentumCard tasks={tasks} weeklyGoalHours={weeklyGoalHours} />
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1.45fr_0.95fr]">
-        <div className="space-y-6">
-          <Card>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                <TextInput
-                  label="Search"
-                  placeholder="Search tasks..."
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                />
-                <Select label="Status" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
-                  <option value="all">All</option>
-                  <option value="open">Open</option>
-                  <option value="today">Due today</option>
-                  <option value="overdue">Overdue</option>
-                  <option value="upcoming">Upcoming</option>
-                  <option value="completed">Completed</option>
-                </Select>
-                <Select
-                  label="Priority"
-                  value={priorityFilter}
-                  onChange={(event) => setPriorityFilter(event.target.value)}
-                >
-                  <option value="all">All</option>
-                  <option value="High">High</option>
-                  <option value="Medium">Medium</option>
-                  <option value="Low">Low</option>
-                </Select>
-                <Select label="Sort by" value={sortBy} onChange={(event) => setSortBy(event.target.value)}>
-                  <option value="dueDate">Due date</option>
-                  <option value="priority">Priority</option>
-                  <option value="recent">Recently updated</option>
-                  <option value="title">Title</option>
-                </Select>
-              </div>
-
-              {loading ? (
-                <p className="text-slate-400">Loading tasks...</p>
-              ) : tasks.length === 0 ? (
-                <GuidedEmptyState hasPremium={hasPremium} onCreateTask={openNewTaskModal} />
-              ) : filteredTasks.length === 0 ? (
-                <Card className="border-dashed border-white/12 bg-slate-950/60 text-center">
-                  <p className="text-sm font-semibold uppercase tracking-[0.24em] text-sky-300/80">No matches</p>
-                  <h3 className="mt-4 text-2xl font-bold text-white">Nothing fits this filter right now.</h3>
-                  <p className="mx-auto mt-3 max-w-xl text-slate-400">
-                    Try widening the search or clearing a filter to bring tasks back into view.
-                  </p>
-                </Card>
-              ) : (
-                <div className="grid gap-4">
-                  {filteredTasks.map((task) => (
-                    <TaskCard
-                      key={task.id}
-                      task={task}
-                      onEdit={openEditTaskModal}
-                      onDelete={handleDelete}
-                      onOpenCompletion={openCompletionModal}
-                      onMarkIncomplete={handleMarkIncomplete}
-                      requireProof={requireProof}
-                    />
-                  ))}
-                </div>
-              )}
+      {/* Task list + sidebar */}
+      <div className="grid gap-5 xl:grid-cols-[1.45fr_0.95fr]">
+        {/* Task list */}
+        <div className="space-y-4">
+          {/* Filters */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative flex-1 min-w-40">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-600" />
+              <input
+                className="h-10 w-full rounded-xl border border-white/8 bg-white/[0.03] pl-9 pr-4 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-sky-400/40 focus:bg-white/5 focus:ring-1 focus:ring-sky-400/15"
+                placeholder="Search tasks..."
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+              />
             </div>
-          </Card>
+            <div className="flex items-center gap-1.5">
+              <SlidersHorizontal className="h-4 w-4 shrink-0 text-slate-600" />
+              <select
+                className="h-10 rounded-xl border border-white/8 bg-white/[0.03] px-3 text-sm text-slate-300 outline-none transition focus:border-sky-400/40 cursor-pointer"
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value)}
+              >
+                <option value="all">All status</option>
+                <option value="open">Open</option>
+                <option value="today">Due today</option>
+                <option value="overdue">Overdue</option>
+                <option value="upcoming">Upcoming</option>
+                <option value="completed">Completed</option>
+              </select>
+              <select
+                className="h-10 rounded-xl border border-white/8 bg-white/[0.03] px-3 text-sm text-slate-300 outline-none transition focus:border-sky-400/40 cursor-pointer"
+                value={priorityFilter}
+                onChange={(event) => setPriorityFilter(event.target.value)}
+              >
+                <option value="all">All priority</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+              <select
+                className="h-10 rounded-xl border border-white/8 bg-white/[0.03] px-3 text-sm text-slate-300 outline-none transition focus:border-sky-400/40 cursor-pointer"
+                value={sortBy}
+                onChange={(event) => setSortBy(event.target.value)}
+              >
+                <option value="dueDate">Sort: Due date</option>
+                <option value="priority">Sort: Priority</option>
+                <option value="recent">Sort: Recent</option>
+                <option value="title">Sort: Title</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Task list body */}
+          <div>
+            {loading ? (
+              <div className="flex h-40 items-center justify-center">
+                <p className="text-sm text-slate-500">Loading tasks...</p>
+              </div>
+            ) : tasks.length === 0 ? (
+              <GuidedEmptyState hasPremium={hasPremium} onCreateTask={openNewTaskModal} />
+            ) : filteredTasks.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] py-14 text-center">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">No matches</p>
+                <h3 className="mt-3 text-xl font-bold text-white">Nothing fits this filter.</h3>
+                <p className="mx-auto mt-2 max-w-sm text-sm text-slate-500">
+                  Try widening the search or clearing a filter to bring tasks back into view.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filteredTasks.map((task) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    onEdit={openEditTaskModal}
+                    onDelete={handleDelete}
+                    onOpenCompletion={openCompletionModal}
+                    onMarkIncomplete={handleMarkIncomplete}
+                    requireProof={requireProof}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="space-y-6">
+        {/* Right sidebar */}
+        <div className="space-y-5">
           <CalendarCard agenda={agenda} />
+
           <Card>
-            <p className="text-sm uppercase tracking-[0.24em] text-sky-300/80">Goal progress</p>
-            <h3 className="mt-2 text-2xl font-bold text-white">Weekly focus target</h3>
-            <div className="mt-6">
+            <div className="flex items-center gap-2">
+              <Target className="h-4 w-4 text-sky-400" />
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-400/70">Goal progress</p>
+            </div>
+            <h3 className="mt-2 text-xl font-bold text-white">Weekly focus target</h3>
+            <div className="mt-5">
               <ProgressBar
                 value={Math.round(stats.focusMinutes / 60)}
                 max={weeklyGoalHours}
@@ -943,52 +1002,36 @@ export default function DashboardPage() {
               />
             </div>
           </Card>
+
           <UpsellCard profile={profile} />
         </div>
       </div>
 
+      {/* Task modal */}
       <Modal
         open={taskModalOpen}
         title={editingTask ? "Edit task" : "Create task"}
-        description={
-          editingTask ? "Refine the task details." : "Capture the work now, then submit proof at completion time."
-        }
-        onClose={() => {
-          setTaskModalOpen(false);
-          resetTaskComposer();
-        }}
+        description={editingTask ? "Refine the task details." : "Capture the work now, then submit proof at completion time."}
+        onClose={() => { setTaskModalOpen(false); resetTaskComposer(); }}
+        size="lg"
       >
         <TaskForm
           form={taskForm}
           setForm={setTaskForm}
           onSubmit={handleTaskSubmit}
-          onCancel={() => {
-            setTaskModalOpen(false);
-            resetTaskComposer();
-          }}
+          onCancel={() => { setTaskModalOpen(false); resetTaskComposer(); }}
           busy={savingTask}
           editing={Boolean(editingTask)}
-          onApplyTemplate={(template) => {
-            setTaskForm((current) => ({
-              ...current,
-              ...template.values,
-            }));
-          }}
+          onApplyTemplate={(template) => setTaskForm((current) => ({ ...current, ...template.values }))}
         />
-        {taskError ? (
-          <p className="mt-4 rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
-            {taskError}
-          </p>
-        ) : null}
+        {taskError && <AlertBox variant="error" className="mt-4">{taskError}</AlertBox>}
       </Modal>
 
+      {/* Completion modal */}
       <CompletionModal
         open={completionModalOpen}
         task={completionTask}
-        onClose={() => {
-          setCompletionModalOpen(false);
-          resetCompletionComposer();
-        }}
+        onClose={() => { setCompletionModalOpen(false); resetCompletionComposer(); }}
         onSubmit={handleCompletionSubmit}
         busy={completionBusy}
         error={completionError}

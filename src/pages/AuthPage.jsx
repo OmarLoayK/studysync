@@ -6,23 +6,25 @@ import {
   signInWithEmailAndPassword,
   updateProfile as updateFirebaseProfile,
 } from "firebase/auth";
+import { BarChart3, ShieldCheck, Sparkles, CheckCircle2 } from "lucide-react";
 import { auth } from "../firebase/config";
 import { useAuth } from "../contexts/AuthContext";
 import { APP_NAME } from "../lib/constants";
-import { Badge, Button, Card, TextInput } from "../components/ui";
+import { AlertBox, Button, Card, TextInput } from "../components/ui";
+import { BrandLockup } from "../components/brand";
 
 const copy = {
   login: {
     title: "Welcome back",
-    subtitle: "Log in to your study operating system.",
+    subtitle: "Log in to your study workspace.",
     button: "Log in",
     alternate: "Need an account?",
     alternateLink: "/signup",
-    alternateLabel: "Create one",
+    alternateLabel: "Create one free",
   },
   signup: {
-    title: "Create your StudySync account",
-    subtitle: "Start free, then unlock premium AI when you need it.",
+    title: "Create your account",
+    subtitle: "Start free, upgrade to AI when you need it.",
     button: "Create account",
     alternate: "Already have an account?",
     alternateLink: "/login",
@@ -30,21 +32,28 @@ const copy = {
   },
 };
 
+const HERO_POINTS = [
+  { icon: BarChart3, text: "Command-center dashboard with daily task planning" },
+  { icon: ShieldCheck, text: "Proof-backed accountability at completion time" },
+  { icon: Sparkles, text: "Premium AI tools for plans, quizzes, and flashcards" },
+];
+
 export default function AuthPage({ mode }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { refreshProfile } = useAuth();
-  const [form, setForm] = useState({
-    displayName: "",
-    email: "",
-    password: "",
-  });
+  const [form, setForm] = useState({ displayName: "", email: "", password: "" });
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [sendingReset, setSendingReset] = useState(false);
 
   const from = useMemo(() => location.state?.from || "/app", [location.state]);
+  const content = copy[mode];
+
+  function setField(field) {
+    return (event) => setForm((current) => ({ ...current, [field]: event.target.value }));
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -56,9 +65,7 @@ export default function AuthPage({ mode }) {
       if (mode === "signup") {
         const credential = await createUserWithEmailAndPassword(auth, form.email, form.password);
         if (form.displayName.trim()) {
-          await updateFirebaseProfile(credential.user, {
-            displayName: form.displayName.trim(),
-          });
+          await updateFirebaseProfile(credential.user, { displayName: form.displayName.trim() });
         }
       } else {
         await signInWithEmailAndPassword(auth, form.email, form.password);
@@ -93,77 +100,140 @@ export default function AuthPage({ mode }) {
     }
   }
 
-  const content = copy[mode];
-
   return (
-    <div className="grid min-h-screen bg-slate-950 px-6 py-10 lg:grid-cols-[0.95fr_1.05fr]">
-      <div className="hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-sky-500/15 via-slate-950 to-teal-400/10 p-10 lg:flex lg:flex-col">
-        <Badge className="w-fit bg-slate-900/70 text-sky-200 ring-sky-400/20">Student-first SaaS</Badge>
-        <h1 className="mt-6 text-5xl font-bold text-white">{APP_NAME} keeps your studying calm, visible, and accountable.</h1>
-        <p className="mt-5 max-w-xl text-lg text-slate-300">
-          Free users get a polished dashboard and serious task management. Premium adds AI tools, deeper planning, and billing-backed upgrades.
-        </p>
+    <div className="grid min-h-screen lg:grid-cols-[1fr_1fr]" style={{ background: "#07071c" }}>
+      {/* Left panel — only on desktop */}
+      <div className="relative hidden overflow-hidden lg:flex lg:flex-col lg:p-12">
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 60% at 20% 20%, rgba(56,189,248,0.14) 0%, transparent 55%), radial-gradient(ellipse 60% 40% at 80% 80%, rgba(20,184,166,0.1) 0%, transparent 55%)",
+          }}
+        />
+        <div
+          className="pointer-events-none absolute inset-0 opacity-40"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(148,163,184,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.04) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
+        />
+
+        <div className="relative z-10 flex flex-1 flex-col">
+          <BrandLockup to="/" />
+
+          <div className="mt-auto">
+            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-sky-400/20 bg-sky-500/10 px-4 py-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+              <span className="text-xs font-semibold text-sky-300">Student-first SaaS</span>
+            </div>
+
+            <h1 className="text-5xl font-bold leading-tight tracking-tight text-white">
+              {APP_NAME} keeps your studying calm, visible, and accountable.
+            </h1>
+
+            <p className="mt-5 text-lg leading-8 text-slate-400">
+              Free users get a polished dashboard and serious task management. Premium adds AI tools, deeper planning, and billing-backed upgrades.
+            </p>
+
+            <ul className="mt-10 space-y-4">
+              {HERO_POINTS.map(({ icon: Icon, text }) => (
+                <li key={text} className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-sky-400/20 bg-sky-500/10">
+                    <Icon className="h-4 w-4 text-sky-400" />
+                  </div>
+                  <span className="text-sm text-slate-300">{text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Bottom trust strip */}
+          <div className="mt-10 flex flex-wrap gap-4">
+            {["Free forever core", "No card to start", "Cancel anytime"].map((item) => (
+              <div key={item} className="flex items-center gap-1.5 text-xs text-slate-500">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500/70" />
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
-      <div className="grid place-items-center lg:px-10">
-        <Card className="w-full max-w-xl bg-slate-900/80 p-8 md:p-10">
-          <Badge className="bg-sky-500/12 text-sky-200 ring-sky-400/20">{mode === "signup" ? "Start free" : "Secure login"}</Badge>
-          <h2 className="mt-6 text-4xl font-bold text-white">{content.title}</h2>
-          <p className="mt-3 text-slate-400">{content.subtitle}</p>
+      {/* Right panel — form */}
+      <div className="flex min-h-screen items-center justify-center px-6 py-12 lg:px-14">
+        <div className="w-full max-w-md">
+          {/* Mobile brand */}
+          <div className="mb-8 flex justify-center lg:hidden">
+            <BrandLockup to="/" />
+          </div>
 
-          <form className="mt-8 grid gap-4" onSubmit={handleSubmit}>
-            {mode === "signup" ? (
+          <div className="mb-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-400/70">
+              {mode === "signup" ? "Start free" : "Secure login"}
+            </p>
+            <h2 className="mt-2 text-3xl font-bold text-white">{content.title}</h2>
+            <p className="mt-2 text-slate-400">{content.subtitle}</p>
+          </div>
+
+          <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-8">
+            <form className="grid gap-4" onSubmit={handleSubmit}>
+              {mode === "signup" && (
+                <TextInput
+                  label="Display name"
+                  placeholder="Omar Khalaf"
+                  autoComplete="name"
+                  value={form.displayName}
+                  onChange={setField("displayName")}
+                />
+              )}
               <TextInput
-                label="Display name"
-                placeholder="Omar Khalaf"
-                value={form.displayName}
-                onChange={(event) => setForm((current) => ({ ...current, displayName: event.target.value }))}
+                label="Email"
+                type="email"
+                placeholder="you@example.com"
+                autoComplete="email"
+                value={form.email}
+                onChange={setField("email")}
+                required
               />
-            ) : null}
+              <TextInput
+                label="Password"
+                type="password"
+                placeholder={mode === "signup" ? "At least 6 characters" : "Your password"}
+                autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                value={form.password}
+                onChange={setField("password")}
+                required
+              />
 
-            <TextInput
-              label="Email"
-              type="email"
-              placeholder="you@example.com"
-              value={form.email}
-              onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
-              required
-            />
-            <TextInput
-              label="Password"
-              type="password"
-              placeholder="At least 6 characters"
-              value={form.password}
-              onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
-              required
-            />
+              {error && <AlertBox variant="error">{error}</AlertBox>}
+              {notice && <AlertBox variant="success">{notice}</AlertBox>}
 
-            {error ? <p className="rounded-2xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">{error}</p> : null}
-            {notice ? <p className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">{notice}</p> : null}
+              <Button variant="primary" size="lg" type="submit" disabled={submitting} className="mt-1 w-full justify-center">
+                {submitting ? "Working..." : content.button}
+              </Button>
+            </form>
 
-            <Button variant="primary" size="lg" type="submit" disabled={submitting}>
-              {submitting ? "Working..." : content.button}
-            </Button>
-          </form>
+            {mode === "login" && (
+              <button
+                type="button"
+                className="mt-4 text-sm font-semibold text-sky-400 transition hover:text-sky-300"
+                onClick={handlePasswordReset}
+                disabled={sendingReset}
+              >
+                {sendingReset ? "Sending..." : "Forgot password?"}
+              </button>
+            )}
+          </div>
 
-          {mode === "login" ? (
-            <button
-              type="button"
-              className="mt-4 text-sm font-semibold text-sky-300 transition hover:text-sky-200"
-              onClick={handlePasswordReset}
-              disabled={sendingReset}
-            >
-              {sendingReset ? "Sending reset..." : "Forgot password?"}
-            </button>
-          ) : null}
-
-          <p className="mt-6 text-sm text-slate-400">
+          <p className="mt-6 text-center text-sm text-slate-500">
             {content.alternate}{" "}
-            <Link className="font-semibold text-sky-300 transition hover:text-sky-200" to={content.alternateLink}>
+            <Link className="font-semibold text-sky-400 transition hover:text-sky-300" to={content.alternateLink}>
               {content.alternateLabel}
             </Link>
           </p>
-        </Card>
+        </div>
       </div>
     </div>
   );

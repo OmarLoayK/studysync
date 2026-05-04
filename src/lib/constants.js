@@ -2,11 +2,11 @@ export const APP_NAME = "StudySync";
 export const APP_TAGLINE = "A dark-mode study operating system for students who want structure, momentum, and premium AI help.";
 
 export const APP_NAV_ITEMS = [
-  { to: "/app", label: "Dashboard" },
-  { to: "/app/ai", label: "AI Tools" },
-  { to: "/app/billing", label: "Billing" },
-  { to: "/app/account", label: "Account" },
-  { to: "/app/settings", label: "Settings" },
+  { to: "/app", label: "Dashboard", icon: "LayoutDashboard" },
+  { to: "/app/ai", label: "AI Tools", icon: "Sparkles" },
+  { to: "/app/billing", label: "Billing", icon: "CreditCard" },
+  { to: "/app/account", label: "Account", icon: "User" },
+  { to: "/app/settings", label: "Settings", icon: "Settings2" },
 ];
 
 export const MARKETING_METRICS = [
