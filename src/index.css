@@ -1,21 +1,22 @@
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,300..900&family=Space+Grotesk:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
 :root {
   color-scheme: dark;
-  --bg: #07071c;
-  --bg-subtle: #0a0a24;
-  --surface-1: rgba(255, 255, 255, 0.045);
-  --surface-2: rgba(255, 255, 255, 0.022);
-  --surface-3: rgba(255, 255, 255, 0.07);
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.14);
-  --text: #eef2ff;
-  --text-muted: #8892b0;
+  --bg: #111113;
+  --bg-subtle: #18181b;
+  --surface-1: rgba(255, 255, 255, 0.04);
+  --surface-2: rgba(255, 255, 255, 0.025);
+  --surface-3: rgba(255, 255, 255, 0.065);
+  --border: rgba(255, 255, 255, 0.06);
+  --border-strong: rgba(255, 255, 255, 0.11);
+  --text: #f4f4f5;
+  --text-muted: #71717a;
   --brand: #38bdf8;
-  --brand-2: #14b8a6;
-  --brand-dim: rgba(56, 189, 248, 0.12);
-  --brand-glow: rgba(56, 189, 248, 0.24);
+  --violet: #8b5cf6;
+  --brand-3: #14b8a6;
+  --brand-dim: rgba(56, 189, 248, 0.1);
+  --violet-dim: rgba(139, 92, 246, 0.12);
 }
 
 * {
@@ -29,15 +30,12 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(56, 189, 248, 0.1) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 85% 5%, rgba(20, 184, 166, 0.07) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 30% at 50% 100%, rgba(56, 189, 248, 0.05) 0%, transparent 60%),
-    linear-gradient(180deg, #07071c 0%, #050514 100%);
+  background: #111113;
   color: var(--text);
-  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv11", "ss01";
 }
 
 #root {
@@ -45,8 +43,8 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Space Grotesk", "Plus Jakarta Sans", sans-serif;
-  letter-spacing: -0.03em;
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  letter-spacing: -0.025em;
 }
 
 a {
@@ -58,10 +56,9 @@ button, input, textarea, select {
   font: inherit;
 }
 
-/* Smooth scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -69,10 +66,10 @@ button, input, textarea, select {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 99px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.35);
+  background: rgba(255, 255, 255, 0.18);
 }

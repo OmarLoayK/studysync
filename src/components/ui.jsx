@@ -58,8 +58,8 @@ export function Card({ className, children, hover = false }) {
   return (
     <div
       className={cn(
-        "rounded-2xl border border-white/8 bg-white/[0.03] p-6 shadow-[0_1px_0_rgba(255,255,255,0.05)_inset]",
-        hover && "cursor-pointer transition-all duration-200 hover:border-white/14 hover:bg-white/[0.05] hover:shadow-[0_0_30px_-10px_rgba(56,189,248,0.15)]",
+        "rounded-2xl border border-white/[0.06] bg-white/[0.04] p-6 shadow-[0_1px_3px_rgba(0,0,0,0.4),0_8px_24px_rgba(0,0,0,0.18)]",
+        hover && "cursor-pointer transition-all duration-300 hover:border-white/[0.10] hover:bg-white/[0.06] hover:shadow-[0_4px_40px_rgba(0,0,0,0.38),0_0_0_1px_rgba(255,255,255,0.08)]",
         className,
       )}
     >
