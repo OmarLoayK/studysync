@@ -61,7 +61,7 @@ export function PublicHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/[0.05] bg-[#08081a]/90 backdrop-blur-2xl">
+    <header className="sticky top-0 z-40 border-b border-white/[0.05] bg-[#08081a]/92 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <BrandLockup to="/" compact subtitle="Study operating system" />
 
@@ -375,7 +375,7 @@ export function AppShell() {
         {/* Main content */}
         <div className="flex min-h-screen flex-1 flex-col overflow-hidden">
           {/* Top bar */}
-          <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/[0.05] bg-[#08081a]/90 px-5 py-3.5 backdrop-blur-2xl lg:px-8">
+          <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/[0.05] bg-[#08081a]/92 px-5 py-3.5 backdrop-blur-md lg:px-8">
             <div className="flex items-center gap-3">
               <button
                 type="button"

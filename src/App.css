@@ -83,50 +83,53 @@
   border-radius: 50%;
   pointer-events: none;
   will-change: transform;
+  /* Force GPU composite layer upfront so blur doesn't trigger per-frame rasterization */
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
 }
 
 .orb-indigo {
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.7) 0%, rgba(67, 56, 202, 0.35) 40%, transparent 70%);
-  filter: blur(80px);
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.65) 0%, rgba(67, 56, 202, 0.3) 40%, transparent 70%);
+  filter: blur(44px);
   animation: drift-a 30s ease-in-out infinite;
 }
 
 .orb-violet {
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.65) 0%, rgba(109, 40, 217, 0.3) 40%, transparent 70%);
-  filter: blur(80px);
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.6) 0%, rgba(109, 40, 217, 0.28) 40%, transparent 70%);
+  filter: blur(44px);
   animation: drift-a 28s ease-in-out infinite;
 }
 
 .orb-cyan {
-  background: radial-gradient(circle, rgba(34, 211, 238, 0.5) 0%, rgba(6, 182, 212, 0.22) 40%, transparent 70%);
-  filter: blur(90px);
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.45) 0%, rgba(6, 182, 212, 0.2) 40%, transparent 70%);
+  filter: blur(50px);
   animation: drift-b 34s ease-in-out infinite;
 }
 
 .orb-sky {
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.5) 0%, rgba(14, 165, 233, 0.22) 40%, transparent 70%);
-  filter: blur(90px);
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.45) 0%, rgba(14, 165, 233, 0.2) 40%, transparent 70%);
+  filter: blur(50px);
   animation: drift-b 34s ease-in-out infinite;
 }
 
 .orb-teal {
-  background: radial-gradient(circle, rgba(45, 212, 191, 0.4) 0%, rgba(20, 184, 166, 0.18) 40%, transparent 70%);
-  filter: blur(100px);
+  background: radial-gradient(circle, rgba(45, 212, 191, 0.35) 0%, rgba(20, 184, 166, 0.16) 40%, transparent 70%);
+  filter: blur(55px);
   animation: drift-c 22s ease-in-out infinite;
 }
 
 .orb-rose {
-  background: radial-gradient(circle, rgba(244, 63, 94, 0.38) 0%, rgba(225, 29, 72, 0.16) 40%, transparent 70%);
-  filter: blur(85px);
+  background: radial-gradient(circle, rgba(244, 63, 94, 0.32) 0%, rgba(225, 29, 72, 0.14) 40%, transparent 70%);
+  filter: blur(46px);
   animation: drift-a 32s ease-in-out infinite reverse;
 }
 
 /* ── Noise texture overlay ── */
+/* mix-blend-mode: overlay removed — it forces a full compositor merge on every frame */
 .noise-overlay {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
   background-size: 256px 256px;
-  opacity: 0.028;
-  mix-blend-mode: overlay;
+  opacity: 0.018;
   pointer-events: none;
 }
 
@@ -213,3 +216,20 @@
 .feature-rows:hover .feature-row { opacity: 0.45; transition: opacity 0.25s; }
 .feature-rows:hover .feature-row:hover { opacity: 1; }
 .feature-row { transition: opacity 0.25s; }
+
+/* Morph blob — also on its own layer */
+.morph {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+/* Reduce motion — pause all non-essential animations */
+@media (prefers-reduced-motion: reduce) {
+  .orb,
+  .morph,
+  .animate-float,
+  .animate-float-slow,
+  .shimmer-text {
+    animation-play-state: paused !important;
+  }
+}

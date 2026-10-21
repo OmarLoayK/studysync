@@ -1,15 +1,15 @@
-import { Link } from "react-router-dom";
+import { motion } from "motion/react";
 import {
   Sparkles,
   CheckCircle2,
   BarChart3,
   ShieldCheck,
+  BrainCircuit,
   Zap,
   ArrowRight,
   Calendar,
   BookOpen,
   FlameIcon,
-  BrainCircuit,
 } from "lucide-react";
 import {
   FEATURE_PILLARS,
@@ -38,6 +38,22 @@ const PLAN_ACCENTS = {
   power:   { cta: "secondary" },
 };
 
+/* Single orchestrated hero entrance — one clean moment, not scattered per-element delays */
+const heroContainer = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.13, delayChildren: 0.08 } },
+};
+const heroItem = {
+  hidden: { opacity: 0, y: 30 },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] } },
+};
+
+/* Scroll-triggered reveal — used sparingly: stats + CTA only */
+const scrollReveal = {
+  hidden: { opacity: 0, y: 22 },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.75, ease: "easeOut" } },
+};
+
 export default function LandingPage() {
   return (
     <div className="min-h-screen overflow-x-hidden" style={{ background: "#08081a" }}>
@@ -46,71 +62,90 @@ export default function LandingPage() {
       <main>
         {/* ── HERO ── */}
         <section className="relative flex min-h-screen items-center overflow-hidden">
-          {/* Background layers */}
+          {/* Two orbs only — reduce compositor layer count vs three */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <div className="orb orb-indigo absolute" style={{ width: "1000px", height: "1000px", top: "-350px", right: "-300px" }} />
-            <div className="orb orb-violet absolute" style={{ width: "650px", height: "650px", bottom: "-250px", left: "-150px" }} />
             <div
-              className="morph absolute opacity-[0.18]"
+              className="orb orb-indigo absolute"
+              style={{ width: "900px", height: "900px", top: "-320px", right: "-260px" }}
+            />
+            <div
+              className="orb orb-violet absolute"
+              style={{ width: "620px", height: "620px", bottom: "-220px", left: "-130px" }}
+            />
+            <div
+              className="morph absolute opacity-[0.16]"
               style={{
-                width: "450px", height: "450px",
-                top: "25%", right: "18%",
-                background: "radial-gradient(circle, rgba(99,102,241,0.7) 0%, rgba(139,92,246,0.35) 50%, transparent 70%)",
+                width: "420px", height: "420px",
+                top: "28%", right: "20%",
+                background: "radial-gradient(circle, rgba(99,102,241,0.65) 0%, rgba(139,92,246,0.3) 50%, transparent 70%)",
                 filter: "blur(50px)",
               }}
             />
             <div className="noise-overlay absolute inset-0" />
           </div>
 
-          {/* Floating product chips — positioned absolutely for depth */}
+          {/* Floating product chips — no backdrop-blur (saves compositor work) */}
           <div className="pointer-events-none absolute right-[4%] top-[22%] hidden xl:block animate-float" style={{ animationDelay: "0s" }}>
-            <div className="flex items-center gap-2.5 rounded-2xl bg-white/[0.07] px-4 py-2.5 backdrop-blur-md ring-1 ring-white/[0.1]">
+            <div className="flex items-center gap-2.5 rounded-2xl bg-white/[0.07] px-4 py-2.5 ring-1 ring-white/[0.1]">
               <div className="h-2 w-2 rounded-full bg-amber-400" />
               <span className="text-sm font-medium text-white">Physics lab — due today</span>
             </div>
           </div>
-          <div className="pointer-events-none absolute right-[7%] top-[42%] hidden xl:block animate-float" style={{ animationDelay: "1.3s" }}>
-            <div className="rounded-2xl bg-indigo-500/10 px-4 py-3 backdrop-blur-md ring-1 ring-indigo-400/20 text-center">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-indigo-400">This week</p>
+          <div className="pointer-events-none absolute right-[7%] top-[43%] hidden xl:block animate-float" style={{ animationDelay: "1.4s" }}>
+            <div className="rounded-2xl bg-indigo-500/10 px-4 py-3 ring-1 ring-indigo-400/20 text-center">
+              <p className="text-[10px] font-semibold text-indigo-400">This week</p>
               <p className="mt-0.5 text-2xl font-black text-white">76%</p>
             </div>
           </div>
-          <div className="pointer-events-none absolute right-[4%] top-[62%] hidden xl:block animate-float" style={{ animationDelay: "2.6s" }}>
-            <div className="flex items-center gap-2 rounded-2xl bg-amber-500/10 px-4 py-2.5 backdrop-blur-md ring-1 ring-amber-400/15">
+          <div className="pointer-events-none absolute right-[4%] top-[62%] hidden xl:block animate-float" style={{ animationDelay: "2.8s" }}>
+            <div className="flex items-center gap-2 rounded-2xl bg-amber-500/10 px-4 py-2.5 ring-1 ring-amber-400/15">
               <FlameIcon className="h-4 w-4 text-amber-400" />
               <span className="text-sm font-bold text-amber-200">9 day streak</span>
             </div>
           </div>
 
-          {/* Hero text */}
-          <div className="relative z-10 mx-auto w-full max-w-7xl px-6 py-28 lg:py-40">
-            <div className="max-w-[740px]">
-              <div className="animate-fade-up mb-10 inline-flex items-center gap-2.5 rounded-full bg-white/[0.05] px-4 py-2 ring-1 ring-white/[0.08]">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                  <span className="relative h-2 w-2 rounded-full bg-emerald-400" />
-                </span>
-                <span className="text-sm font-medium text-zinc-300">Free · Premium $5/mo · Power $20/mo</span>
-              </div>
+          {/* Hero content — single staggered entrance, the one motion moment */}
+          <motion.div
+            className="relative z-10 mx-auto w-full max-w-7xl px-6 py-28 lg:py-40"
+            variants={heroContainer}
+            initial="hidden"
+            animate="show"
+          >
+            <div className="max-w-[760px]">
+              <motion.div variants={heroItem}>
+                <div className="mb-10 inline-flex items-center gap-2.5 rounded-full bg-white/[0.05] px-4 py-2 ring-1 ring-white/[0.08]">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+                    <span className="relative h-2 w-2 rounded-full bg-emerald-400" />
+                  </span>
+                  <span className="text-sm font-medium text-zinc-300">
+                    Free to start · Premium AI from $5/month
+                  </span>
+                </div>
+              </motion.div>
 
-              <h1
-                className="animate-fade-up delay-100 font-black leading-[0.92] tracking-[-0.04em] text-white"
+              <motion.h1
+                variants={heroItem}
+                className="font-black leading-[0.92] tracking-[-0.04em] text-white"
                 style={{ fontSize: "clamp(3.75rem, 10.5vw, 9rem)" }}
               >
                 Study<br />smarter.
-              </h1>
-              <div
-                className="animate-fade-up delay-200 font-black leading-[0.92] tracking-[-0.04em]"
+              </motion.h1>
+
+              <motion.div
+                variants={heroItem}
+                className="font-black leading-[0.92] tracking-[-0.04em]"
                 style={{ fontSize: "clamp(3.75rem, 10.5vw, 9rem)" }}
               >
                 <span className="shimmer-text">Actually<br />trust it.</span>
-              </div>
+              </motion.div>
 
-              <p className="animate-fade-up delay-300 mt-10 max-w-lg text-xl leading-8 text-zinc-400">
-                {APP_NAME} is a study OS with proof-backed accountability, an intelligent dashboard, and AI tools that work at every price point.
-              </p>
+              <motion.p variants={heroItem} className="mt-10 max-w-lg text-xl leading-8 text-zinc-400">
+                {APP_NAME} is a study OS with proof-backed accountability, an intelligent
+                dashboard, and AI tools that work at every price point.
+              </motion.p>
 
-              <div className="animate-fade-up delay-300 mt-10 flex flex-wrap gap-4">
+              <motion.div variants={heroItem} className="mt-10 flex flex-wrap gap-4">
                 <LinkButton to="/signup" variant="primary" size="lg">
                   Start free — no card needed
                   <ArrowRight className="h-4 w-4" />
@@ -118,31 +153,37 @@ export default function LandingPage() {
                 <LinkButton to="/pricing" variant="secondary" size="lg">
                   See pricing
                 </LinkButton>
-              </div>
+              </motion.div>
 
-              <div className="animate-fade-up delay-500 mt-8 flex flex-wrap gap-x-7 gap-y-2">
+              <motion.div variants={heroItem} className="mt-8 flex flex-wrap gap-x-7 gap-y-2">
                 {["Free forever core", "Proof-backed tasks", "AI study tools"].map((item) => (
                   <div key={item} className="flex items-center gap-2 text-sm text-zinc-500">
                     <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400/60" />
                     {item}
                   </div>
                 ))}
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         </section>
 
         {/* ── Wave divider ── */}
-        <div className="relative z-10 -mb-px overflow-hidden" style={{ height: "100px" }}>
-          <svg viewBox="0 0 1440 100" className="absolute bottom-0 w-full" preserveAspectRatio="none" style={{ height: "100px" }}>
-            <path d="M0,60 C400,100 1040,0 1440,60 L1440,100 L0,100 Z" fill="rgba(255,255,255,0.013)" />
+        <div className="relative z-10 overflow-hidden" style={{ height: "90px" }}>
+          <svg viewBox="0 0 1440 90" className="absolute bottom-0 w-full" preserveAspectRatio="none" style={{ height: "90px" }}>
+            <path d="M0,55 C480,90 960,0 1440,55 L1440,90 L0,90 Z" fill="rgba(255,255,255,0.012)" />
           </svg>
         </div>
 
-        {/* ── STATS (keep 50K+ etc.) ── */}
+        {/* ── STATS (keep 50K+ etc.) — single scroll reveal ── */}
         <section className="py-24" style={{ background: "rgba(255,255,255,0.01)" }}>
           <div className="mx-auto max-w-7xl px-6">
-            <div className="grid gap-14 text-center sm:grid-cols-3">
+            <motion.div
+              className="grid gap-14 text-center sm:grid-cols-3"
+              variants={scrollReveal}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: "-60px" }}
+            >
               {MARKETING_METRICS.map((metric) => (
                 <div key={metric.label}>
                   <p
@@ -154,69 +195,60 @@ export default function LandingPage() {
                   <p className="mt-4 text-base text-zinc-500">{metric.label}</p>
                 </div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
 
         {/* ── Wave divider (flipped) ── */}
-        <div className="relative z-10 -mt-px overflow-hidden" style={{ height: "100px" }}>
-          <svg viewBox="0 0 1440 100" className="absolute top-0 w-full" preserveAspectRatio="none" style={{ height: "100px" }}>
-            <path d="M0,40 C400,0 1040,100 1440,40 L1440,0 L0,0 Z" fill="rgba(255,255,255,0.01)" />
+        <div className="relative z-10 overflow-hidden" style={{ height: "90px" }}>
+          <svg viewBox="0 0 1440 90" className="absolute top-0 w-full" preserveAspectRatio="none" style={{ height: "90px" }}>
+            <path d="M0,35 C480,0 960,90 1440,35 L1440,0 L0,0 Z" fill="rgba(255,255,255,0.01)" />
           </svg>
         </div>
 
-        {/* ── FEATURES (editorial numbered rows) ── */}
+        {/* ── FEATURES — three pillars, not numbered (not a sequence) ── */}
         <section id="features" className="mx-auto max-w-7xl px-6 py-32">
-          <div className="mb-20">
-            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-indigo-400/70">
-              Built for serious students
-            </p>
+          <div className="mb-20 max-w-3xl">
             <h2
-              className="mt-5 max-w-2xl font-black tracking-tight text-white"
+              className="font-black tracking-tight text-white"
               style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.75rem)", lineHeight: "1.04" }}
             >
-              Your tasks, focus windows, and AI. One system.
+              Your tasks, focus windows, and AI.{" "}
+              <span className="text-zinc-500">One system.</span>
             </h2>
+            <p className="mt-6 text-lg leading-8 text-zinc-400">
+              {APP_NAME} is designed like a startup-grade productivity product — built for
+              students who need clarity under pressure.
+            </p>
           </div>
 
-          <div className="feature-rows">
+          <div className="grid gap-12 md:grid-cols-3">
             {FEATURE_PILLARS.map((pillar, i) => {
               const Icon = PILLAR_ICONS[i] || BarChart3;
               return (
-                <div
-                  key={pillar.title}
-                  className="feature-row border-t border-white/[0.06] py-12 grid gap-6 md:gap-16 md:grid-cols-[96px_280px_1fr] items-start"
-                >
-                  <span className="text-[5.5rem] font-black text-white/[0.04] leading-none select-none tracking-tighter">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <div className="flex items-start gap-3">
-                    <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/15">
-                      <Icon className="h-5 w-5 text-indigo-400" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-white leading-tight">{pillar.title}</h3>
-                  </div>
-                  <p className="text-lg leading-8 text-zinc-400">{pillar.copy}</p>
+                <div key={pillar.title}>
+                  <Icon className="h-7 w-7 text-indigo-400 mb-5" />
+                  <h3 className="text-xl font-bold text-white">{pillar.title}</h3>
+                  <p className="mt-3 text-base leading-7 text-zinc-400">{pillar.copy}</p>
                 </div>
               );
             })}
-            <div className="border-t border-white/[0.06]" />
           </div>
         </section>
 
-        {/* ── PREMIUM AI (immersive full-section) ── */}
+        {/* ── PREMIUM AI — immersive full section ── */}
         <section id="premium" className="relative overflow-hidden py-36">
           <div className="pointer-events-none absolute inset-0">
-            <div className="orb orb-violet absolute" style={{ width: "750px", height: "750px", top: "-150px", right: "-200px", opacity: 0.45 }} />
-            <div className="orb orb-indigo absolute" style={{ width: "550px", height: "550px", bottom: "-120px", left: "-100px", opacity: 0.4 }} />
+            <div className="orb orb-violet absolute" style={{ width: "700px", height: "700px", top: "-150px", right: "-200px", opacity: 0.45 }} />
+            <div className="orb orb-indigo absolute" style={{ width: "500px", height: "500px", bottom: "-100px", left: "-80px", opacity: 0.38 }} />
             <div
               className="morph absolute opacity-[0.09]"
               style={{
-                width: "550px", height: "550px",
+                width: "520px", height: "520px",
                 top: "50%", left: "50%",
-                transform: "translate(-50%, -50%)",
-                background: "radial-gradient(circle, rgba(139,92,246,0.9) 0%, rgba(99,102,241,0.45) 40%, transparent 70%)",
-                filter: "blur(65px)",
+                transform: "translate(-50%, -50%) translate3d(0,0,0)",
+                background: "radial-gradient(circle, rgba(139,92,246,0.85) 0%, rgba(99,102,241,0.4) 40%, transparent 70%)",
+                filter: "blur(60px)",
               }}
             />
             <div className="noise-overlay absolute inset-0" />
@@ -227,7 +259,7 @@ export default function LandingPage() {
               <div>
                 <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-violet-500/10 px-3.5 py-1.5 ring-1 ring-violet-400/20">
                   <Sparkles className="h-3.5 w-3.5 text-violet-400" />
-                  <span className="text-xs font-semibold text-violet-300">Premium AI tools</span>
+                  <span className="text-sm font-semibold text-violet-300">Premium AI tools</span>
                 </div>
                 <h2
                   className="font-black tracking-tight text-white"
@@ -238,7 +270,8 @@ export default function LandingPage() {
                   <span className="gradient-text">One workspace.</span>
                 </h2>
                 <p className="mt-8 text-xl leading-8 text-zinc-400">
-                  Premium is intentionally priced at $5/month for everyday use. Power at $20/month gives serious users best-model routing and bigger limits.
+                  Premium is intentionally $5/month for everyday use. Power at $20/month
+                  gives serious users best-model routing and bigger limits.
                 </p>
                 <div className="mt-10 flex flex-wrap gap-3">
                   <LinkButton to="/pricing" variant="primary">
@@ -250,12 +283,12 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              {/* Tools as editorial left-border list — no individual boxes */}
+              {/* Tools as editorial border-list — no individual boxes */}
               <div>
                 {AI_TOOLS_DISPLAY.map((tool) => (
                   <div
                     key={tool.label}
-                    className="flex items-start gap-5 border-t border-white/[0.06] py-7 last:border-b last:mb-0"
+                    className="flex items-start gap-5 border-t border-white/[0.06] py-7 last:border-b"
                   >
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/12">
                       <tool.icon className="h-5 w-5 text-violet-300" />
@@ -273,17 +306,17 @@ export default function LandingPage() {
 
         {/* ── PRICING ── */}
         <section className="mx-auto max-w-7xl px-6 py-28">
-          <div className="mb-16 text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-indigo-400/70">Simple pricing</p>
+          <div className="mb-16 max-w-2xl">
             <h2
-              className="mt-4 font-black tracking-tight text-white"
+              className="font-black tracking-tight text-white"
               style={{ fontSize: "clamp(2rem, 4.5vw, 3.75rem)", lineHeight: "1.08" }}
             >
-              A free core, an affordable AI tier,
-              <br className="hidden md:block" /> and one power tier.
+              Free core. Affordable AI.{" "}
+              <span className="text-zinc-500">One power tier.</span>
             </h2>
-            <p className="mx-auto mt-5 max-w-2xl text-lg text-zinc-400">
-              Start free for task and dashboard management. Unlock everyday AI with Premium. Reserve Power for users who need the strongest model.
+            <p className="mt-5 text-lg text-zinc-400">
+              Start free for task and dashboard management. Unlock everyday AI with Premium.
+              Reserve Power for users who need the strongest model.
             </p>
           </div>
 
@@ -334,25 +367,31 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── BOTTOM CTA ── */}
+        {/* ── BOTTOM CTA — scroll reveal (once) ── */}
         <section className="relative overflow-hidden py-40">
           <div className="pointer-events-none absolute inset-0">
-            <div className="orb orb-indigo absolute" style={{ width: "650px", height: "650px", top: "-200px", left: "5%", opacity: 0.38 }} />
-            <div className="orb orb-violet absolute" style={{ width: "550px", height: "550px", bottom: "-150px", right: "5%", opacity: 0.35 }} />
+            <div className="orb orb-indigo absolute" style={{ width: "600px", height: "600px", top: "-180px", left: "5%", opacity: 0.36 }} />
+            <div className="orb orb-violet absolute" style={{ width: "520px", height: "520px", bottom: "-140px", right: "5%", opacity: 0.33 }} />
             <div
               className="morph absolute opacity-[0.07]"
               style={{
-                width: "700px", height: "700px",
+                width: "680px", height: "680px",
                 top: "50%", left: "50%",
-                transform: "translate(-50%, -50%)",
-                background: "radial-gradient(circle, rgba(99,102,241,0.9) 0%, rgba(139,92,246,0.5) 40%, transparent 70%)",
-                filter: "blur(60px)",
+                transform: "translate(-50%, -50%) translate3d(0,0,0)",
+                background: "radial-gradient(circle, rgba(99,102,241,0.85) 0%, rgba(139,92,246,0.45) 40%, transparent 70%)",
+                filter: "blur(55px)",
               }}
             />
             <div className="noise-overlay absolute inset-0" />
           </div>
 
-          <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
+          <motion.div
+            className="relative z-10 mx-auto max-w-4xl px-6 text-center"
+            variants={scrollReveal}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-60px" }}
+          >
             <h2
               className="font-black tracking-tight text-white"
               style={{ fontSize: "clamp(2.75rem, 6.5vw, 5.5rem)", lineHeight: "1.04" }}
@@ -371,7 +410,7 @@ export default function LandingPage() {
                 View all plans
               </LinkButton>
             </div>
-          </div>
+          </motion.div>
         </section>
       </main>
 
