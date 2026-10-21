@@ -20,11 +20,11 @@ import { isPremiumPlan } from "../lib/utils";
 import { AlertBox, Badge, Button, LinkButton, ProgressBar, SectionHeading, Select, TextArea, TextInput } from "../components/ui";
 
 const TOOL_ICONS = {
-  planner: Calendar,
-  quiz: BookOpen,
+  planner:    Calendar,
+  quiz:       BookOpen,
   flashcards: FlameIcon,
-  explainer: BrainCircuit,
-  breakdown: Zap,
+  explainer:  BrainCircuit,
+  breakdown:  Zap,
 };
 
 function normalizeAnswer(value = "") {
@@ -53,14 +53,14 @@ function buildInitialFormState(tool) {
 function PlannerResult({ result }) {
   return (
     <div className="space-y-3">
-      <div className="rounded-xl border border-white/8 bg-white/[0.03] p-5">
+      <div className="rounded-xl bg-white/[0.025] p-5">
         <h3 className="text-lg font-bold text-white">{result.title}</h3>
         <p className="mt-2 text-sm leading-6 text-slate-400">{result.summary}</p>
       </div>
       {result.schedule?.map((item) => (
-        <div key={`${item.day}-${item.focus}`} className="flex gap-4 rounded-xl border border-white/8 bg-white/[0.03] p-5">
+        <div key={`${item.day}-${item.focus}`} className="flex gap-4 rounded-xl bg-white/[0.02] p-5">
           <div className="shrink-0">
-            <span className="inline-block rounded-lg bg-sky-500/10 px-2.5 py-1 text-xs font-semibold text-sky-300">
+            <span className="inline-block rounded-lg bg-indigo-500/10 px-2.5 py-1 text-xs font-semibold text-indigo-300">
               {item.day}
             </span>
           </div>
@@ -87,17 +87,17 @@ function FlashcardsResult({ result }) {
             key={card.front}
             type="button"
             onClick={() => setFlipped((prev) => ({ ...prev, [i]: !prev[i] }))}
-            className="rounded-xl border border-white/8 bg-white/[0.03] p-5 text-left transition-all duration-200 hover:border-sky-400/25 hover:bg-white/5"
+            className="rounded-xl bg-white/[0.025] p-5 text-left transition-all duration-200 hover:bg-white/[0.04]"
           >
             {!isFlipped ? (
               <>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-400/70">Front</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-400/70">Front</p>
                 <h4 className="mt-2 text-sm font-bold text-white">{card.front}</h4>
                 <p className="mt-3 text-xs text-slate-600">Tap to reveal back →</p>
               </>
             ) : (
               <>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-400/70">Back</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-400/70">Back</p>
                 <p className="mt-2 text-sm text-slate-300">{card.back}</p>
                 <p className="mt-3 text-xs text-slate-600">← Tap to flip back</p>
               </>
@@ -111,7 +111,7 @@ function FlashcardsResult({ result }) {
 
 function ExplainerResult({ result }) {
   return (
-    <div className="rounded-xl border border-white/8 bg-white/[0.03] p-5">
+    <div className="rounded-xl bg-white/[0.025] p-5">
       <h3 className="text-lg font-bold text-white">{result.title}</h3>
       <p className="mt-2 text-sm leading-6 text-slate-300">{result.summary}</p>
       <div className="mt-4 space-y-3 text-sm leading-6 text-slate-400">
@@ -127,10 +127,10 @@ function BreakdownResult({ result }) {
   return (
     <div className="space-y-3">
       {result.phases?.map((phase) => (
-        <div key={phase.name} className="rounded-xl border border-white/8 bg-white/[0.03] p-5">
+        <div key={phase.name} className="rounded-xl bg-white/[0.025] p-5">
           <div className="flex items-center justify-between gap-3">
             <h4 className="text-sm font-bold text-white">{phase.name}</h4>
-            <span className="rounded-full bg-sky-500/10 px-2.5 py-0.5 text-xs font-semibold text-sky-300 ring-1 ring-inset ring-sky-400/20">
+            <span className="rounded-full bg-indigo-500/10 px-2.5 py-0.5 text-xs font-semibold text-indigo-300 ring-1 ring-inset ring-indigo-400/20">
               {phase.estimate}
             </span>
           </div>
@@ -138,7 +138,7 @@ function BreakdownResult({ result }) {
           <ul className="mt-3 space-y-1">
             {phase.tasks?.map((task) => (
               <li key={task} className="flex items-center gap-2 text-xs text-slate-500">
-                <ArrowRight className="h-3 w-3 text-sky-400/60" />
+                <ArrowRight className="h-3 w-3 text-indigo-400/60" />
                 {task}
               </li>
             ))}
@@ -201,30 +201,23 @@ function InteractiveQuizResult({ result, onPerfectRun }) {
   if (completed) {
     const perfectRun = score === questions.length && questions.length > 0;
     return (
-      <div className="rounded-xl border border-white/8 bg-white/[0.03] p-6">
-        <div className="text-center">
-          <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-2xl ${perfectRun ? "bg-amber-500/15" : "bg-sky-500/10"}`}>
-            {perfectRun ? <Trophy className="h-7 w-7 text-amber-300" /> : <CheckCircle2 className="h-7 w-7 text-sky-300" />}
-          </div>
-          <p className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-sky-400/70">Quiz complete</p>
-          <h3 className="mt-2 text-2xl font-bold text-white">{result.title}</h3>
-          <p className="mt-2 text-slate-400">{result.summary}</p>
-          <div className="mt-5 flex justify-center gap-2">
-            <Badge className={perfectRun ? "bg-amber-500/15 text-amber-200 ring-amber-400/25" : "bg-sky-500/15 text-sky-200 ring-sky-400/25"}>
-              Score {score}/{questions.length}
-            </Badge>
-            {perfectRun && <Badge className="bg-emerald-500/15 text-emerald-200 ring-emerald-400/25">Perfect run</Badge>}
-          </div>
-          <p className="mt-4 text-sm text-slate-400">
-            {perfectRun
-              ? "You got every question right. Perfect run trophy added to your account."
-              : "Review the explanations, then run it back for a cleaner score."}
-          </p>
-          <Button variant="secondary" onClick={handleRestart} className="mt-5">
-            <RefreshCw className="h-4 w-4" />
-            Restart quiz
-          </Button>
+      <div className="rounded-xl bg-white/[0.025] p-6 text-center">
+        <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-2xl ${perfectRun ? "bg-amber-500/15" : "bg-indigo-500/10"}`}>
+          {perfectRun ? <Trophy className="h-7 w-7 text-amber-300" /> : <CheckCircle2 className="h-7 w-7 text-indigo-300" />}
         </div>
+        <p className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-indigo-400/70">Quiz complete</p>
+        <h3 className="mt-2 text-2xl font-bold text-white">{result.title}</h3>
+        <p className="mt-2 text-slate-400">{result.summary}</p>
+        <div className="mt-5 flex justify-center gap-2">
+          <Badge className={perfectRun ? "bg-amber-500/15 text-amber-200 ring-amber-400/25" : "bg-indigo-500/15 text-indigo-200 ring-indigo-400/25"}>
+            Score {score}/{questions.length}
+          </Badge>
+          {perfectRun && <Badge className="bg-emerald-500/15 text-emerald-200 ring-emerald-400/25">Perfect run</Badge>}
+        </div>
+        <Button variant="secondary" onClick={handleRestart} className="mt-5">
+          <RefreshCw className="h-4 w-4" />
+          Restart quiz
+        </Button>
       </div>
     );
   }
@@ -233,24 +226,24 @@ function InteractiveQuizResult({ result, onPerfectRun }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between text-sm">
         <span className="font-medium text-slate-400">Question {currentIndex + 1} of {questions.length}</span>
-        <Badge className="bg-white/8 text-slate-300 ring-white/10">Score {score}/{questions.length}</Badge>
+        <Badge className="bg-white/[0.06] text-slate-300 ring-white/10">Score {score}/{questions.length}</Badge>
       </div>
 
-      <div className="rounded-xl border border-white/8 bg-white/[0.03] p-5">
+      <div className="rounded-xl bg-white/[0.025] p-5">
         <h4 className="text-base font-semibold text-white">{question.question}</h4>
         <div className="mt-4 space-y-2">
           {options.map((option) => {
             const selected = selectedAnswer === option;
             const correctOption = normalizeAnswer(question.answer) === normalizeAnswer(option);
-            let className = "rounded-xl border px-4 py-3.5 text-left text-sm transition-all duration-150 w-full ";
+            let className = "rounded-xl px-4 py-3.5 text-left text-sm transition-all duration-150 w-full ";
             if (revealed) {
-              if (correctOption) className += "border-emerald-400/35 bg-emerald-500/10 text-emerald-100";
-              else if (selected) className += "border-rose-400/30 bg-rose-500/8 text-rose-100";
-              else className += "border-white/8 bg-white/[0.02] text-slate-400";
+              if (correctOption) className += "bg-emerald-500/10 text-emerald-100";
+              else if (selected) className += "bg-rose-500/8 text-rose-100";
+              else className += "bg-white/[0.02] text-slate-400";
             } else if (selected) {
-              className += "border-sky-400/35 bg-sky-500/10 text-sky-100";
+              className += "bg-indigo-500/10 text-indigo-100 ring-1 ring-indigo-400/30";
             } else {
-              className += "border-white/8 bg-white/[0.03] text-slate-300 hover:border-white/14 hover:bg-white/[0.05]";
+              className += "bg-white/[0.02] text-slate-300 hover:bg-white/[0.04]";
             }
 
             return (
@@ -264,7 +257,7 @@ function InteractiveQuizResult({ result, onPerfectRun }) {
                   {revealed && correctOption && <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />}
                   {revealed && selected && !correctOption && <XCircle className="h-4 w-4 shrink-0 text-rose-400" />}
                   {(!revealed || (!correctOption && !selected)) && (
-                    <div className={`h-4 w-4 shrink-0 rounded-full border-2 ${selected ? "border-sky-400 bg-sky-400/20" : "border-white/20"}`} />
+                    <div className={`h-4 w-4 shrink-0 rounded-full border-2 ${selected ? "border-indigo-400 bg-indigo-400/20" : "border-white/20"}`} />
                   )}
                   {option}
                 </div>
@@ -278,7 +271,7 @@ function InteractiveQuizResult({ result, onPerfectRun }) {
             Check answer
           </Button>
         ) : (
-          <div className={`mt-5 rounded-xl border p-4 ${answeredCorrectly ? "border-emerald-400/20 bg-emerald-500/8" : "border-rose-400/20 bg-rose-500/8"}`}>
+          <div className={`mt-5 rounded-xl p-4 ${answeredCorrectly ? "bg-emerald-500/8" : "bg-rose-500/8"}`}>
             <p className={`text-xs font-semibold uppercase tracking-[0.18em] ${answeredCorrectly ? "text-emerald-300" : "text-rose-300"}`}>
               {answeredCorrectly ? "Correct!" : "Not quite"}
             </p>
@@ -372,20 +365,20 @@ export default function AiToolsPage() {
   }
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-8">
       <SectionHeading
         eyebrow="Premium AI"
         title="AI study tools for real work"
         description="Tight prompts, structured outputs, and cost-aware limits that keep the paid AI tiers credible."
       />
 
-      <div className="grid gap-6 xl:grid-cols-[300px_1fr]">
+      <div className="grid gap-6 xl:grid-cols-[280px_1fr]">
         {/* Left: plan status + tool list */}
         <div className="space-y-4">
           {/* Plan status */}
-          <div className={`rounded-2xl border p-5 ${isPremium ? "border-sky-400/20 bg-gradient-to-br from-sky-500/8 via-white/[0.02] to-teal-400/5" : "border-white/8 bg-white/[0.03]"}`}>
+          <div className={`rounded-2xl p-5 ${isPremium ? "bg-gradient-to-br from-indigo-500/8 via-white/[0.02] to-violet-400/4" : "bg-white/[0.025]"}`}>
             <div className="flex items-center gap-2">
-              <Sparkles className={`h-4 w-4 ${isPremium ? "text-sky-400" : "text-slate-600"}`} />
+              <Sparkles className={`h-4 w-4 ${isPremium ? "text-indigo-400" : "text-slate-600"}`} />
               <p className="text-xs font-semibold text-slate-400">Plan status</p>
             </div>
             <h2 className="mt-2 text-base font-bold text-white">
@@ -413,7 +406,7 @@ export default function AiToolsPage() {
           </div>
 
           {/* Tool picker */}
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             {AI_TOOLS.map((tool) => {
               const Icon = TOOL_ICONS[tool.key] || Sparkles;
               const isSelected = selectedTool === tool.key;
@@ -425,17 +418,17 @@ export default function AiToolsPage() {
                     setSelectedTool(tool.key);
                     setResultBundle(null);
                   }}
-                  className={`flex w-full items-start gap-3 rounded-xl border p-4 text-left transition-all duration-150 ${
+                  className={`flex w-full items-start gap-3 rounded-xl p-4 text-left transition-all duration-150 ${
                     isSelected
-                      ? "border-sky-400/25 bg-sky-500/8"
-                      : "border-white/7 bg-white/[0.02] hover:border-white/12 hover:bg-white/[0.04]"
+                      ? "bg-indigo-500/10"
+                      : "hover:bg-white/[0.03]"
                   }`}
                 >
-                  <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${isSelected ? "bg-sky-500/20" : "bg-white/5"}`}>
-                    <Icon className={`h-4 w-4 ${isSelected ? "text-sky-400" : "text-slate-500"}`} />
+                  <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${isSelected ? "bg-indigo-500/20" : "bg-white/[0.04]"}`}>
+                    <Icon className={`h-4 w-4 ${isSelected ? "text-indigo-400" : "text-slate-500"}`} />
                   </div>
                   <div className="min-w-0">
-                    <p className={`text-sm font-semibold ${isSelected ? "text-sky-200" : "text-slate-300"}`}>
+                    <p className={`text-sm font-semibold ${isSelected ? "text-indigo-200" : "text-slate-300"}`}>
                       {tool.shortLabel}
                     </p>
                     <p className="mt-0.5 truncate text-xs text-slate-500">{tool.description}</p>
@@ -449,10 +442,10 @@ export default function AiToolsPage() {
         {/* Right: generator + result */}
         <div className="space-y-5">
           {/* Generator panel */}
-          <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-6">
+          <div className="rounded-2xl bg-white/[0.025] p-6">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-400/70">Generator</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400/70">Generator</p>
                 <h2 className="mt-1.5 text-2xl font-bold text-white">{activeTool.label}</h2>
                 <p className="mt-1 text-sm text-slate-400">{activeTool.description}</p>
               </div>
@@ -466,11 +459,11 @@ export default function AiToolsPage() {
             </div>
 
             {!isPremium ? (
-              <div className="mt-6 rounded-xl border border-rose-400/15 bg-rose-500/5 p-5 text-center">
+              <div className="mt-6 rounded-xl bg-rose-500/5 p-5 text-center">
                 <Lock className="mx-auto h-8 w-8 text-rose-400/50" />
                 <h3 className="mt-3 text-base font-bold text-white">Upgrade to use AI tools</h3>
                 <p className="mt-2 text-sm text-slate-400">
-                  AI tools are gated by active Stripe subscription, then rate-limited by monthly usage credits to keep costs controlled.
+                  AI tools are gated by active Stripe subscription, then rate-limited by monthly usage credits.
                 </p>
                 <LinkButton to="/app/billing" className="mt-5">
                   Open billing
@@ -527,10 +520,10 @@ export default function AiToolsPage() {
 
           {/* Result panel */}
           {resultBundle && (
-            <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-6">
+            <div className="rounded-2xl bg-white/[0.025] p-6">
               <div className="mb-5 flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-400/70">Result</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400/70">Result</p>
                   <h2 className="mt-1 text-xl font-bold text-white">{activeTool.label} output</h2>
                 </div>
                 <Badge className="bg-emerald-500/10 text-emerald-300 ring-emerald-400/20">

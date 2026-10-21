@@ -4,16 +4,17 @@ import "../App.css";
 import { AppShell, LoadingScreen, ProtectedRoute, PublicOnlyRoute } from "../components/layout";
 import { useAuth } from "../contexts/AuthContext";
 
-const LandingPage = lazy(() => import("../pages/LandingPage"));
-const PricingPage = lazy(() => import("../pages/PricingPage"));
-const TermsPage = lazy(() => import("../pages/TermsPage"));
-const PrivacyPage = lazy(() => import("../pages/PrivacyPage"));
-const SupportPage = lazy(() => import("../pages/SupportPage"));
-const AuthPage = lazy(() => import("../pages/AuthPage"));
+const LandingPage  = lazy(() => import("../pages/LandingPage"));
+const PricingPage  = lazy(() => import("../pages/PricingPage"));
+const TermsPage    = lazy(() => import("../pages/TermsPage"));
+const PrivacyPage  = lazy(() => import("../pages/PrivacyPage"));
+const CookiesPage  = lazy(() => import("../pages/CookiesPage"));
+const SupportPage  = lazy(() => import("../pages/SupportPage"));
+const AuthPage     = lazy(() => import("../pages/AuthPage"));
 const DashboardPage = lazy(() => import("../pages/DashboardPage"));
-const AiToolsPage = lazy(() => import("../pages/AiToolsPage"));
-const BillingPage = lazy(() => import("../pages/BillingPage"));
-const AccountPage = lazy(() => import("../pages/AccountPage"));
+const AiToolsPage  = lazy(() => import("../pages/AiToolsPage"));
+const BillingPage  = lazy(() => import("../pages/BillingPage"));
+const AccountPage  = lazy(() => import("../pages/AccountPage"));
 const SettingsPage = lazy(() => import("../pages/SettingsPage"));
 
 function HashScrollManager() {
@@ -47,6 +48,7 @@ function AppRoutes() {
         <Route path="/pricing" element={<PricingPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/cookies" element={<CookiesPage />} />
         <Route path="/support" element={<SupportPage />} />
         <Route
           path="/login"

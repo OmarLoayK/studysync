@@ -2,7 +2,6 @@ import { startTransition, useCallback, useDeferredValue, useEffect, useMemo, use
 import {
   Plus,
   Search,
-  SlidersHorizontal,
   CheckCircle2,
   Circle,
   AlertTriangle,
@@ -18,6 +17,7 @@ import {
   ArrowRight,
   Sparkles,
   ChevronRight,
+  Filter,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { DEFAULT_SETTINGS, PLAN_DETAILS, TASK_TEMPLATES } from "../lib/constants";
@@ -176,7 +176,7 @@ function TaskTemplatePicker({ onApplyTemplate }) {
             key={template.key}
             type="button"
             onClick={() => onApplyTemplate(template)}
-            className="rounded-xl border border-white/8 bg-white/[0.03] p-4 text-left transition hover:border-sky-400/25 hover:bg-white/5"
+            className="rounded-xl bg-white/[0.03] p-4 text-left transition hover:bg-white/[0.05]"
           >
             <p className="text-sm font-semibold text-white">{template.label}</p>
             <p className="mt-1 text-xs text-slate-500">{template.description}</p>
@@ -226,22 +226,22 @@ function TaskForm({ form, setForm, onSubmit, onCancel, busy, editing, onApplyTem
 
 function ProofUploader({ fileName, previewUrl, onChange, disabled }) {
   return (
-    <div className="space-y-3 rounded-xl border border-white/8 bg-white/[0.03] p-4">
+    <div className="space-y-3 rounded-xl bg-white/[0.025] p-4">
       <div className="flex items-center gap-2">
-        <Upload className="h-4 w-4 text-sky-400" />
+        <Upload className="h-4 w-4 text-indigo-400" />
         <div>
           <p className="text-sm font-semibold text-slate-200">Premium image proof</p>
           <p className="text-xs text-slate-500">Upload a screenshot or photo as proof of completion.</p>
         </div>
       </div>
       {previewUrl ? (
-        <img src={previewUrl} alt="Proof preview" className="max-h-52 w-full rounded-xl border border-white/8 object-cover" />
+        <img src={previewUrl} alt="Proof preview" className="max-h-52 w-full rounded-xl border border-white/[0.06] object-cover" />
       ) : (
-        <div className="flex items-center justify-center rounded-xl border border-dashed border-white/10 py-8 text-sm text-slate-600">
+        <div className="flex items-center justify-center rounded-xl border border-dashed border-white/[0.08] py-8 text-sm text-slate-600">
           No image selected yet
         </div>
       )}
-      <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-white/6 px-4 py-2.5 text-sm font-semibold text-slate-200 ring-1 ring-inset ring-white/10 transition hover:bg-white/10">
+      <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-white/[0.06] px-4 py-2.5 text-sm font-semibold text-slate-200 ring-1 ring-inset ring-white/10 transition hover:bg-white/10">
         <input type="file" accept="image/*" className="hidden" disabled={disabled} onChange={onChange} />
         {fileName ? `✓ ${fileName}` : "Choose image"}
       </label>
@@ -257,10 +257,10 @@ function CompletionModal({
   if (!task) return null;
 
   return (
-    <Modal open={open} title={`Complete: ${task.title}`} description="Submit proof now so the task can be verified and finished cleanly." onClose={onClose}>
+    <Modal open={open} title={`Complete: ${task.title}`} description="Submit proof so the task can be verified and finished cleanly." onClose={onClose}>
       <form className="grid gap-5" onSubmit={onSubmit}>
-        <div className="rounded-xl border border-white/8 bg-white/[0.03] p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-400/70">Task subject</p>
+        <div className="rounded-xl bg-white/[0.025] p-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-400/70">Task subject</p>
           <h3 className="mt-1.5 text-lg font-bold text-white">{task.course}</h3>
           <p className="mt-1 text-sm text-slate-400">{task.description || "No extra description on this task."}</p>
         </div>
@@ -286,20 +286,16 @@ function CompletionModal({
             placeholder="https://docs.google.com/document/d/..."
             value={proofState.proofLink}
             onChange={(event) => setProofState((current) => ({ ...current, proofLink: event.target.value }))}
-            hint="Must be a public Google Doc that includes a picture or screenshot tied to the task subject. StudySync checks the content before completing."
+            hint="Must be a public Google Doc that includes a picture or screenshot tied to the task subject."
             required={requireProof}
           />
         )}
 
-        <div className="rounded-xl border border-white/7 bg-white/[0.02] p-3.5 text-xs leading-5 text-slate-500">
+        <p className="text-xs text-slate-500">
           {isPremium
-            ? requireProof
-              ? "Premium: image proof required before completion."
-              : "Premium: add an image proof before completing the task."
-            : requireProof
-              ? "Free: a public Google Doc with subject-related proof is required."
-              : "Free: optionally submit a public Google Doc proof before completing."}
-        </div>
+            ? requireProof ? "Premium: image proof required." : "Premium: add image proof before completing."
+            : requireProof ? "Free: a public Google Doc with subject-related proof is required." : "Free: optionally submit a Google Doc proof."}
+        </p>
 
         {error && <AlertBox variant="error">{error}</AlertBox>}
 
@@ -315,9 +311,9 @@ function CompletionModal({
 }
 
 const PRIORITY_CONFIG = {
-  High: { dot: "bg-rose-400", text: "text-rose-300", badge: "bg-rose-500/12 text-rose-200 ring-rose-400/20" },
-  Medium: { dot: "bg-amber-400", text: "text-amber-300", badge: "bg-amber-500/12 text-amber-200 ring-amber-400/20" },
-  Low: { dot: "bg-slate-500", text: "text-slate-400", badge: "bg-white/6 text-slate-400 ring-white/10" },
+  High:   { dot: "bg-rose-400",   text: "text-rose-300",   badge: "bg-rose-500/12 text-rose-200 ring-rose-400/20",     left: "border-l-rose-400/60" },
+  Medium: { dot: "bg-amber-400",  text: "text-amber-300",  badge: "bg-amber-500/12 text-amber-200 ring-amber-400/20",  left: "border-l-amber-400/60" },
+  Low:    { dot: "bg-slate-500",  text: "text-slate-400",  badge: "bg-white/[0.06] text-slate-400 ring-white/10",      left: "border-l-white/10" },
 };
 
 function TaskCard({ task, onEdit, onDelete, onOpenCompletion, onMarkIncomplete, requireProof }) {
@@ -325,8 +321,8 @@ function TaskCard({ task, onEdit, onDelete, onOpenCompletion, onMarkIncomplete, 
   const priorityCfg = PRIORITY_CONFIG[task.priority] || PRIORITY_CONFIG.Medium;
 
   return (
-    <div className={`group rounded-2xl border p-5 transition-all duration-200 ${task.completed ? "border-emerald-400/15 bg-emerald-500/[0.04]" : "border-white/8 bg-white/[0.03] hover:border-white/12 hover:bg-white/[0.05]"}`}>
-      <div className="flex flex-wrap items-start justify-between gap-3">
+    <div className={`group border-l-2 pl-4 transition-all duration-200 ${task.completed ? "border-l-emerald-400/40 opacity-60" : priorityCfg.left}`}>
+      <div className="flex flex-wrap items-start justify-between gap-3 py-3">
         <div className="flex items-start gap-3">
           <div className="mt-0.5 shrink-0">
             {task.completed
@@ -362,19 +358,19 @@ function TaskCard({ task, onEdit, onDelete, onOpenCompletion, onMarkIncomplete, 
       </div>
 
       {task.description && (
-        <p className="mt-3 pl-8 text-sm leading-6 text-slate-400">{task.description}</p>
+        <p className="pb-2 pl-8 text-sm leading-6 text-slate-400">{task.description}</p>
       )}
 
-      {(task.proofLink || task.completionNote) && (
-        <div className="mt-3 pl-8 space-y-1">
+      {(task.proofLink || task.completionNote || task.imageProofUrl) && (
+        <div className="pb-2 pl-8 space-y-1">
           {task.proofLink && (
-            <a href={task.proofLink} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-xs text-sky-400 hover:text-sky-300 transition">
+            <a href={task.proofLink} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 transition">
               <FileText className="h-3.5 w-3.5" />
               Open Google Doc proof
             </a>
           )}
           {task.imageProofUrl && (
-            <a href={task.imageProofUrl} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-xs text-sky-400 hover:text-sky-300 transition">
+            <a href={task.imageProofUrl} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 transition">
               <Upload className="h-3.5 w-3.5" />
               Open image proof
             </a>
@@ -386,10 +382,10 @@ function TaskCard({ task, onEdit, onDelete, onOpenCompletion, onMarkIncomplete, 
       )}
 
       {task.imageProofUrl && (
-        <img src={task.imageProofUrl} alt={`${task.title} proof`} className="mt-3 ml-8 max-h-44 rounded-xl border border-white/8 object-cover" />
+        <img src={task.imageProofUrl} alt={`${task.title} proof`} className="pb-3 ml-8 max-h-44 rounded-xl border border-white/[0.06] object-cover" />
       )}
 
-      <div className="mt-4 flex flex-wrap gap-2 pl-8">
+      <div className="pb-4 flex flex-wrap gap-2 pl-8">
         {task.completed ? (
           <Button variant="secondary" size="sm" onClick={() => onMarkIncomplete(task)}>
             Mark incomplete
@@ -441,9 +437,9 @@ function GuidedEmptyState({ hasPremium, onCreateTask }) {
   ];
 
   return (
-    <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] p-8">
-      <div className="text-center">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-white/8 bg-white/[0.04]">
+    <div className="py-12">
+      <div className="text-center mb-8">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/[0.04]">
           <Target className="h-6 w-6 text-slate-500" />
         </div>
         <h3 className="mt-4 text-2xl font-bold text-white">Start your system, not just a list.</h3>
@@ -451,10 +447,10 @@ function GuidedEmptyState({ hasPremium, onCreateTask }) {
           The fastest way to make StudySync useful is to set up one real task, shape your study window, and let the dashboard plan the next move.
         </p>
       </div>
-      <div className="mt-8 grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3">
         {steps.map((step) => (
-          <div key={step.number} className="rounded-xl border border-white/8 bg-white/[0.03] p-5">
-            <p className="text-xs font-bold tracking-[0.2em] text-sky-400/60">{step.number}</p>
+          <div key={step.number}>
+            <p className="text-xs font-bold tracking-[0.2em] text-indigo-400/60">{step.number}</p>
             <h4 className="mt-3 text-base font-bold text-white">{step.title}</h4>
             <p className="mt-1.5 text-sm text-slate-400">{step.desc}</p>
             <div className="mt-4">{step.action}</div>
@@ -466,13 +462,11 @@ function GuidedEmptyState({ hasPremium, onCreateTask }) {
 }
 
 function TodayPlanCard({ tasks }) {
-  const priorityCfg = PRIORITY_CONFIG;
-
   return (
-    <Card>
+    <div className="rounded-2xl bg-white/[0.025] p-6">
       <div className="flex items-center gap-2">
-        <Clock className="h-4 w-4 text-sky-400" />
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-400/70">Today's plan</p>
+        <Clock className="h-4 w-4 text-indigo-400" />
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400/70">Today's plan</p>
       </div>
       <h3 className="mt-2 text-xl font-bold text-white">What to study next</h3>
 
@@ -482,24 +476,27 @@ function TodayPlanCard({ tasks }) {
         </p>
       ) : (
         <div className="mt-5 space-y-3">
-          {tasks.map((task) => (
-            <div key={task.id} className="rounded-xl border border-white/8 bg-white/[0.03] p-4">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <div className={`h-2 w-2 shrink-0 rounded-full ${(priorityCfg[task.priority] || priorityCfg.Medium).dot}`} />
-                  <p className="text-xs font-semibold text-slate-400">{task.orderLabel}</p>
+          {tasks.map((task) => {
+            const priorityCfg = PRIORITY_CONFIG[task.priority] || PRIORITY_CONFIG.Medium;
+            return (
+              <div key={task.id} className="rounded-xl bg-white/[0.02] p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <div className={`h-2 w-2 shrink-0 rounded-full ${priorityCfg.dot}`} />
+                    <p className="text-xs font-semibold text-slate-400">{task.orderLabel}</p>
+                  </div>
+                  <span className="rounded-lg bg-indigo-500/10 px-2 py-0.5 text-xs font-medium text-indigo-300 ring-1 ring-inset ring-indigo-400/20">
+                    {task.slot}
+                  </span>
                 </div>
-                <span className="rounded-lg bg-sky-500/10 px-2 py-0.5 text-xs font-medium text-sky-300 ring-1 ring-inset ring-sky-400/20">
-                  {task.slot}
-                </span>
+                <h4 className="mt-2.5 text-sm font-semibold text-white">{task.title}</h4>
+                <p className="mt-1 text-xs leading-5 text-slate-500">{task.reason}</p>
               </div>
-              <h4 className="mt-2.5 text-sm font-semibold text-white">{task.title}</h4>
-              <p className="mt-1 text-xs leading-5 text-slate-500">{task.reason}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
-    </Card>
+    </div>
   );
 }
 
@@ -509,10 +506,10 @@ function WeeklyMomentumCard({ tasks, weeklyGoalHours }) {
   const maxBar = Math.max(...trend.map((item) => item.completed), 1);
 
   return (
-    <Card>
+    <div className="rounded-2xl bg-white/[0.025] p-6">
       <div className="flex items-center gap-2">
-        <BarChart3 className="h-4 w-4 text-sky-400" />
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-400/70">Weekly momentum</p>
+        <BarChart3 className="h-4 w-4 text-indigo-400" />
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400/70">Weekly momentum</p>
       </div>
       <h3 className="mt-2 text-xl font-bold text-white">Recent completions</h3>
 
@@ -523,11 +520,11 @@ function WeeklyMomentumCard({ tasks, weeklyGoalHours }) {
             <div key={item.key} className="group flex flex-1 flex-col items-center gap-2">
               <div className="relative flex h-24 w-full items-end">
                 <div
-                  className={`w-full rounded-lg transition-all duration-500 ${item.completed > 0 ? "bg-gradient-to-t from-sky-500 to-teal-400" : "bg-white/5"}`}
+                  className={`w-full rounded-lg transition-all duration-500 ${item.completed > 0 ? "bg-gradient-to-t from-indigo-500 to-violet-400" : "bg-white/[0.04]"}`}
                   style={{ height: `${height}px` }}
                 />
                 {item.completed > 0 && (
-                  <div className="absolute inset-x-0 -top-6 hidden text-center text-xs font-semibold text-sky-300 group-hover:block">
+                  <div className="absolute inset-x-0 -top-6 hidden text-center text-xs font-semibold text-indigo-300 group-hover:block">
                     {item.completed}
                   </div>
                 )}
@@ -541,25 +538,22 @@ function WeeklyMomentumCard({ tasks, weeklyGoalHours }) {
       <p className="mt-4 text-xs text-slate-500">
         {completedThisWeek} completed this week · {weeklyGoalHours}h weekly goal
       </p>
-    </Card>
+    </div>
   );
 }
 
 function CalendarCard({ agenda }) {
   return (
-    <Card>
+    <div className="rounded-2xl bg-white/[0.025] p-6">
       <div className="flex items-center gap-2">
-        <CalendarDays className="h-4 w-4 text-sky-400" />
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-400/70">7-day calendar</p>
+        <CalendarDays className="h-4 w-4 text-indigo-400" />
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400/70">7-day calendar</p>
       </div>
       <h3 className="mt-2 text-xl font-bold text-white">Next seven days</h3>
 
-      <div className="mt-5 space-y-2">
+      <div className="mt-5 space-y-1.5">
         {agenda.map((day) => (
-          <div
-            key={day.key}
-            className="flex items-center justify-between rounded-xl border border-white/7 bg-white/[0.02] px-4 py-3"
-          >
+          <div key={day.key} className="flex items-center justify-between rounded-xl px-4 py-3 hover:bg-white/[0.02] transition">
             <div>
               <p className="text-sm font-semibold text-white">{day.label}</p>
               <p className="text-xs text-slate-600">{day.dayLabel}</p>
@@ -573,7 +567,7 @@ function CalendarCard({ agenda }) {
           </div>
         ))}
       </div>
-    </Card>
+    </div>
   );
 }
 
@@ -584,13 +578,13 @@ function UpsellCard({ profile }) {
 
   if (isPower) {
     return (
-      <div className="rounded-2xl border border-amber-400/15 bg-gradient-to-br from-amber-500/8 via-white/[0.02] to-orange-400/5 p-5">
+      <div className="rounded-2xl bg-gradient-to-br from-amber-500/6 via-white/[0.015] to-orange-400/4 p-5">
         <div className="flex items-center gap-2">
           <Flame className="h-4 w-4 text-amber-400" />
           <p className="text-xs font-semibold text-amber-400/80">Power workspace</p>
         </div>
         <h3 className="mt-2 text-base font-bold text-white">Best-model AI is active</h3>
-        <p className="mt-1.5 text-sm text-slate-400">You're on the highest StudySync tier. Use AI planning, quizzes, and richer breakdowns.</p>
+        <p className="mt-1.5 text-sm text-slate-400">You're on the highest StudySync tier.</p>
         <div className="mt-4">
           <LinkButton to="/app/ai" variant="secondary" size="sm" className="w-full justify-center">
             Open AI tools
@@ -602,14 +596,13 @@ function UpsellCard({ profile }) {
   }
 
   return (
-    <div className="rounded-2xl border border-sky-400/15 bg-gradient-to-br from-sky-500/8 via-white/[0.02] to-teal-400/5 p-5">
+    <div className="rounded-2xl bg-gradient-to-br from-indigo-500/6 via-white/[0.015] to-violet-400/4 p-5">
       <div className="flex items-center gap-2">
-        <Sparkles className="h-4 w-4 text-sky-400" />
-        <Badge className="bg-sky-500/15 text-sky-200 ring-sky-400/25 text-[10px]">{nextPlan.badge}</Badge>
+        <Sparkles className="h-4 w-4 text-indigo-400" />
       </div>
       <h3 className="mt-2 text-base font-bold text-white">{nextPlan.name} unlocks stronger proof and AI</h3>
       <p className="mt-1.5 text-sm text-slate-400">
-        Cleaner proof uploads, more AI generations, and smarter planning help.
+        Cleaner proof uploads, more AI generations, and smarter planning.
       </p>
       <div className="mt-4 flex gap-2">
         <LinkButton to="/app/billing" size="sm" className="flex-1 justify-center">View billing</LinkButton>
@@ -618,6 +611,30 @@ function UpsellCard({ profile }) {
     </div>
   );
 }
+
+/* ─── Inline filter pills ─── */
+const STATUS_OPTIONS = [
+  { value: "all", label: "All" },
+  { value: "open", label: "Open" },
+  { value: "today", label: "Today" },
+  { value: "overdue", label: "Overdue" },
+  { value: "upcoming", label: "Upcoming" },
+  { value: "completed", label: "Done" },
+];
+
+const PRIORITY_OPTIONS = [
+  { value: "all", label: "Any priority" },
+  { value: "High", label: "High" },
+  { value: "Medium", label: "Medium" },
+  { value: "Low", label: "Low" },
+];
+
+const SORT_OPTIONS = [
+  { value: "dueDate",  label: "Due date" },
+  { value: "priority", label: "Priority" },
+  { value: "recent",   label: "Recent" },
+  { value: "title",    label: "Title" },
+];
 
 /* ─── Main page ─── */
 
@@ -869,11 +886,11 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-8">
       <SectionHeading
         eyebrow="Task command center"
         title="Sort, filter, and finish work cleanly"
-        description="Capture quickly, let the dashboard suggest what's next, and submit proof only when the work is actually done."
+        description="Capture quickly, let the dashboard suggest what's next, and submit proof when the work is done."
         action={
           <Button onClick={openNewTaskModal}>
             <Plus className="h-4 w-4" />
@@ -883,12 +900,12 @@ export default function DashboardPage() {
       />
 
       {/* Stats row */}
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-        <StatCard label="Due today" value={stats.dueToday} helper="Needs attention before tonight." accent="sky" icon={Clock} />
-        <StatCard label="Overdue" value={stats.overdue} helper="Backlog to clear first." accent="rose" icon={AlertTriangle} />
-        <StatCard label="Completed" value={stats.completed} helper={`${stats.completionRate}% of all tasks`} accent="emerald" icon={CheckCircle2} />
-        <StatCard label="Streak" value={`${stats.streak}d`} helper="Days with at least one completion." accent="amber" icon={Flame} />
-        <StatCard label="Focus this week" value={formatMinutesAsHours(stats.focusMinutes)} helper={`${weeklyGoalHours}h weekly goal`} accent="violet" icon={Target} />
+      <div className="grid gap-px sm:grid-cols-2 xl:grid-cols-5 rounded-2xl overflow-hidden bg-white/[0.04]">
+        <StatCard label="Due today"       value={stats.dueToday}                          helper="Needs attention before tonight."      accent="indigo" icon={Clock} />
+        <StatCard label="Overdue"         value={stats.overdue}                           helper="Backlog to clear first."              accent="rose"   icon={AlertTriangle} />
+        <StatCard label="Completed"       value={stats.completed}                         helper={`${stats.completionRate}% of all tasks`} accent="emerald" icon={CheckCircle2} />
+        <StatCard label="Streak"          value={`${stats.streak}d`}                      helper="Days with at least one completion."   accent="amber"  icon={Flame} />
+        <StatCard label="Focus this week" value={formatMinutesAsHours(stats.focusMinutes)} helper={`${weeklyGoalHours}h weekly goal`}    accent="violet" icon={Target} />
       </div>
 
       {/* Plan + momentum row */}
@@ -898,55 +915,69 @@ export default function DashboardPage() {
       </div>
 
       {/* Task list + sidebar */}
-      <div className="grid gap-5 xl:grid-cols-[1.45fr_0.95fr]">
+      <div className="grid gap-6 xl:grid-cols-[1.45fr_0.95fr]">
         {/* Task list */}
         <div className="space-y-4">
-          {/* Filters */}
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative flex-1 min-w-40">
+          {/* Search + filter bar */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="relative flex-1">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-600" />
               <input
-                className="h-10 w-full rounded-xl border border-white/8 bg-white/[0.03] pl-9 pr-4 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-sky-400/40 focus:bg-white/5 focus:ring-1 focus:ring-sky-400/15"
+                className="h-10 w-full rounded-xl border border-white/[0.07] bg-white/[0.03] pl-9 pr-4 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-indigo-400/40 focus:bg-white/[0.05] focus:ring-1 focus:ring-indigo-400/15"
                 placeholder="Search tasks..."
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
               />
             </div>
-            <div className="flex items-center gap-1.5">
-              <SlidersHorizontal className="h-4 w-4 shrink-0 text-slate-600" />
-              <select
-                className="h-10 rounded-xl border border-white/8 bg-white/[0.03] px-3 text-sm text-slate-300 outline-none transition focus:border-sky-400/40 cursor-pointer"
-                value={statusFilter}
-                onChange={(event) => setStatusFilter(event.target.value)}
-              >
-                <option value="all">All status</option>
-                <option value="open">Open</option>
-                <option value="today">Due today</option>
-                <option value="overdue">Overdue</option>
-                <option value="upcoming">Upcoming</option>
-                <option value="completed">Completed</option>
-              </select>
-              <select
-                className="h-10 rounded-xl border border-white/8 bg-white/[0.03] px-3 text-sm text-slate-300 outline-none transition focus:border-sky-400/40 cursor-pointer"
-                value={priorityFilter}
-                onChange={(event) => setPriorityFilter(event.target.value)}
-              >
-                <option value="all">All priority</option>
-                <option value="High">High</option>
-                <option value="Medium">Medium</option>
-                <option value="Low">Low</option>
-              </select>
-              <select
-                className="h-10 rounded-xl border border-white/8 bg-white/[0.03] px-3 text-sm text-slate-300 outline-none transition focus:border-sky-400/40 cursor-pointer"
-                value={sortBy}
-                onChange={(event) => setSortBy(event.target.value)}
-              >
-                <option value="dueDate">Sort: Due date</option>
-                <option value="priority">Sort: Priority</option>
-                <option value="recent">Sort: Recent</option>
-                <option value="title">Sort: Title</option>
-              </select>
+            <div className="flex flex-wrap gap-1.5">
+              {STATUS_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setStatusFilter(opt.value)}
+                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
+                    statusFilter === opt.value
+                      ? "bg-indigo-500/20 text-indigo-300 ring-1 ring-indigo-400/30"
+                      : "text-slate-500 hover:text-slate-300"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
             </div>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <Filter className="h-3.5 w-3.5 text-slate-600" />
+            {PRIORITY_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setPriorityFilter(opt.value)}
+                className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${
+                  priorityFilter === opt.value
+                    ? "bg-white/[0.08] text-slate-200"
+                    : "text-slate-600 hover:text-slate-400"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+            <span className="text-slate-700 text-xs">·</span>
+            {SORT_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setSortBy(opt.value)}
+                className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${
+                  sortBy === opt.value
+                    ? "bg-white/[0.08] text-slate-200"
+                    : "text-slate-600 hover:text-slate-400"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
           </div>
 
           {/* Task list body */}
@@ -958,15 +989,15 @@ export default function DashboardPage() {
             ) : tasks.length === 0 ? (
               <GuidedEmptyState hasPremium={hasPremium} onCreateTask={openNewTaskModal} />
             ) : filteredTasks.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] py-14 text-center">
+              <div className="py-14 text-center">
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">No matches</p>
                 <h3 className="mt-3 text-xl font-bold text-white">Nothing fits this filter.</h3>
                 <p className="mx-auto mt-2 max-w-sm text-sm text-slate-500">
-                  Try widening the search or clearing a filter to bring tasks back into view.
+                  Try widening the search or clearing a filter.
                 </p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="divide-y divide-white/[0.04]">
                 {filteredTasks.map((task) => (
                   <TaskCard
                     key={task.id}
@@ -987,10 +1018,10 @@ export default function DashboardPage() {
         <div className="space-y-5">
           <CalendarCard agenda={agenda} />
 
-          <Card>
+          <div className="rounded-2xl bg-white/[0.025] p-6">
             <div className="flex items-center gap-2">
-              <Target className="h-4 w-4 text-sky-400" />
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-400/70">Goal progress</p>
+              <Target className="h-4 w-4 text-indigo-400" />
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400/70">Goal progress</p>
             </div>
             <h3 className="mt-2 text-xl font-bold text-white">Weekly focus target</h3>
             <div className="mt-5">
@@ -1001,7 +1032,7 @@ export default function DashboardPage() {
                 helper="Completed task estimates count toward your weekly target."
               />
             </div>
-          </Card>
+          </div>
 
           <UpsellCard profile={profile} />
         </div>

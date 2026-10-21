@@ -26,61 +26,53 @@ import { Badge, LinkButton } from "../components/ui";
 const PILLAR_ICONS = [BarChart3, ShieldCheck, BrainCircuit];
 
 const AI_FEATURES = [
-  { icon: Calendar,    label: "Study Planner",    desc: "Turn assignments into realistic weekly schedules" },
-  { icon: BookOpen,    label: "Quiz Generator",   desc: "Practice questions from any topic or notes" },
-  { icon: FlameIcon,   label: "Flashcard Builder", desc: "Convert messy notes into clean revision cards" },
-  { icon: BrainCircuit,label: "Topic Explainer",  desc: "Simpler explanations of hard concepts" },
-  { icon: Zap,         label: "Study Breakdown",  desc: "Split big projects into manageable phases" },
-  { icon: Trophy,      label: "Power tier",       desc: "Best-model AI routing with 240 monthly credits" },
+  { icon: Calendar,     label: "Study Planner",     desc: "Turn assignments into realistic weekly schedules" },
+  { icon: BookOpen,     label: "Quiz Generator",    desc: "Practice questions from any topic or notes" },
+  { icon: FlameIcon,    label: "Flashcard Builder", desc: "Convert messy notes into clean revision cards" },
+  { icon: BrainCircuit, label: "Topic Explainer",   desc: "Simpler explanations of hard concepts" },
+  { icon: Zap,          label: "Study Breakdown",   desc: "Split big projects into manageable phases" },
+  { icon: Trophy,       label: "Power tier",        desc: "Best-model AI routing with 240 monthly credits" },
 ];
 
 const PLAN_ACCENTS = {
   free: {
-    card: "bg-white/[0.03]",
-    badge: "bg-white/8 text-slate-400 ring-white/10",
     cta: "secondary",
   },
   premium: {
-    card: "bg-white/[0.05]",
-    badge: "bg-sky-500/15 text-sky-200 ring-sky-400/25",
     cta: "primary",
     highlight: true,
   },
   power: {
-    card: "bg-white/[0.03]",
-    badge: "bg-amber-500/15 text-amber-200 ring-amber-400/25",
     cta: "secondary",
   },
 };
 
 function HeroMockDashboard() {
   return (
-    <div className="relative">
-      <div className="overflow-hidden rounded-3xl bg-white/[0.04] shadow-[0_32px_80px_-10px_rgba(0,0,0,0.75),0_0_0_1px_rgba(255,255,255,0.07)] backdrop-blur-sm">
-        {/* Chrome bar */}
-        <div className="flex items-center gap-2 border-b border-white/[0.06] px-5 py-3.5">
+    <div className="relative animate-float">
+      <div className="overflow-hidden rounded-3xl bg-white/[0.04] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.06)] backdrop-blur-sm">
+        <div className="flex items-center gap-2 border-b border-white/[0.05] px-5 py-3.5">
           <div className="flex gap-1.5">
             <div className="h-2.5 w-2.5 rounded-full bg-rose-400/60" />
             <div className="h-2.5 w-2.5 rounded-full bg-amber-400/60" />
             <div className="h-2.5 w-2.5 rounded-full bg-emerald-400/60" />
           </div>
-          <div className="mx-auto flex items-center gap-2 rounded-md bg-white/[0.06] px-3 py-1 text-xs text-zinc-500">
+          <div className="mx-auto flex items-center gap-2 rounded-md bg-white/[0.05] px-3 py-1 text-xs text-zinc-500">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            studysync.app/dashboard
+            studysync.app
           </div>
         </div>
 
         <div className="p-5">
-          {/* Stats row */}
           <div className="mb-4 grid grid-cols-3 gap-3">
             {[
-              { label: "Due today",    value: "4",   accent: "text-sky-300",    bg: "from-sky-500/12" },
-              { label: "This week",   value: "76%", accent: "text-violet-300", bg: "from-violet-500/12" },
-              { label: "Streak",      value: "9d",  accent: "text-amber-300",  bg: "from-amber-500/12" },
+              { label: "Due today",  value: "4",   accent: "text-indigo-300", bg: "from-indigo-500/12" },
+              { label: "This week",  value: "76%", accent: "text-violet-300", bg: "from-violet-500/12" },
+              { label: "Streak",     value: "9d",  accent: "text-amber-300",  bg: "from-amber-500/12" },
             ].map((s) => (
               <div
                 key={s.label}
-                className={`overflow-hidden rounded-xl bg-gradient-to-b ${s.bg} to-transparent p-3.5 shadow-[0_1px_0_rgba(255,255,255,0.05)_inset]`}
+                className={`overflow-hidden rounded-xl bg-gradient-to-b ${s.bg} to-transparent p-3.5`}
               >
                 <p className="text-xs text-zinc-500">{s.label}</p>
                 <p className={`mt-1.5 text-xl font-bold ${s.accent}`}>{s.value}</p>
@@ -88,8 +80,7 @@ function HeroMockDashboard() {
             ))}
           </div>
 
-          {/* Task card */}
-          <div className="mb-3 rounded-xl bg-white/[0.04] p-4 shadow-[0_1px_0_rgba(255,255,255,0.05)_inset]">
+          <div className="mb-3 rounded-xl bg-white/[0.035] p-4">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
@@ -104,24 +95,22 @@ function HeroMockDashboard() {
             </div>
           </div>
 
-          {/* AI card */}
-          <div className="rounded-xl bg-gradient-to-br from-violet-500/12 via-white/[0.02] to-sky-400/8 p-4 shadow-[0_1px_0_rgba(255,255,255,0.06)_inset]">
-            <div className="flex items-center gap-2 text-xs font-semibold text-violet-300">
+          <div className="rounded-xl bg-gradient-to-br from-indigo-500/12 via-white/[0.02] to-violet-400/8 p-4">
+            <div className="flex items-center gap-2 text-xs font-semibold text-indigo-300">
               <Sparkles className="h-3.5 w-3.5" />
               AI Study Planner
             </div>
             <p className="mt-2 text-xs leading-5 text-zinc-500">Generate a schedule from your deadlines.</p>
-            <div className="mt-3 flex items-center gap-1 text-xs font-medium text-violet-400">
+            <div className="mt-3 flex items-center gap-1 text-xs font-medium text-indigo-400">
               Generate plan <ArrowRight className="h-3 w-3" />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Glow halo under the card */}
       <div
-        className="pointer-events-none absolute -inset-10 -z-10 opacity-50"
-        style={{ background: "radial-gradient(ellipse at center, rgba(139,92,246,0.28) 0%, transparent 70%)" }}
+        className="pointer-events-none absolute -inset-12 -z-10 opacity-40"
+        style={{ background: "radial-gradient(ellipse at center, rgba(99,102,241,0.3) 0%, transparent 70%)" }}
       />
     </div>
   );
@@ -129,25 +118,23 @@ function HeroMockDashboard() {
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen" style={{ background: "#111113" }}>
+    <div className="min-h-screen" style={{ background: "#08081a" }}>
       <PublicHeader />
 
       <main>
         {/* ── Hero ── */}
-        <section className="relative flex min-h-[92vh] items-center overflow-hidden">
-          {/* Aurora scene */}
+        <section className="relative flex min-h-[94vh] items-center overflow-hidden">
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <div className="orb orb-violet absolute" style={{ width: "700px", height: "700px", top: "-260px", right: "-160px" }} />
-            <div className="orb orb-sky absolute"    style={{ width: "560px", height: "560px", bottom: "-200px", left: "-120px" }} />
-            <div className="orb orb-teal absolute"   style={{ width: "360px", height: "360px", top: "55%", left: "48%", transform: "translate(-50%,-50%)" }} />
+            <div className="orb orb-indigo absolute" style={{ width: "800px", height: "800px", top: "-300px", right: "-200px" }} />
+            <div className="orb orb-violet absolute" style={{ width: "500px", height: "500px", bottom: "-200px", left: "-100px" }} />
+            <div className="orb orb-cyan absolute"   style={{ width: "340px", height: "340px", top: "60%", left: "40%", transform: "translate(-50%,-50%)" }} />
             <div className="noise-overlay absolute inset-0" />
           </div>
 
           <div className="relative z-10 mx-auto w-full max-w-7xl px-6 py-20 lg:py-32">
             <div className="grid items-center gap-16 lg:grid-cols-2">
-              {/* Left: copy */}
               <div>
-                <div className="animate-fade-up mb-8 inline-flex items-center gap-2.5 rounded-full bg-white/[0.06] px-4 py-2 ring-1 ring-white/[0.09]">
+                <div className="animate-fade-up mb-8 inline-flex items-center gap-2.5 rounded-full bg-white/[0.05] px-4 py-2 ring-1 ring-white/[0.08]">
                   <span className="relative flex h-2 w-2">
                     <span className="absolute h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
                     <span className="relative h-2 w-2 rounded-full bg-emerald-400" />
@@ -162,7 +149,7 @@ export default function LandingPage() {
                 </h1>
 
                 <p className="animate-fade-up delay-200 mt-7 max-w-[500px] text-xl leading-8 text-zinc-400">
-                  {APP_NAME} is a dark-mode study OS with proof-backed accountability, an intelligent dashboard, and AI tools that work at every price point.
+                  {APP_NAME} is a study OS with proof-backed accountability, an intelligent dashboard, and AI tools that work at every price point.
                 </p>
 
                 <div className="animate-fade-up delay-300 mt-10 flex flex-wrap gap-4">
@@ -179,7 +166,7 @@ export default function LandingPage() {
                   {["Free forever core", "Proof-backed tasks", "AI study tools"].map((item) => (
                     <div
                       key={item}
-                      className="flex items-center gap-2 rounded-full bg-white/[0.04] px-3.5 py-1.5 text-sm text-zinc-400 ring-1 ring-white/[0.07]"
+                      className="flex items-center gap-2 rounded-full bg-white/[0.035] px-3.5 py-1.5 text-sm text-zinc-400"
                     >
                       <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
                       {item}
@@ -188,7 +175,6 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              {/* Right: mock dashboard */}
               <div className="animate-fade-up delay-200 hidden lg:block">
                 <HeroMockDashboard />
               </div>
@@ -197,8 +183,9 @@ export default function LandingPage() {
         </section>
 
         {/* ── Metrics strip ── */}
-        <section className="border-y border-white/[0.05] bg-white/[0.015]">
-          <div className="mx-auto max-w-7xl px-6 py-12">
+        <div className="section-divider" />
+        <section className="bg-white/[0.012]">
+          <div className="mx-auto max-w-7xl px-6 py-14">
             <div className="grid gap-8 sm:grid-cols-3">
               {MARKETING_METRICS.map((metric) => (
                 <div key={metric.label} className="text-center">
@@ -209,11 +196,12 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+        <div className="section-divider" />
 
         {/* ── Features ── */}
         <section id="features" className="mx-auto max-w-7xl px-6 py-28">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-sky-400/70">Built for serious students</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-indigo-400/70">Built for serious students</p>
             <h2 className="mt-4 text-4xl font-bold tracking-tight text-white md:text-5xl xl:text-6xl">
               Your tasks, focus windows,
               <br className="hidden md:block" /> and AI tools. One system.
@@ -223,29 +211,16 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="mt-16 grid gap-4 md:grid-cols-3">
+          <div className="mt-16 grid gap-8 md:grid-cols-3">
             {FEATURE_PILLARS.map((pillar, i) => {
               const Icon = PILLAR_ICONS[i] || BarChart3;
               return (
-                <div
-                  key={pillar.title}
-                  className="card-float group relative overflow-hidden rounded-3xl bg-white/[0.04] p-8 shadow-[0_2px_4px_rgba(0,0,0,0.35),0_12px_40px_rgba(0,0,0,0.22)]"
-                >
-                  {/* Top edge highlight */}
-                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
-
-                  <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500/20 to-violet-500/10 ring-1 ring-white/[0.08]">
-                    <Icon className="h-6 w-6 text-sky-400" />
+                <div key={pillar.title} className="group relative">
+                  <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500/20 to-violet-500/10">
+                    <Icon className="h-6 w-6 text-indigo-400" />
                   </div>
-
                   <h3 className="text-2xl font-bold text-white">{pillar.title}</h3>
                   <p className="mt-4 text-base leading-7 text-zinc-400">{pillar.copy}</p>
-
-                  {/* Hover glow */}
-                  <div
-                    className="pointer-events-none absolute inset-0 rounded-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-                    style={{ background: "radial-gradient(circle at top left, rgba(56,189,248,0.07) 0%, transparent 60%)" }}
-                  />
                 </div>
               );
             })}
@@ -254,15 +229,14 @@ export default function LandingPage() {
 
         {/* ── Premium AI ── */}
         <section id="premium" className="relative overflow-hidden py-32">
-          {/* Aurora */}
           <div className="pointer-events-none absolute inset-0">
-            <div className="orb orb-violet absolute" style={{ width: "600px", height: "600px", top: "-200px", right: "-200px", opacity: 0.5 }} />
-            <div className="orb orb-rose absolute"   style={{ width: "420px", height: "420px", bottom: "-150px", left: "-80px", opacity: 0.35 }} />
+            <div className="orb orb-violet absolute" style={{ width: "600px", height: "600px", top: "-200px", right: "-200px", opacity: 0.45 }} />
+            <div className="orb orb-indigo absolute" style={{ width: "420px", height: "420px", bottom: "-150px", left: "-80px", opacity: 0.35 }} />
             <div className="noise-overlay absolute inset-0" />
           </div>
 
           <div className="relative z-10 mx-auto max-w-7xl px-6">
-            <div className="grid items-start gap-16 lg:grid-cols-2">
+            <div className="grid items-center gap-16 lg:grid-cols-2">
               <div>
                 <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-violet-500/10 px-3.5 py-1.5 ring-1 ring-violet-400/20">
                   <Sparkles className="h-3.5 w-3.5 text-violet-400" />
@@ -276,7 +250,7 @@ export default function LandingPage() {
                 </h2>
 
                 <p className="mt-6 text-xl leading-8 text-zinc-400">
-                  Premium is intentionally priced at $5/month for everyday use. Power at $20/month gives serious users the best model routing and bigger limits — without making the whole product expensive for everyone.
+                  Premium is intentionally priced at $5/month for everyday use. Power at $20/month gives serious users the best model routing and bigger limits.
                 </p>
 
                 <div className="mt-8 flex flex-wrap gap-3">
@@ -290,13 +264,10 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2">
                 {AI_FEATURES.map((feature) => (
-                  <div
-                    key={feature.label}
-                    className="card-float flex items-start gap-3.5 rounded-2xl bg-white/[0.04] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.3)]"
-                  >
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-500/15 ring-1 ring-violet-400/20">
+                  <div key={feature.label} className="flex items-start gap-3.5 rounded-2xl bg-white/[0.035] p-5">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-500/15">
                       <feature.icon className="h-4 w-4 text-violet-300" />
                     </div>
                     <div>
@@ -313,13 +284,13 @@ export default function LandingPage() {
         {/* ── Pricing ── */}
         <section className="mx-auto max-w-7xl px-6 py-28">
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-sky-400/70">Simple pricing</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-indigo-400/70">Simple pricing</p>
             <h2 className="mt-4 text-4xl font-bold tracking-tight text-white md:text-5xl">
               A free core, an affordable AI tier,
               <br className="hidden md:block" /> and one power tier.
             </h2>
             <p className="mx-auto mt-5 max-w-2xl text-lg text-zinc-400">
-              Start free for task and dashboard management, unlock everyday AI with Premium, and reserve Power for users who need the strongest model and higher limits.
+              Start free for task and dashboard management. Unlock everyday AI with Premium. Reserve Power for users who need the strongest model.
             </p>
           </div>
 
@@ -333,17 +304,14 @@ export default function LandingPage() {
                   key={plan.name}
                   className={cn(
                     "relative flex flex-col rounded-3xl p-8 transition-all duration-300",
-                    accent.card,
-                    "shadow-[0_2px_4px_rgba(0,0,0,0.35),0_12px_40px_rgba(0,0,0,0.22)]",
                     accent.highlight
-                      ? "gradient-ring scale-[1.025] shadow-[0_4px_60px_rgba(56,189,248,0.14),0_2px_4px_rgba(0,0,0,0.4)]"
-                      : "",
-                    "hover:shadow-[0_4px_60px_rgba(0,0,0,0.45)]",
+                      ? "gradient-ring bg-white/[0.04] scale-[1.025]"
+                      : "bg-white/[0.025]",
                   )}
                 >
                   {accent.highlight && (
                     <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                      <span className="rounded-full bg-sky-500 px-4 py-1 text-xs font-bold text-slate-950 shadow-[0_0_24px_rgba(56,189,248,0.6)]">
+                      <span className="rounded-full bg-indigo-500 px-4 py-1 text-xs font-bold text-white shadow-[0_0_24px_rgba(99,102,241,0.5)]">
                         Most popular
                       </span>
                     </div>
@@ -352,7 +320,6 @@ export default function LandingPage() {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <h3 className="text-2xl font-bold text-white">{plan.name}</h3>
-                      <Badge className={cn("mt-2", accent.badge)}>{plan.badge}</Badge>
                     </div>
                     <div className="text-right">
                       <p className="text-4xl font-bold text-white">{plan.priceLabel}</p>
@@ -382,17 +349,15 @@ export default function LandingPage() {
 
         {/* ── Bottom CTA ── */}
         <section className="mx-auto max-w-7xl px-6 pb-28">
-          <div className="relative overflow-hidden rounded-3xl bg-white/[0.03] p-16 text-center shadow-[0_2px_4px_rgba(0,0,0,0.35),0_16px_60px_rgba(0,0,0,0.3)]">
-            {/* Aurora inside CTA */}
+          <div className="relative overflow-hidden rounded-3xl py-20 text-center">
             <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl">
-              <div className="orb orb-violet absolute" style={{ width: "450px", height: "450px", top: "-180px", left: "-120px", opacity: 0.45 }} />
-              <div className="orb orb-sky absolute"    style={{ width: "380px", height: "380px", bottom: "-160px", right: "-100px", opacity: 0.35 }} />
+              <div className="orb orb-indigo absolute" style={{ width: "500px", height: "500px", top: "-200px", left: "-100px", opacity: 0.4 }} />
+              <div className="orb orb-violet absolute" style={{ width: "400px", height: "400px", bottom: "-160px", right: "-80px", opacity: 0.35 }} />
               <div className="noise-overlay absolute inset-0" />
             </div>
-            {/* Top edge highlight */}
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.14] to-transparent" />
+            <div className="pointer-events-none absolute inset-0 rounded-3xl bg-white/[0.02]" />
 
-            <div className="relative z-10">
+            <div className="relative z-10 px-6">
               <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl xl:text-6xl">
                 Ready to build a real study system?
               </h2>
@@ -404,7 +369,7 @@ export default function LandingPage() {
                   Create free account
                   <ArrowRight className="h-4 w-4" />
                 </LinkButton>
-                <LinkButton to="/pricing" variant="ghost" size="lg">
+                <LinkButton to="/pricing" variant="secondary" size="lg">
                   View all plans
                 </LinkButton>
               </div>

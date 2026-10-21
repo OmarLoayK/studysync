@@ -1,7 +1,7 @@
 import { createContext, startTransition, useContext, useEffect, useRef, useState } from "react";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { deleteUser, onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../firebase/config";
-import { ensureUserProfile, getUserProfile, updateUserProfile } from "../services/firestore";
+import { deleteUserData, ensureUserProfile, getUserProfile, updateUserProfile } from "../services/firestore";
 
 const AuthContext = createContext(null);
 
@@ -74,6 +74,13 @@ export function AuthProvider({ children }) {
     await signOut(auth);
   }
 
+  async function deleteAccount() {
+    const currentUser = auth.currentUser;
+    if (!currentUser) throw new Error("Not signed in.");
+    await deleteUserData(currentUser.uid);
+    await deleteUser(currentUser);
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -83,6 +90,7 @@ export function AuthProvider({ children }) {
         refreshProfile,
         saveProfile,
         signOutUser,
+        deleteAccount,
       }}
     >
       {children}

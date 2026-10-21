@@ -93,6 +93,12 @@ export async function updateUserProfile(uid, patch) {
   );
 }
 
+export async function deleteUserData(uid) {
+  const tasks = await getDocs(tasksCollection(uid));
+  await Promise.all(tasks.docs.map((entry) => deleteDoc(entry.ref)));
+  await deleteDoc(userRef(uid));
+}
+
 export async function listTasks(uid) {
   const snapshot = await getDocs(tasksCollection(uid));
   return snapshot.docs.map((entry) => ({

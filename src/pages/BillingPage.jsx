@@ -4,23 +4,19 @@ import { useAuth } from "../contexts/AuthContext";
 import { createCheckoutSession, createPortalSession, syncBillingStatus } from "../services/api";
 import { formatDateTime, isPremiumPlan } from "../lib/utils";
 import { PLAN_DETAILS, PLAN_ORDER } from "../lib/constants";
-import { AlertBox, Badge, Button, Card, ProgressBar, SectionHeading } from "../components/ui";
+import { AlertBox, Badge, Button, ProgressBar, SectionHeading } from "../components/ui";
 
 const PLAN_ACCENTS = {
   free: {
-    card: "border-white/8 bg-white/[0.03]",
-    badge: "bg-white/8 text-slate-400 ring-white/10",
     cta: "secondary",
   },
   premium: {
-    card: "border-sky-400/20 bg-gradient-to-br from-sky-500/6 via-white/[0.02] to-teal-400/4",
-    badge: "bg-sky-500/15 text-sky-200 ring-sky-400/25",
     cta: "primary",
+    highlight: true,
   },
   power: {
-    card: "border-amber-400/15 bg-gradient-to-br from-amber-500/6 via-white/[0.02] to-orange-400/4",
-    badge: "bg-amber-500/15 text-amber-200 ring-amber-400/25",
     cta: "secondary",
+    warm: true,
   },
 };
 
@@ -86,31 +82,31 @@ export default function BillingPage() {
   }
 
   const statusStyles = {
-    active: "bg-emerald-500/15 text-emerald-200 ring-emerald-400/25",
-    trialing: "bg-sky-500/15 text-sky-200 ring-sky-400/25",
-    inactive: "bg-white/8 text-slate-400 ring-white/10",
+    active:   "bg-emerald-500/15 text-emerald-200 ring-emerald-400/25",
+    trialing: "bg-indigo-500/15 text-indigo-200 ring-indigo-400/25",
+    inactive: "bg-white/[0.06] text-slate-400 ring-white/10",
     past_due: "bg-rose-500/15 text-rose-200 ring-rose-400/25",
     canceled: "bg-slate-700/30 text-slate-400 ring-white/10",
   };
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-8">
       <SectionHeading
         eyebrow="Billing"
         title="Subscription status and AI usage"
-        description="Stripe owns checkout and customer portal flows. Firestore stores the current plan state so the app can gate premium features immediately."
+        description="Stripe owns checkout and customer portal flows. Your plan gates premium features immediately."
       />
 
       {error && <AlertBox variant="error">{error}</AlertBox>}
 
-      {/* Current status cards */}
+      {/* Current status */}
       <div className="grid gap-5 xl:grid-cols-2">
         {/* Current plan */}
-        <Card className={hasPaidPlan ? "border-sky-400/20 bg-gradient-to-br from-sky-500/6 via-white/[0.02] to-teal-400/4" : ""}>
+        <div className={`rounded-2xl p-6 ${hasPaidPlan ? "bg-gradient-to-br from-indigo-500/6 via-white/[0.02] to-violet-400/4" : "bg-white/[0.025]"}`}>
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/8 bg-white/[0.04]">
-                <CreditCard className="h-5 w-5 text-sky-400" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/15">
+                <CreditCard className="h-5 w-5 text-indigo-400" />
               </div>
               <div>
                 <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">Current plan</p>
@@ -122,19 +118,13 @@ export default function BillingPage() {
             </Badge>
           </div>
 
-          <div className="mt-5 space-y-2 text-sm text-slate-400">
-            <p>Free keeps the task dashboard, analytics, and account controls strong.</p>
-            <p>Premium is the affordable AI layer for most students at $5/month.</p>
-            <p>Power is the high-usage tier with the best model routing and bigger limits.</p>
-          </div>
-
           <div className="mt-5 space-y-1.5 text-sm text-slate-500">
             <p>
               Billing cycle end:{" "}
               <span className="text-slate-300">
                 {profile?.plan?.currentPeriodEnd
                   ? formatDateTime(profile.plan.currentPeriodEnd)
-                  : "Appears after Stripe syncs the billing period."}
+                  : "Appears after Stripe syncs."}
               </span>
             </p>
             {profile?.plan?.cancelAtPeriodEnd && (
@@ -165,13 +155,13 @@ export default function BillingPage() {
               </>
             )}
           </div>
-        </Card>
+        </div>
 
         {/* AI usage */}
-        <Card>
+        <div className="rounded-2xl bg-white/[0.025] p-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/8 bg-white/[0.04]">
-              <Zap className="h-5 w-5 text-sky-400" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/15">
+              <Zap className="h-5 w-5 text-indigo-400" />
             </div>
             <div>
               <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">AI usage</p>
@@ -197,29 +187,35 @@ export default function BillingPage() {
           </div>
 
           {hasPaidPlan && (
-            <div className="mt-5 rounded-xl border border-white/7 bg-white/[0.02] p-3.5 text-xs text-slate-500">
+            <p className="mt-4 text-xs text-slate-500">
               Credits are shared across all 5 AI tools. Use them on the tools that unblock you most.
-            </div>
+            </p>
           )}
-        </Card>
+        </div>
       </div>
 
-      {/* Plan comparison cards */}
+      {/* Plan comparison */}
       <div>
-        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">All plans</p>
-        <div className="grid gap-5 xl:grid-cols-3">
+        <p className="mb-5 text-xs font-semibold uppercase tracking-[0.22em] text-slate-600">All plans</p>
+        <div className="grid gap-4 xl:grid-cols-3">
           {planCards.map((plan) => {
             const accent = PLAN_ACCENTS[plan.key];
             const isCurrent = currentTier === plan.key && (plan.key === "free" || hasPaidPlan);
             const isLockedUpgrade = hasPaidPlan && plan.key !== currentTier;
 
             return (
-              <div key={plan.key} className={`flex flex-col rounded-2xl border p-6 ${accent.card}`}>
+              <div
+                key={plan.key}
+                className={`flex flex-col rounded-2xl p-6 ${
+                  accent.highlight ? "bg-gradient-to-br from-indigo-500/6 via-white/[0.02] to-violet-400/4" :
+                  accent.warm ? "bg-gradient-to-br from-amber-500/6 via-white/[0.02] to-orange-400/4" :
+                  "bg-white/[0.025]"
+                }`}
+              >
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <h3 className="text-xl font-bold text-white">{plan.name}</h3>
                     <div className="mt-2 flex flex-wrap gap-2">
-                      <Badge className={accent.badge}>{plan.badge}</Badge>
                       {isCurrent && (
                         <Badge className="bg-emerald-500/15 text-emerald-200 ring-emerald-400/25">
                           <CheckCircle2 className="h-3 w-3" />
@@ -233,14 +229,6 @@ export default function BillingPage() {
                     <p className="text-xs text-slate-500">{plan.cadence}</p>
                   </div>
                 </div>
-
-                <p className="mt-4 text-sm text-slate-400">
-                  {plan.key === "power"
-                    ? "For heavy AI users who want the strongest study assist."
-                    : plan.key === "premium"
-                      ? "For most students who want paid AI without overpaying."
-                      : "For clean task management and planning basics."}
-                </p>
 
                 <ul className="mt-5 flex-1 space-y-2.5">
                   {plan.features.map((feature) => (

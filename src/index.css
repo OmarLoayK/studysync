@@ -3,20 +3,28 @@
 
 :root {
   color-scheme: dark;
-  --bg: #111113;
-  --bg-subtle: #18181b;
-  --surface-1: rgba(255, 255, 255, 0.04);
-  --surface-2: rgba(255, 255, 255, 0.025);
-  --surface-3: rgba(255, 255, 255, 0.065);
-  --border: rgba(255, 255, 255, 0.06);
-  --border-strong: rgba(255, 255, 255, 0.11);
-  --text: #f4f4f5;
-  --text-muted: #71717a;
-  --brand: #38bdf8;
-  --violet: #8b5cf6;
-  --brand-3: #14b8a6;
-  --brand-dim: rgba(56, 189, 248, 0.1);
-  --violet-dim: rgba(139, 92, 246, 0.12);
+  --bg: #08081a;
+  --bg-subtle: #0c0c22;
+  --bg-void: #050510;
+  --surface-1: rgba(255, 255, 255, 0.03);
+  --surface-2: rgba(255, 255, 255, 0.018);
+  --surface-3: rgba(255, 255, 255, 0.055);
+  --border: rgba(255, 255, 255, 0.055);
+  --border-strong: rgba(255, 255, 255, 0.1);
+  --text: #eef2ff;
+  --text-sub: #94a3b8;
+  --text-muted: #64748b;
+  --brand: #818cf8;
+  --brand-vivid: #6366f1;
+  --brand-glow: rgba(99, 102, 241, 0.2);
+  --violet: #a78bfa;
+  --cyan: #22d3ee;
+  --brand-dim: rgba(129, 140, 248, 0.1);
+  --violet-dim: rgba(167, 139, 250, 0.12);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
 }
 
 * {
@@ -25,17 +33,19 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background: #111113;
+  background: var(--bg);
   color: var(--text);
   font-family: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "cv11", "ss01";
+  overscroll-behavior: none;
 }
 
 #root {
@@ -56,9 +66,18 @@ button, input, textarea, select {
   font: inherit;
 }
 
+select {
+  color-scheme: dark;
+}
+
+select option {
+  background: #0f0f28;
+  color: #eef2ff;
+}
+
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -66,10 +85,14 @@ button, input, textarea, select {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 99px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.15);
 }
+
+/* ── Safe area utilities ── */
+.pb-safe { padding-bottom: calc(var(--safe-bottom) + 80px); }
+.pb-safe-lg { padding-bottom: calc(var(--safe-bottom)); }
