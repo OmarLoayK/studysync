@@ -10,6 +10,10 @@ import {
   Calendar,
   BookOpen,
   FlameIcon,
+  Clock,
+  Trophy,
+  Target,
+  BookMarked,
 } from "lucide-react";
 import {
   FEATURE_PILLARS,
@@ -84,23 +88,47 @@ export default function LandingPage() {
             <div className="noise-overlay absolute inset-0" />
           </div>
 
-          {/* Floating product chips — no backdrop-blur (saves compositor work) */}
-          <div className="pointer-events-none absolute right-[4%] top-[22%] hidden xl:block animate-float" style={{ animationDelay: "0s" }}>
-            <div className="flex items-center gap-2.5 rounded-2xl bg-white/[0.07] px-4 py-2.5 ring-1 ring-white/[0.1]">
-              <div className="h-2 w-2 rounded-full bg-amber-400" />
-              <span className="text-sm font-medium text-white">Physics lab — due today</span>
+          {/* Floating product chips — bigger, more variety, no backdrop-blur */}
+          <div className="pointer-events-none absolute right-[6%] top-[15%] hidden xl:block animate-float" style={{ animationDelay: "0s" }}>
+            <div className="flex items-center gap-3 rounded-2xl bg-white/[0.07] px-5 py-3.5 ring-1 ring-white/[0.1]">
+              <div className="h-2.5 w-2.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.7)]" />
+              <span className="text-base font-semibold text-white">Physics lab — due today</span>
             </div>
           </div>
-          <div className="pointer-events-none absolute right-[7%] top-[43%] hidden xl:block animate-float" style={{ animationDelay: "1.4s" }}>
-            <div className="rounded-2xl bg-indigo-500/10 px-4 py-3 ring-1 ring-indigo-400/20 text-center">
-              <p className="text-[10px] font-semibold text-indigo-400">This week</p>
-              <p className="mt-0.5 text-2xl font-black text-white">76%</p>
+          <div className="pointer-events-none absolute right-[14%] top-[26%] hidden xl:block animate-float" style={{ animationDelay: "0.7s" }}>
+            <div className="flex items-center gap-3 rounded-2xl bg-indigo-500/10 px-5 py-3.5 ring-1 ring-indigo-400/20">
+              <Clock className="h-4.5 w-4.5 text-indigo-400" style={{ width: "18px", height: "18px" }} />
+              <span className="text-base font-semibold text-indigo-200">Focus session: 45 min</span>
             </div>
           </div>
-          <div className="pointer-events-none absolute right-[4%] top-[62%] hidden xl:block animate-float" style={{ animationDelay: "2.8s" }}>
-            <div className="flex items-center gap-2 rounded-2xl bg-amber-500/10 px-4 py-2.5 ring-1 ring-amber-400/15">
-              <FlameIcon className="h-4 w-4 text-amber-400" />
-              <span className="text-sm font-bold text-amber-200">9 day streak</span>
+          <div className="pointer-events-none absolute right-[5%] top-[37%] hidden xl:block animate-float" style={{ animationDelay: "1.1s" }}>
+            <div className="flex items-center gap-3 rounded-2xl bg-rose-500/10 px-5 py-3.5 ring-1 ring-rose-400/20">
+              <div className="h-2.5 w-2.5 rounded-full bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.6)]" />
+              <span className="text-base font-semibold text-rose-200">Math exam — 3 days left</span>
+            </div>
+          </div>
+          <div className="pointer-events-none absolute right-[11%] top-[48%] hidden xl:block animate-float" style={{ animationDelay: "1.4s" }}>
+            <div className="rounded-2xl bg-indigo-500/10 px-5 py-3.5 ring-1 ring-indigo-400/20 text-center min-w-[100px]">
+              <p className="text-xs font-semibold text-indigo-400 tracking-wide">This week</p>
+              <p className="mt-1 text-3xl font-black text-white leading-none">76%</p>
+            </div>
+          </div>
+          <div className="pointer-events-none absolute right-[5%] top-[59%] hidden xl:block animate-float" style={{ animationDelay: "2.1s" }}>
+            <div className="flex items-center gap-3 rounded-2xl bg-amber-500/10 px-5 py-3.5 ring-1 ring-amber-400/20">
+              <FlameIcon className="text-amber-400" style={{ width: "20px", height: "20px" }} />
+              <span className="text-base font-bold text-amber-200">9 day streak</span>
+            </div>
+          </div>
+          <div className="pointer-events-none absolute right-[13%] top-[70%] hidden xl:block animate-float" style={{ animationDelay: "2.8s" }}>
+            <div className="flex items-center gap-3 rounded-2xl bg-violet-500/10 px-5 py-3.5 ring-1 ring-violet-400/20">
+              <Sparkles className="text-violet-400" style={{ width: "18px", height: "18px" }} />
+              <span className="text-base font-semibold text-violet-200">AI quiz: 9/10 ✓</span>
+            </div>
+          </div>
+          <div className="pointer-events-none absolute right-[5%] top-[80%] hidden xl:block animate-float" style={{ animationDelay: "1.8s" }}>
+            <div className="flex items-center gap-3 rounded-2xl bg-emerald-500/10 px-5 py-3.5 ring-1 ring-emerald-400/20">
+              <CheckCircle2 className="text-emerald-400" style={{ width: "18px", height: "18px" }} />
+              <span className="text-base font-semibold text-emerald-200">Essay submitted ✓</span>
             </div>
           </div>
 
@@ -129,7 +157,7 @@ export default function LandingPage() {
                 className="font-black leading-[0.92] tracking-[-0.04em] text-white"
                 style={{ fontSize: "clamp(3.75rem, 10.5vw, 9rem)" }}
               >
-                Study<br />smarter.
+                Stop<br />falling.
               </motion.h1>
 
               <motion.div
@@ -137,7 +165,7 @@ export default function LandingPage() {
                 className="font-black leading-[0.92] tracking-[-0.04em]"
                 style={{ fontSize: "clamp(3.75rem, 10.5vw, 9rem)" }}
               >
-                <span className="shimmer-text">Actually<br />trust it.</span>
+                <span className="shimmer-text">Start<br />winning.</span>
               </motion.div>
 
               <motion.p variants={heroItem} className="mt-10 max-w-lg text-xl leading-8 text-zinc-400">

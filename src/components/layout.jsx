@@ -11,6 +11,7 @@ import {
   LogOut,
   ChevronRight,
   Zap,
+  Home,
 } from "lucide-react";
 import { APP_NAME, APP_NAV_ITEMS, PLAN_DETAILS } from "../lib/constants";
 import { cn, getInitials, isPremiumPlan } from "../lib/utils";
@@ -395,6 +396,13 @@ export function AppShell() {
             </div>
 
             <div className="flex items-center gap-2.5">
+              <Link
+                to="/"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-500 transition hover:bg-white/[0.05] hover:text-zinc-200"
+                title="Back to homepage"
+              >
+                <Home className="h-4 w-4" />
+              </Link>
               <Badge className={cn("text-xs", tierStyles[tier])}>
                 {tier === "free" ? "Free" : plan.name}
               </Badge>
