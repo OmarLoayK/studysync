@@ -220,7 +220,7 @@ function MobileBottomNav({ tierStyles, tier, plan, hasPaidPlan, handleSignOut })
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
       <div className="flex items-center justify-around px-2 py-2">
-        {APP_NAV_ITEMS.map((item) => {
+        {APP_NAV_ITEMS.filter((item) => hasPaidPlan || item.to !== "/app/ai").map((item) => {
           const Icon = NAV_ICONS[item.icon] || LayoutDashboard;
           return (
             <NavLink
@@ -291,7 +291,7 @@ export function AppShell() {
 
       <nav className="mt-2 px-3">
         <div className="space-y-0.5">
-          {APP_NAV_ITEMS.map((item) => (
+          {APP_NAV_ITEMS.filter((item) => hasPaidPlan || item.to !== "/app/ai").map((item) => (
             <SidebarNavItem
               key={item.to}
               item={item}

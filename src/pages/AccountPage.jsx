@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { updateProfile as updateFirebaseProfile } from "firebase/auth";
-import { User, Mail, Calendar, Flame, Trophy, LogOut, CreditCard, Trash2 } from "lucide-react";
+import { User, Mail, Calendar, Flame, Trophy, LogOut, CreditCard, Trash2, AlertTriangle } from "lucide-react";
 import { auth } from "../firebase/config";
 import { useAuth } from "../contexts/AuthContext";
 import { formatDateTime, isPremiumPlan } from "../lib/utils";
-import { AlertBox, Badge, Button, Card, LinkButton, SectionHeading, TextInput } from "../components/ui";
+import { AlertBox, Badge, Button, LinkButton, SectionHeading, TextInput } from "../components/ui";
 
 function StatRow({ icon: Icon, label, value }) {
   return (
@@ -24,9 +24,13 @@ export default function AccountPage() {
   const [displayName, setDisplayName] = useState(profile?.displayName || "");
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
-  const [deleteConfirm, setDeleteConfirm] = useState("");
+
+  // Delete flow — requires typing email + 3-second armed countdown
+  const [deleteEmail, setDeleteEmail] = useState("");
+  const [deleteCountdown, setDeleteCountdown] = useState(null); // null | 3 | 2 | 1 | 0
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
+  const countdownRef = useRef(null);
 
   const tier = profile?.plan?.tier || "free";
   const tierName = hasPaidPlan
@@ -34,10 +38,34 @@ export default function AccountPage() {
     : "Free";
 
   const tierBadgeStyle = {
-    power: "bg-amber-500/15 text-amber-200 ring-amber-400/25",
+    power:   "bg-amber-500/15 text-amber-200 ring-amber-400/25",
     premium: "bg-indigo-500/15 text-indigo-200 ring-indigo-400/25",
-    free: "bg-white/[0.06] text-slate-400 ring-white/10",
+    free:    "bg-white/[0.06] text-slate-400 ring-white/10",
   }[tier] || "bg-white/[0.06] text-slate-400 ring-white/10";
+
+  const emailMatches = deleteEmail.trim().toLowerCase() === (profile?.email || "").toLowerCase();
+
+  // Start countdown when email matches; cancel if it no longer matches
+  useEffect(() => {
+    if (emailMatches && deleteCountdown === null) {
+      setDeleteCountdown(3);
+    }
+    if (!emailMatches && deleteCountdown !== null) {
+      clearInterval(countdownRef.current);
+      setDeleteCountdown(null);
+    }
+  }, [emailMatches]);
+
+  useEffect(() => {
+    if (deleteCountdown === null || deleteCountdown === 0) return;
+    countdownRef.current = setInterval(() => {
+      setDeleteCountdown((c) => {
+        if (c <= 1) { clearInterval(countdownRef.current); return 0; }
+        return c - 1;
+      });
+    }, 1000);
+    return () => clearInterval(countdownRef.current);
+  }, [deleteCountdown === null ? null : deleteCountdown > 0 ? "running" : "done"]);
 
   async function handleSave() {
     setSaving(true);
@@ -59,10 +87,7 @@ export default function AccountPage() {
   }
 
   async function handleDeleteAccount() {
-    if (deleteConfirm !== "DELETE") {
-      setDeleteError('Type DELETE (in capitals) to confirm.');
-      return;
-    }
+    if (!emailMatches || deleteCountdown !== 0) return;
     setDeleting(true);
     setDeleteError("");
     try {
@@ -108,11 +133,11 @@ export default function AccountPage() {
           </div>
 
           <div className="bg-white/[0.02] px-6 py-2">
-            <StatRow icon={Mail}     label="Email"          value={profile?.email || "—"} />
-            <StatRow icon={CreditCard} label="Plan"          value={tierName} />
-            <StatRow icon={Calendar} label="Joined"         value={formatDateTime(profile?.createdAt)} />
-            <StatRow icon={Flame}    label="Current streak" value={`${profile?.stats?.currentStreak ?? 0} days`} />
-            <StatRow icon={Trophy}   label="Perfect quiz runs" value={profile?.stats?.perfectQuizRuns ?? 0} />
+            <StatRow icon={Mail}       label="Email"             value={profile?.email || "—"} />
+            <StatRow icon={CreditCard} label="Plan"              value={tierName} />
+            <StatRow icon={Calendar}   label="Joined"            value={formatDateTime(profile?.createdAt)} />
+            <StatRow icon={Flame}      label="Current streak"    value={`${profile?.stats?.currentStreak ?? 0} days`} />
+            <StatRow icon={Trophy}     label="Perfect quiz runs" value={profile?.stats?.perfectQuizRuns ?? 0} />
           </div>
 
           <div className="rounded-b-2xl bg-white/[0.025] px-6 pt-4 pb-6">
@@ -142,7 +167,7 @@ export default function AccountPage() {
                 label="Display name"
                 placeholder="Your name"
                 value={displayName}
-                onChange={(event) => setDisplayName(event.target.value)}
+                onChange={(e) => setDisplayName(e.target.value)}
               />
               {message && <AlertBox variant="success">{message}</AlertBox>}
               <Button onClick={handleSave} disabled={saving} className="w-full justify-center">
@@ -165,33 +190,69 @@ export default function AccountPage() {
             </div>
           </div>
 
-          {/* Delete account */}
+          {/* Delete account — harder confirmation */}
           <div className="rounded-2xl bg-rose-500/[0.04] p-6 ring-1 ring-inset ring-rose-400/15">
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 mb-4">
               <Trash2 className="h-4 w-4 text-rose-400" />
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-rose-400/70">Danger zone</p>
             </div>
+
             <h3 className="text-base font-bold text-white">Delete account</h3>
-            <p className="mt-1.5 text-sm text-slate-400">
-              Permanently deletes your account, all tasks, and data. This cannot be undone.
-              {hasPaidPlan && " Cancel your Stripe subscription first via the billing portal to avoid future charges."}
-            </p>
-            <div className="mt-4 space-y-3">
+
+            {/* Consequences list */}
+            <div className="mt-3 space-y-1.5">
+              {[
+                "All your tasks and proof submissions will be deleted",
+                "Your account data and profile will be permanently removed",
+                "This action cannot be undone",
+                hasPaidPlan ? "Cancel your Stripe subscription first to avoid future charges" : null,
+              ]
+                .filter(Boolean)
+                .map((line) => (
+                  <div key={line} className="flex items-start gap-2">
+                    <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-rose-400/60" />
+                    <p className="text-xs text-slate-500">{line}</p>
+                  </div>
+                ))}
+            </div>
+
+            <div className="mt-5 space-y-3">
               <TextInput
-                label='Type DELETE to confirm'
-                placeholder="DELETE"
-                value={deleteConfirm}
-                onChange={(e) => { setDeleteConfirm(e.target.value); setDeleteError(""); }}
+                label={`Type your email address to confirm: ${profile?.email || ""}`}
+                placeholder={profile?.email || "your@email.com"}
+                value={deleteEmail}
+                onChange={(e) => {
+                  setDeleteEmail(e.target.value);
+                  setDeleteError("");
+                }}
               />
+
+              {/* Countdown status */}
+              {emailMatches && deleteCountdown !== null && deleteCountdown > 0 && (
+                <p className="text-xs text-rose-400/70 text-center">
+                  Delete button arms in {deleteCountdown}s…
+                </p>
+              )}
+              {emailMatches && deleteCountdown === 0 && (
+                <p className="text-xs text-rose-300/80 text-center font-medium">
+                  Button is now armed. This cannot be undone.
+                </p>
+              )}
+
               {deleteError && <AlertBox variant="error">{deleteError}</AlertBox>}
+
               <Button
                 variant="danger"
                 onClick={handleDeleteAccount}
-                disabled={deleting}
+                disabled={deleting || !emailMatches || deleteCountdown !== 0}
                 className="w-full justify-center"
               >
                 <Trash2 className="h-4 w-4" />
-                {deleting ? "Deleting account..." : "Delete my account permanently"}
+                {deleting
+                  ? "Deleting account…"
+                  : deleteCountdown !== null && deleteCountdown > 0
+                    ? `Delete account (${deleteCountdown})`
+                    : "Delete my account permanently"}
               </Button>
             </div>
           </div>

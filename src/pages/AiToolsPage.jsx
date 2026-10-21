@@ -310,6 +310,53 @@ export default function AiToolsPage() {
 
   const activeTool = useMemo(() => AI_TOOLS.find((tool) => tool.key === selectedTool), [selectedTool]);
   const isPremium = isPremiumPlan(profile);
+
+  if (!isPremium) {
+    return (
+      <div className="flex min-h-[70vh] flex-col items-center justify-center px-6 text-center">
+        <div className="relative">
+          <div
+            className="absolute inset-0 -z-10 rounded-full opacity-30"
+            style={{
+              background: "radial-gradient(circle, rgba(139,92,246,0.6) 0%, transparent 70%)",
+              filter: "blur(40px)",
+              transform: "scale(2)",
+            }}
+          />
+          <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-violet-500/20 to-indigo-500/10 ring-1 ring-violet-400/20">
+            <Sparkles className="h-9 w-9 text-violet-300" />
+          </div>
+        </div>
+        <h1 className="mt-8 text-3xl font-black tracking-tight text-white md:text-4xl">
+          AI Tools are Premium only
+        </h1>
+        <p className="mx-auto mt-4 max-w-sm text-base leading-7 text-slate-400">
+          Unlock the Study Planner, Quiz Generator, Flashcard Builder, Topic Explainer, and Study Breakdown — all five tools — with a Premium or Power plan.
+        </p>
+        <div className="mt-2 flex flex-wrap justify-center gap-3 text-sm text-slate-500">
+          {["Study Planner", "Quiz Generator", "Flashcards", "Explainer", "Breakdown"].map((tool) => (
+            <span key={tool} className="flex items-center gap-1.5">
+              <Lock className="h-3 w-3 text-slate-600" />
+              {tool}
+            </span>
+          ))}
+        </div>
+        <div className="mt-10 flex flex-wrap justify-center gap-3">
+          <LinkButton to="/app/billing" variant="primary" size="lg">
+            Upgrade to Premium — $5/mo
+            <ArrowRight className="h-4 w-4" />
+          </LinkButton>
+          <LinkButton to="/app/billing" variant="secondary" size="lg">
+            Compare all plans
+          </LinkButton>
+        </div>
+        <p className="mt-6 text-xs text-slate-600">
+          Cancel anytime · Billed by Stripe · No long-term commitment
+        </p>
+      </div>
+    );
+  }
+
   const tierName = isPremium
     ? `${profile?.plan?.tier?.[0]?.toUpperCase() || "P"}${profile?.plan?.tier?.slice(1) || "remium"}`
     : "Free";
