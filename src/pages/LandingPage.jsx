@@ -157,7 +157,7 @@ export default function LandingPage() {
                 className="font-black leading-[0.92] tracking-[-0.04em] text-white"
                 style={{ fontSize: "clamp(3.75rem, 10.5vw, 9rem)" }}
               >
-                Stop<br />falling.
+                Show up.
               </motion.h1>
 
               <motion.div
@@ -165,7 +165,7 @@ export default function LandingPage() {
                 className="font-black leading-[0.92] tracking-[-0.04em]"
                 style={{ fontSize: "clamp(3.75rem, 10.5vw, 9rem)" }}
               >
-                <span className="shimmer-text">Start<br />winning.</span>
+                <span className="shimmer-text">And level up.</span>
               </motion.div>
 
               <motion.p variants={heroItem} className="mt-10 max-w-lg text-xl leading-8 text-zinc-400">
