@@ -58,7 +58,8 @@ async function requestOpenAi(body) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
     },
-    body: JSON.stringify(body),
+    // store: false — don't keep student content on OpenAI's side beyond the request.
+    body: JSON.stringify({ store: false, ...body }),
   });
 
   if (!response.ok) {

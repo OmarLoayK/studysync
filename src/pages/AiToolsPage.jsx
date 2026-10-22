@@ -91,13 +91,13 @@ function FlashcardsResult({ result }) {
           >
             {!isFlipped ? (
               <>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-400/70">Front</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-400">Front</p>
                 <h4 className="mt-2 text-sm font-bold text-white">{card.front}</h4>
                 <p className="mt-3 text-xs text-slate-600">Tap to reveal back →</p>
               </>
             ) : (
               <>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-400/70">Back</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-400">Back</p>
                 <p className="mt-2 text-sm text-slate-300">{card.back}</p>
                 <p className="mt-3 text-xs text-slate-600">← Tap to flip back</p>
               </>
@@ -138,7 +138,7 @@ function BreakdownResult({ result }) {
           <ul className="mt-3 space-y-1">
             {phase.tasks?.map((task) => (
               <li key={task} className="flex items-center gap-2 text-xs text-slate-500">
-                <ArrowRight className="h-3 w-3 text-indigo-400/60" />
+                <ArrowRight className="h-3 w-3 text-indigo-400" />
                 {task}
               </li>
             ))}
@@ -205,7 +205,7 @@ function InteractiveQuizResult({ result, onPerfectRun }) {
         <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-2xl ${perfectRun ? "bg-amber-500/15" : "bg-indigo-500/10"}`}>
           {perfectRun ? <Trophy className="h-7 w-7 text-amber-300" /> : <CheckCircle2 className="h-7 w-7 text-indigo-300" />}
         </div>
-        <p className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-indigo-400/70">Quiz complete</p>
+        <p className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-indigo-400">Quiz complete</p>
         <h3 className="mt-2 text-2xl font-bold text-white">{result.title}</h3>
         <p className="mt-2 text-slate-400">{result.summary}</p>
         <div className="mt-5 flex justify-center gap-2">
@@ -492,7 +492,7 @@ export default function AiToolsPage() {
           <div className="rounded-2xl bg-white/[0.025] p-6">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400/70">Generator</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400">Generator</p>
                 <h2 className="mt-1.5 text-2xl font-bold text-white">{activeTool.label}</h2>
                 <p className="mt-1 text-sm text-slate-400">{activeTool.description}</p>
               </div>
@@ -507,7 +507,7 @@ export default function AiToolsPage() {
 
             {!isPremium ? (
               <div className="mt-6 rounded-xl bg-rose-500/5 p-5 text-center">
-                <Lock className="mx-auto h-8 w-8 text-rose-400/50" />
+                <Lock className="mx-auto h-8 w-8 text-rose-400" />
                 <h3 className="mt-3 text-base font-bold text-white">Upgrade to use AI tools</h3>
                 <p className="mt-2 text-sm text-slate-400">
                   AI tools are gated by active Stripe subscription, then rate-limited by monthly usage credits.
@@ -570,7 +570,7 @@ export default function AiToolsPage() {
             <div className="rounded-2xl bg-white/[0.025] p-6">
               <div className="mb-5 flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400/70">Result</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400">Result</p>
                   <h2 className="mt-1 text-xl font-bold text-white">{activeTool.label} output</h2>
                 </div>
                 <Badge className="bg-emerald-500/10 text-emerald-300 ring-emerald-400/20">

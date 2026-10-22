@@ -6,7 +6,7 @@ export default function SupportPage() {
   return (
     <div className="min-h-screen" style={{ background: "#08081a" }}>
       <PublicHeader />
-      <main className="mx-auto max-w-3xl px-6 py-20">
+      <main id="main-content" tabIndex={-1} className="mx-auto max-w-3xl px-6 py-20">
         <SectionHeading
           eyebrow="Support"
           title="Help, billing, and proof-flow guidance"
@@ -83,6 +83,7 @@ export default function SupportPage() {
                 <LinkButton to="/pricing">View pricing</LinkButton>
                 <LinkButton to="/terms" variant="secondary">Terms</LinkButton>
                 <LinkButton to="/privacy" variant="secondary">Privacy</LinkButton>
+                <LinkButton to="/refunds" variant="secondary">Refunds</LinkButton>
                 <LinkButton to="/cookies" variant="secondary">Cookies</LinkButton>
                 <LinkButton to="/signup" variant="ghost">Create account</LinkButton>
               </div>

@@ -160,7 +160,7 @@ export default function AccountPage() {
           <div className="rounded-2xl bg-white/[0.025] p-6">
             <div className="flex items-center gap-2 mb-5">
               <User className="h-4 w-4 text-indigo-400" />
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400/70">Update profile</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400">Update profile</p>
             </div>
             <div className="space-y-4">
               <TextInput
@@ -194,7 +194,7 @@ export default function AccountPage() {
           <div className="rounded-2xl bg-rose-500/[0.04] p-6 ring-1 ring-inset ring-rose-400/15">
             <div className="flex items-center gap-2 mb-4">
               <Trash2 className="h-4 w-4 text-rose-400" />
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-rose-400/70">Danger zone</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-rose-400">Danger zone</p>
             </div>
 
             <h3 className="text-base font-bold text-white">Delete account</h3>
@@ -202,15 +202,15 @@ export default function AccountPage() {
             {/* Consequences list */}
             <div className="mt-3 space-y-1.5">
               {[
-                "All your tasks and proof submissions will be deleted",
-                "Your account data and profile will be permanently removed",
+                "All your tasks, proof images, and AI history will be deleted",
+                "Your account data and login will be permanently removed",
                 "This action cannot be undone",
-                hasPaidPlan ? "Cancel your Stripe subscription first to avoid future charges" : null,
+                hasPaidPlan ? "Your subscription will be canceled immediately — no further charges" : null,
               ]
                 .filter(Boolean)
                 .map((line) => (
                   <div key={line} className="flex items-start gap-2">
-                    <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-rose-400/60" />
+                    <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-rose-400" />
                     <p className="text-xs text-slate-500">{line}</p>
                   </div>
                 ))}
@@ -229,12 +229,12 @@ export default function AccountPage() {
 
               {/* Countdown status */}
               {emailMatches && deleteCountdown !== null && deleteCountdown > 0 && (
-                <p className="text-xs text-rose-400/70 text-center">
+                <p className="text-xs text-rose-400 text-center">
                   Delete button arms in {deleteCountdown}s…
                 </p>
               )}
               {emailMatches && deleteCountdown === 0 && (
-                <p className="text-xs text-rose-300/80 text-center font-medium">
+                <p className="text-xs text-rose-300 text-center font-medium">
                   Button is now armed. This cannot be undone.
                 </p>
               )}

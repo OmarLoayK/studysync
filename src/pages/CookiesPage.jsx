@@ -1,71 +1,67 @@
-import { Cookie, Shield, BarChart3, Settings2, CheckCircle2, Mail } from "lucide-react";
-import { PublicFooter, PublicHeader } from "../components/layout";
-import { APP_NAME } from "../lib/constants";
+import { Cookie, Shield, Ban, ExternalLink, Settings2, Mail } from "lucide-react";
+import { LegalPage } from "../components/legal";
+import { APP_NAME, SUPPORT_EMAIL } from "../lib/constants";
 
 const SECTIONS = [
   {
+    id: "what",
     icon: Cookie,
-    title: "What are cookies?",
-    body: "Cookies are small text files stored on your device when you visit a website. They help websites remember your preferences and understand how you use the product.",
+    title: "What cookies and local storage are",
+    blocks: [
+      "Cookies are small files a website saves in your browser. Local storage and IndexedDB are similar browser storage areas. In this policy, \"cookies\" covers all of them.",
+    ],
   },
   {
+    id: "what-we-use",
     icon: Shield,
-    title: "Essential cookies",
-    body: "These are required for StudySync to function. They include Firebase Authentication session tokens that keep you logged in, and security cookies that protect against cross-site request forgery. You cannot opt out of essential cookies and continue using the product.",
+    title: "What we use (strictly necessary only)",
+    blocks: [
+      `${APP_NAME} only uses storage that it needs to work. The law doesn't require consent for this kind of storage, but we still tell you about it:`,
+      [
+        "Firebase Authentication sign-in session (IndexedDB / local storage, set by Google Firebase). Keeps you signed in until you sign out.",
+        "Reminder history (local storage, key studysync:reminder:…). Stops the same browser reminder from showing twice in one day. Only used if you turn reminders on.",
+        "Cookie notice choice (local storage, key studysync:cookie-notice). Remembers that you dismissed the cookie notice so it doesn't keep appearing.",
+      ],
+    ],
   },
   {
-    icon: BarChart3,
-    title: "Third-party cookies",
-    body: "StudySync uses Firebase (Google) for authentication and database storage, Stripe for payment processing, and OpenAI for AI features. These providers may set their own cookies governed by their privacy policies. We do not use advertising cookies or sell your data to advertisers.",
+    id: "what-we-dont",
+    icon: Ban,
+    title: "What we don't use",
+    blocks: [
+      "We don't use advertising cookies, analytics or tracking cookies, social media pixels, or cross-site tracking of any kind. Our fonts are hosted on our own site, so loading a page doesn't contact Google Fonts or other font services.",
+    ],
   },
   {
+    id: "third-party",
+    icon: ExternalLink,
+    title: "Third-party pages",
+    blocks: [
+      "When you check out or manage billing, you are sent to pages hosted by Stripe. Stripe sets its own cookies there for payments and fraud prevention, under Stripe's cookie and privacy policies. If you open a Google Doc you linked as proof, Google's own policies apply on that page.",
+    ],
+  },
+  {
+    id: "control",
     icon: Settings2,
-    title: "Managing cookies",
-    body: "You can control cookies through your browser settings. Blocking essential cookies will prevent you from logging in. Most browsers let you view, delete, or block cookies at any time — check your browser's help documentation for instructions.",
+    title: "Managing storage",
+    blocks: [
+      "Signing out clears your sign-in session. You can also clear site data in your browser settings at any time. If you block this storage, sign-in won't work. If we ever add optional cookies such as analytics, they will stay off until you turn them on in the cookie notice, and you will be able to change your choice at any time.",
+    ],
   },
   {
-    icon: CheckCircle2,
-    title: "Cookie duration",
-    body: "Session cookies expire when you close your browser. Persistent cookies (such as Firebase session tokens) are stored for up to 30 days so you can stay logged in between visits. You can clear them at any time by signing out or clearing your browser storage.",
-  },
-  {
+    id: "contact",
     icon: Mail,
     title: "Questions",
-    body: "If you have questions about how we use cookies, email omarkhalafbusiness@gmail.com. We aim to respond within 5 business days.",
+    blocks: [`Email ${SUPPORT_EMAIL}. We aim to reply within 5 business days.`],
   },
 ];
 
 export default function CookiesPage() {
   return (
-    <div className="min-h-screen" style={{ background: "#08081a" }}>
-      <PublicHeader />
-
-      <main className="mx-auto max-w-4xl px-6 py-20">
-        <div className="text-center mb-16">
-          <p className="text-xs font-semibold uppercase tracking-[0.26em] text-indigo-400/70">Legal</p>
-          <h1 className="mt-3 text-4xl font-bold tracking-tight text-white md:text-5xl">Cookie Policy</h1>
-          <p className="mx-auto mt-4 max-w-xl text-lg text-slate-400">
-            How {APP_NAME} uses cookies and similar technologies to keep your session secure.
-          </p>
-          <p className="mt-3 text-sm text-slate-600">Last updated October 2026</p>
-        </div>
-
-        <div className="space-y-8">
-          {SECTIONS.map(({ icon: Icon, title, body }) => (
-            <div key={title} className="flex gap-5">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 mt-0.5">
-                <Icon className="h-5 w-5 text-indigo-400" />
-              </div>
-              <div>
-                <h2 className="text-lg font-bold text-white">{title}</h2>
-                <p className="mt-2 text-sm leading-7 text-slate-400">{body}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </main>
-
-      <PublicFooter />
-    </div>
+    <LegalPage
+      title="Cookie Policy"
+      intro={`Exactly what ${APP_NAME} stores in your browser, and what it doesn't.`}
+      sections={SECTIONS}
+    />
   );
 }

@@ -34,4 +34,12 @@ export function getAdminDb() {
   return getAdminApp().firestore();
 }
 
+export function getAdminBucket() {
+  const bucketName = process.env.FIREBASE_STORAGE_BUCKET || process.env.VITE_FIREBASE_STORAGE_BUCKET;
+  if (!bucketName) {
+    throw new Error("Missing FIREBASE_STORAGE_BUCKET environment variable.");
+  }
+  return getAdminApp().storage().bucket(bucketName);
+}
+
 export { admin };

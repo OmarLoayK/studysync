@@ -13,9 +13,9 @@ export default function PricingPage() {
     <div className="min-h-screen" style={{ background: "#08081a" }}>
       <PublicHeader />
 
-      <main className="mx-auto max-w-7xl px-6 py-20">
+      <main id="main-content" tabIndex={-1} className="mx-auto max-w-7xl px-6 py-20">
         <div className="text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-indigo-400/70">Pricing</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-indigo-400">Pricing</p>
           <h1 className="mt-3 text-5xl font-bold tracking-tight text-white md:text-6xl">
             Free core productivity.
             <br className="hidden md:block" />
@@ -45,7 +45,7 @@ export default function PricingPage() {
                 {isPopular && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
                     <span className="rounded-full bg-indigo-500 px-4 py-1 text-xs font-bold text-white shadow-[0_0_24px_rgba(99,102,241,0.5)]">
-                      Most popular
+                      Recommended
                     </span>
                   </div>
                 )}
@@ -67,7 +67,7 @@ export default function PricingPage() {
 
                 <p className="mt-4 text-sm text-slate-400">
                   {key === "power"
-                    ? "Best-model AI, bigger limits, and heavier study workflows."
+                    ? "Our most capable AI model and 4× the monthly credits."
                     : key === "premium"
                       ? "Affordable paid AI for most students who want assistance without overpaying."
                       : "Core study management without the AI spend. Seriously strong on its own."}

@@ -1,5 +1,18 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,300..900&family=Space+Grotesk:wght@400;500;600;700;800&display=swap");
+/* Fonts are self-hosted (SIL Open Font License) so no visitor data is sent to Google Fonts. */
+@import "@fontsource-variable/inter";
+@import "@fontsource/space-grotesk/400.css";
+@import "@fontsource/space-grotesk/500.css";
+@import "@fontsource/space-grotesk/600.css";
+@import "@fontsource/space-grotesk/700.css";
 @import "tailwindcss";
+
+/* Muted grays lightened so small text meets WCAG AA (4.5:1) on the dark background. */
+@theme {
+  --color-slate-500: #8590a6;
+  --color-slate-600: #7a8499;
+  --color-zinc-500: #8f8f99;
+  --color-zinc-600: #80808a;
+}
 
 :root {
   color-scheme: dark;
@@ -41,7 +54,7 @@ body {
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-family: "Inter Variable", "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "cv11", "ss01";
@@ -53,8 +66,45 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-family: "Space Grotesk", "Inter Variable", "Inter", sans-serif;
   letter-spacing: -0.025em;
+}
+
+/* Visible keyboard focus everywhere (mouse clicks don't trigger :focus-visible). */
+:focus-visible {
+  outline: 2px solid #a5b4fc;
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 100;
+  border-radius: 0.75rem;
+  background: #6366f1;
+  padding: 0.75rem 1.25rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+#main-content:focus {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 a {

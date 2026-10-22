@@ -1,4 +1,17 @@
 export const APP_NAME = "StudySync";
+export const SUPPORT_EMAIL = "omarkhalafbusiness@gmail.com";
+// Bump LEGAL_VERSION whenever the Terms, Privacy, Refund, or Cookie policies change materially.
+export const LEGAL_VERSION = "2026-10-21";
+export const LEGAL_UPDATED_LABEL = "October 21, 2026";
+export const MINIMUM_AGE = 13;
+
+export const LEGAL_LINKS = [
+  { to: "/terms", label: "Terms of Service" },
+  { to: "/privacy", label: "Privacy Policy" },
+  { to: "/refunds", label: "Refund Policy" },
+  { to: "/cookies", label: "Cookie Policy" },
+];
+
 export const APP_TAGLINE = "A dark-mode study operating system for students who want structure, momentum, and premium AI help.";
 
 export const APP_NAV_ITEMS = [
@@ -9,10 +22,11 @@ export const APP_NAV_ITEMS = [
   { to: "/app/settings", label: "Settings", icon: "Settings2" },
 ];
 
+// Product facts only. No usage stats or outcomes we can't verify.
 export const MARKETING_METRICS = [
-  { label: "Tasks shipped", value: "50K+" },
-  { label: "Study streak wins", value: "91%" },
-  { label: "Avg. weekly clarity", value: "7.4h saved" },
+  { label: "AI study tools on paid plans", value: "5" },
+  { label: "To start, no card required", value: "$0" },
+  { label: "AI credits a month on Premium", value: "60" },
 ];
 
 export const FEATURE_PILLARS = [
@@ -58,7 +72,7 @@ export const PLAN_DETAILS = {
       "Everything in Free",
       "AI study planner, quiz, flashcards, explainer, and breakdown tools",
       "Interactive quizzes, better study plans, and proof image uploads",
-      "Core analytics and smarter planning insights",
+      "Dashboard analytics and planning insights",
       "Stripe billing portal and subscription controls",
     ],
     cta: "Unlock premium",
@@ -72,10 +86,9 @@ export const PLAN_DETAILS = {
     monthlyAiLimit: 240,
     features: [
       "Everything in Premium",
-      "Best available AI model routing for deeper explanations and plans",
-      "Higher monthly AI credits for heavy study sessions",
+      "Uses our most capable AI model for deeper explanations and plans",
+      "240 AI credits a month (4× Premium)",
       "Longer quizzes, larger flashcard sets, and richer breakdowns",
-      "Priority access to future advanced coaching features",
     ],
     cta: "Go power",
   },

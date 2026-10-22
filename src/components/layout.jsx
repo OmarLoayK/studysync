@@ -35,7 +35,7 @@ export function LoadingScreen({ label }) {
         <div className="mx-auto w-fit animate-[pulse_2.4s_ease-in-out_infinite]">
           <BrandMark size="lg" />
         </div>
-        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.26em] text-indigo-400/60">{APP_NAME}</p>
+        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.26em] text-indigo-400">{APP_NAME}</p>
         <p className="mt-3 text-sm text-zinc-500">{label}</p>
       </div>
     </div>
@@ -63,7 +63,7 @@ export function PublicHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-white/[0.05] bg-[#08081a]/92 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
         <BrandLockup to="/" compact subtitle="Study operating system" />
 
         <nav className="hidden items-center gap-1 md:flex">
@@ -90,9 +90,11 @@ export function PublicHeader() {
             </LinkButton>
           ) : (
             <>
-              <LinkButton to="/login" variant="ghost" size="sm" className="hidden md:inline-flex">
-                Log in
-              </LinkButton>
+              <span className="hidden md:inline-flex">
+                <LinkButton to="/login" variant="ghost" size="sm">
+                  Log in
+                </LinkButton>
+              </span>
               <LinkButton to="/signup" variant="primary" size="sm">
                 Start free
               </LinkButton>
@@ -102,7 +104,8 @@ export function PublicHeader() {
             type="button"
             className="flex h-9 w-9 items-center justify-center rounded-lg text-zinc-400 hover:text-white md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle menu"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -166,6 +169,7 @@ export function PublicFooter() {
               { to: "/support",   label: "Support" },
               { to: "/terms",     label: "Terms" },
               { to: "/privacy",   label: "Privacy" },
+              { to: "/refunds",   label: "Refunds" },
               { to: "/cookies",   label: "Cookies" },
             ].map((item) => (
               <Link key={item.to} to={item.to} className="text-zinc-500 transition hover:text-zinc-200">
@@ -285,6 +289,7 @@ export function AppShell() {
           type="button"
           className="lg:hidden flex h-8 w-8 items-center justify-center rounded-lg text-zinc-500 hover:text-zinc-200"
           onClick={() => setMobileSidebarOpen(false)}
+          aria-label="Close menu"
         >
           <X className="h-4 w-4" />
         </button>
@@ -413,7 +418,7 @@ export function AppShell() {
           </header>
 
           {/* Page content — extra bottom padding on mobile for bottom nav */}
-          <main className="flex-1 px-5 py-7 pb-28 lg:px-8 lg:py-9 lg:pb-9">
+          <main id="main-content" tabIndex={-1} className="flex-1 px-5 py-7 pb-28 lg:px-8 lg:py-9 lg:pb-9">
             <Outlet />
           </main>
         </div>

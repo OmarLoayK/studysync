@@ -32,6 +32,10 @@ export function createPortalSession(user) {
   return request("/api/billing/create-portal-session", { user });
 }
 
+export function deleteAccountData(user) {
+  return request("/api/account/delete", { user });
+}
+
 export function syncBillingStatus(user) {
   return request("/api/billing/status", { user });
 }

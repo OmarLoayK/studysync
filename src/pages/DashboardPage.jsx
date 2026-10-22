@@ -260,7 +260,7 @@ function CompletionModal({
     <Modal open={open} title={`Complete: ${task.title}`} description="Submit proof so the task can be verified and finished cleanly." onClose={onClose}>
       <form className="grid gap-5" onSubmit={onSubmit}>
         <div className="rounded-xl bg-white/[0.025] p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-400/70">Task subject</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-400">Task subject</p>
           <h3 className="mt-1.5 text-lg font-bold text-white">{task.course}</h3>
           <p className="mt-1 text-sm text-slate-400">{task.description || "No extra description on this task."}</p>
         </div>
@@ -450,7 +450,7 @@ function GuidedEmptyState({ hasPremium, onCreateTask }) {
       <div className="grid gap-6 lg:grid-cols-3">
         {steps.map((step) => (
           <div key={step.number}>
-            <p className="text-xs font-bold tracking-[0.2em] text-indigo-400/60">{step.number}</p>
+            <p className="text-xs font-bold tracking-[0.2em] text-indigo-400">{step.number}</p>
             <h4 className="mt-3 text-base font-bold text-white">{step.title}</h4>
             <p className="mt-1.5 text-sm text-slate-400">{step.desc}</p>
             <div className="mt-4">{step.action}</div>
@@ -466,7 +466,7 @@ function TodayPlanCard({ tasks }) {
     <div className="rounded-2xl bg-white/[0.025] p-6">
       <div className="flex items-center gap-2">
         <Clock className="h-4 w-4 text-indigo-400" />
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400/70">Today's plan</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400">Today's plan</p>
       </div>
       <h3 className="mt-2 text-xl font-bold text-white">What to study next</h3>
 
@@ -509,7 +509,7 @@ function WeeklyMomentumCard({ tasks, weeklyGoalHours }) {
     <div className="rounded-2xl bg-white/[0.025] p-6">
       <div className="flex items-center gap-2">
         <BarChart3 className="h-4 w-4 text-indigo-400" />
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400/70">Weekly momentum</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400">Weekly momentum</p>
       </div>
       <h3 className="mt-2 text-xl font-bold text-white">Recent completions</h3>
 
@@ -547,7 +547,7 @@ function CalendarCard({ agenda }) {
     <div className="rounded-2xl bg-white/[0.025] p-6">
       <div className="flex items-center gap-2">
         <CalendarDays className="h-4 w-4 text-indigo-400" />
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400/70">7-day calendar</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400">7-day calendar</p>
       </div>
       <h3 className="mt-2 text-xl font-bold text-white">Next seven days</h3>
 
@@ -581,9 +581,9 @@ function UpsellCard({ profile }) {
       <div className="rounded-2xl bg-gradient-to-br from-amber-500/6 via-white/[0.015] to-orange-400/4 p-5">
         <div className="flex items-center gap-2">
           <Flame className="h-4 w-4 text-amber-400" />
-          <p className="text-xs font-semibold text-amber-400/80">Power workspace</p>
+          <p className="text-xs font-semibold text-amber-400">Power workspace</p>
         </div>
-        <h3 className="mt-2 text-base font-bold text-white">Best-model AI is active</h3>
+        <h3 className="mt-2 text-base font-bold text-white">Power AI model is active</h3>
         <p className="mt-1.5 text-sm text-slate-400">You're on the highest StudySync tier.</p>
         <div className="mt-4">
           <LinkButton to="/app/ai" variant="secondary" size="sm" className="w-full justify-center">
@@ -935,6 +935,7 @@ export default function DashboardPage() {
                   key={opt.value}
                   type="button"
                   onClick={() => setStatusFilter(opt.value)}
+                  aria-pressed={statusFilter === opt.value}
                   className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
                     statusFilter === opt.value
                       ? "bg-indigo-500/20 text-indigo-300 ring-1 ring-indigo-400/30"
@@ -954,6 +955,7 @@ export default function DashboardPage() {
                 key={opt.value}
                 type="button"
                 onClick={() => setPriorityFilter(opt.value)}
+                aria-pressed={priorityFilter === opt.value}
                 className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${
                   priorityFilter === opt.value
                     ? "bg-white/[0.08] text-slate-200"
@@ -969,6 +971,7 @@ export default function DashboardPage() {
                 key={opt.value}
                 type="button"
                 onClick={() => setSortBy(opt.value)}
+                aria-pressed={sortBy === opt.value}
                 className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${
                   sortBy === opt.value
                     ? "bg-white/[0.08] text-slate-200"
@@ -1021,7 +1024,7 @@ export default function DashboardPage() {
           <div className="rounded-2xl bg-white/[0.025] p-6">
             <div className="flex items-center gap-2">
               <Target className="h-4 w-4 text-indigo-400" />
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400/70">Goal progress</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400">Goal progress</p>
             </div>
             <h3 className="mt-2 text-xl font-bold text-white">Weekly focus target</h3>
             <div className="mt-5">

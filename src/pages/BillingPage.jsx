@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { CreditCard, CheckCircle2, ArrowRight, Zap, RefreshCw } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { createCheckoutSession, createPortalSession, syncBillingStatus } from "../services/api";
@@ -268,6 +269,13 @@ export default function BillingPage() {
             );
           })}
         </div>
+        <p className="mt-6 max-w-3xl text-xs leading-6 text-slate-400">
+          Paid plans are monthly subscriptions that renew automatically at the price shown until you cancel.
+          You can cancel any time in the billing portal and keep access until the end of the paid period.
+          First payments can be refunded within 14 days. See the{" "}
+          <Link to="/refunds" className="text-indigo-300 underline underline-offset-2">Refund Policy</Link> and{" "}
+          <Link to="/terms" className="text-indigo-300 underline underline-offset-2">Terms of Service</Link>.
+        </p>
       </div>
     </div>
   );

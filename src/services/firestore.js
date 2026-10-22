@@ -62,14 +62,24 @@ function mergeDefaults(user, profile = {}) {
   };
 }
 
+// Consent captured on the signup form, written once when the profile document is first created.
+let pendingSignupConsent = null;
+
+export function setPendingSignupConsent(consent) {
+  pendingSignupConsent = consent;
+}
+
 export async function ensureUserProfile(user) {
   const ref = userRef(user.uid);
   const snapshot = await getDoc(ref);
   const profile = mergeDefaults(user, snapshot.exists() ? snapshot.data() : {});
+  const consent = !snapshot.exists() && pendingSignupConsent ? { consent: pendingSignupConsent } : {};
+  pendingSignupConsent = null;
   await setDoc(
     ref,
     {
       ...profile,
+      ...consent,
       updatedAt: serverTimestamp(),
     },
     { merge: true },
@@ -91,12 +101,6 @@ export async function updateUserProfile(uid, patch) {
     },
     { merge: true },
   );
-}
-
-export async function deleteUserData(uid) {
-  const tasks = await getDocs(tasksCollection(uid));
-  await Promise.all(tasks.docs.map((entry) => deleteDoc(entry.ref)));
-  await deleteDoc(userRef(uid));
 }
 
 export async function listTasks(uid) {

@@ -1,7 +1,8 @@
 import { createContext, startTransition, useContext, useEffect, useRef, useState } from "react";
-import { deleteUser, onAuthStateChanged, signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../firebase/config";
-import { deleteUserData, ensureUserProfile, getUserProfile, updateUserProfile } from "../services/firestore";
+import { ensureUserProfile, getUserProfile, updateUserProfile } from "../services/firestore";
+import { deleteAccountData } from "../services/api";
 
 const AuthContext = createContext(null);
 
@@ -77,8 +78,9 @@ export function AuthProvider({ children }) {
   async function deleteAccount() {
     const currentUser = auth.currentUser;
     if (!currentUser) throw new Error("Not signed in.");
-    await deleteUserData(currentUser.uid);
-    await deleteUser(currentUser);
+    // The server cancels billing and removes all data, files, and the login itself.
+    await deleteAccountData(currentUser);
+    await signOut(auth);
   }
 
   return (

@@ -14,7 +14,7 @@ function SettingGroup({ icon: Icon, label, children }) {
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <Icon className="h-4 w-4 text-indigo-400" />
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400/70">{label}</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400">{label}</p>
       </div>
       {children}
     </div>
@@ -85,7 +85,7 @@ export default function SettingsPage() {
         <div className="rounded-2xl bg-white/[0.025] p-6">
           <div className="flex items-center gap-2 mb-7">
             <Settings2 className="h-4 w-4 text-indigo-400" />
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400/70">Study defaults</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400">Study defaults</p>
           </div>
 
           <form className="space-y-8" onSubmit={handleSave}>
@@ -192,7 +192,7 @@ export default function SettingsPage() {
           <div className="rounded-2xl bg-white/[0.025] p-6">
             <div className="flex items-center gap-2 mb-3">
               <ShieldCheck className="h-4 w-4 text-violet-400" />
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-400/70">Proof workflow</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-400">Proof workflow</p>
             </div>
             <h2 className="text-lg font-bold text-white">Completion stays accountable</h2>
             <p className="mt-2 text-sm leading-6 text-slate-400">
@@ -208,7 +208,7 @@ export default function SettingsPage() {
           <div className="rounded-2xl bg-white/[0.025] p-6">
             <div className="flex items-center gap-2 mb-3">
               <Bell className="h-4 w-4 text-amber-400" />
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-400/70">Reminder system</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-400">Reminder system</p>
             </div>
             <h2 className="text-lg font-bold text-white">Nudges during your study window</h2>
             <p className="mt-2 text-sm leading-6 text-slate-400">

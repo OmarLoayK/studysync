@@ -9,7 +9,8 @@ import {
 import { BarChart3, ShieldCheck, Sparkles, CheckCircle2 } from "lucide-react";
 import { auth } from "../firebase/config";
 import { useAuth } from "../contexts/AuthContext";
-import { APP_NAME } from "../lib/constants";
+import { APP_NAME, LEGAL_VERSION, MINIMUM_AGE } from "../lib/constants";
+import { setPendingSignupConsent } from "../services/firestore";
 import { AlertBox, Button, TextInput } from "../components/ui";
 import { BrandLockup } from "../components/brand";
 
@@ -43,6 +44,8 @@ export default function AuthPage({ mode }) {
   const location = useLocation();
   const { refreshProfile } = useAuth();
   const [form, setForm] = useState({ displayName: "", email: "", password: "" });
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [confirmedAge, setConfirmedAge] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -61,8 +64,20 @@ export default function AuthPage({ mode }) {
     setError("");
     setNotice("");
 
+    if (mode === "signup" && (!acceptedTerms || !confirmedAge)) {
+      setError("Please confirm your age and accept the Terms and Privacy Policy to create an account.");
+      setSubmitting(false);
+      return;
+    }
+
     try {
       if (mode === "signup") {
+        setPendingSignupConsent({
+          version: LEGAL_VERSION,
+          acceptedTermsAndPrivacy: true,
+          confirmedMinimumAge: MINIMUM_AGE,
+          acceptedAt: new Date().toISOString(),
+        });
         const credential = await createUserWithEmailAndPassword(auth, form.email, form.password);
         if (form.displayName.trim()) {
           await updateFirebaseProfile(credential.user, { displayName: form.displayName.trim() });
@@ -126,7 +141,7 @@ export default function AuthPage({ mode }) {
           <div className="mt-auto">
             <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-indigo-400/20 bg-indigo-500/10 px-4 py-2">
               <span className="h-1.5 w-1.5 rounded-full bg-indigo-400" />
-              <span className="text-xs font-semibold text-indigo-300">Student-first SaaS</span>
+              <span className="text-xs font-semibold text-indigo-300">Built for students</span>
             </div>
 
             <h1 className="text-5xl font-bold leading-tight tracking-tight text-white">
@@ -150,9 +165,9 @@ export default function AuthPage({ mode }) {
           </div>
 
           <div className="mt-10 flex flex-wrap gap-4">
-            {["Free forever core", "No card to start", "Cancel anytime"].map((item) => (
+            {["Free plan available", "No card to start", "Cancel anytime"].map((item) => (
               <div key={item} className="flex items-center gap-1.5 text-xs text-slate-500">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500/70" />
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
                 {item}
               </div>
             ))}
@@ -161,14 +176,14 @@ export default function AuthPage({ mode }) {
       </div>
 
       {/* Right panel */}
-      <div className="flex min-h-screen items-center justify-center px-6 py-12 lg:px-14">
+      <main id="main-content" tabIndex={-1} className="flex min-h-screen items-center justify-center px-6 py-12 lg:px-14">
         <div className="w-full max-w-md">
           <div className="mb-8 flex justify-center lg:hidden">
             <BrandLockup to="/" />
           </div>
 
           <div className="mb-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400/70">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400">
               {mode === "signup" ? "Start free" : "Secure login"}
             </p>
             <h2 className="mt-2 text-3xl font-bold text-white">{content.title}</h2>
@@ -205,6 +220,39 @@ export default function AuthPage({ mode }) {
                 required
               />
 
+              {mode === "signup" && (
+                <fieldset className="grid gap-3 pt-1">
+                  <legend className="sr-only">Required agreements</legend>
+                  <label className="flex items-start gap-3 text-sm leading-6 text-slate-300">
+                    <input
+                      type="checkbox"
+                      className="mt-1 h-4 w-4 shrink-0 accent-indigo-500"
+                      checked={confirmedAge}
+                      onChange={(event) => setConfirmedAge(event.target.checked)}
+                      required
+                    />
+                    <span>
+                      I am {MINIMUM_AGE} or older. If I am under 18 (or the age of majority where I live), a parent or guardian has agreed to let me use {APP_NAME}.
+                    </span>
+                  </label>
+                  <label className="flex items-start gap-3 text-sm leading-6 text-slate-300">
+                    <input
+                      type="checkbox"
+                      className="mt-1 h-4 w-4 shrink-0 accent-indigo-500"
+                      checked={acceptedTerms}
+                      onChange={(event) => setAcceptedTerms(event.target.checked)}
+                      required
+                    />
+                    <span>
+                      I agree to the{" "}
+                      <Link to="/terms" target="_blank" className="font-semibold text-indigo-300 underline underline-offset-2">Terms of Service</Link>
+                      {" "}and{" "}
+                      <Link to="/privacy" target="_blank" className="font-semibold text-indigo-300 underline underline-offset-2">Privacy Policy</Link>.
+                    </span>
+                  </label>
+                </fieldset>
+              )}
+
               {error && <AlertBox variant="error">{error}</AlertBox>}
               {notice && <AlertBox variant="success">{notice}</AlertBox>}
 
@@ -232,7 +280,7 @@ export default function AuthPage({ mode }) {
             </Link>
           </p>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

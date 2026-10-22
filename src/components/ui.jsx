@@ -103,7 +103,7 @@ export function SectionHeading({ eyebrow, title, description, action }) {
     <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
       <div className="max-w-2xl">
         {eyebrow ? (
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400/70">{eyebrow}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-400">{eyebrow}</p>
         ) : null}
         <h2 className={cn("font-bold text-white", eyebrow ? "mt-2 text-3xl md:text-4xl" : "text-3xl md:text-4xl")}>
           {title}
@@ -122,32 +122,32 @@ export function SectionHeading({ eyebrow, title, description, action }) {
 const accentConfig = {
   sky: {
     text: "text-sky-300",
-    label: "text-sky-400/70",
+    label: "text-sky-400",
     bg: "bg-gradient-to-b from-sky-500/10 to-transparent",
   },
   indigo: {
     text: "text-indigo-300",
-    label: "text-indigo-400/70",
+    label: "text-indigo-400",
     bg: "bg-gradient-to-b from-indigo-500/10 to-transparent",
   },
   emerald: {
     text: "text-emerald-300",
-    label: "text-emerald-400/70",
+    label: "text-emerald-400",
     bg: "bg-gradient-to-b from-emerald-500/10 to-transparent",
   },
   rose: {
     text: "text-rose-300",
-    label: "text-rose-400/70",
+    label: "text-rose-400",
     bg: "bg-gradient-to-b from-rose-500/10 to-transparent",
   },
   amber: {
     text: "text-amber-300",
-    label: "text-amber-400/70",
+    label: "text-amber-400",
     bg: "bg-gradient-to-b from-amber-500/10 to-transparent",
   },
   violet: {
     text: "text-violet-300",
-    label: "text-violet-400/70",
+    label: "text-violet-400",
     bg: "bg-gradient-to-b from-violet-500/10 to-transparent",
   },
 };
@@ -264,6 +264,12 @@ export function Select({ label, hint, className, children, ...props }) {
 
 export function Modal({ open, title, description, onClose, children, size = "md" }) {
   const panelRef = useRef(null);
+  // Keep the latest onClose in a ref so the effect below doesn't re-run on every
+  // parent render (inline arrow props would otherwise steal focus mid-typing).
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -274,7 +280,7 @@ export function Modal({ open, title, description, onClose, children, size = "md"
 
     function handleKey(event) {
       if (event.key === "Escape") {
-        onClose?.();
+        onCloseRef.current?.();
         return;
       }
       if (event.key === "Tab" && panelRef.current) {
@@ -309,7 +315,7 @@ export function Modal({ open, title, description, onClose, children, size = "md"
       document.body.style.overflow = originalOverflow;
       previouslyFocused?.focus();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
 

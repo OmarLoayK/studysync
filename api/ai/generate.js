@@ -102,7 +102,6 @@ export default async function handler(req, res) {
     const result = await generateStudyArtifact(tool, {
       ...normalizedPayload,
       studentContext: {
-        email: decoded.email,
         preferredStudyWindow: profile.settings?.preferredStudyWindow,
         availableStudyHours: profile.settings?.availableStudyHours,
         weeklyGoalHours: profile.settings?.weeklyGoalHours,

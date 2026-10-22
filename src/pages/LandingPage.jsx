@@ -63,11 +63,11 @@ export default function LandingPage() {
     <div className="min-h-screen overflow-x-hidden" style={{ background: "#08081a" }}>
       <PublicHeader />
 
-      <main>
+      <main id="main-content" tabIndex={-1}>
         {/* ── HERO ── */}
         <section className="relative flex min-h-screen items-center overflow-hidden">
           {/* Two orbs only — reduce compositor layer count vs three */}
-          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
             <div
               className="orb orb-indigo absolute"
               style={{ width: "900px", height: "900px", top: "-320px", right: "-260px" }}
@@ -89,43 +89,43 @@ export default function LandingPage() {
           </div>
 
           {/* Floating product chips — bigger, more variety, no backdrop-blur */}
-          <div className="pointer-events-none absolute right-[6%] top-[15%] hidden xl:block animate-float" style={{ animationDelay: "0s" }}>
+          <div aria-hidden="true" className="pointer-events-none absolute right-[6%] top-[15%] hidden xl:block animate-float" style={{ animationDelay: "0s" }}>
             <div className="flex items-center gap-3 rounded-2xl bg-white/[0.07] px-5 py-3.5 ring-1 ring-white/[0.1]">
               <div className="h-2.5 w-2.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.7)]" />
               <span className="text-base font-semibold text-white">Physics lab — due today</span>
             </div>
           </div>
-          <div className="pointer-events-none absolute right-[14%] top-[26%] hidden xl:block animate-float" style={{ animationDelay: "0.7s" }}>
+          <div aria-hidden="true" className="pointer-events-none absolute right-[14%] top-[26%] hidden xl:block animate-float" style={{ animationDelay: "0.7s" }}>
             <div className="flex items-center gap-3 rounded-2xl bg-indigo-500/10 px-5 py-3.5 ring-1 ring-indigo-400/20">
               <Clock className="h-4.5 w-4.5 text-indigo-400" style={{ width: "18px", height: "18px" }} />
               <span className="text-base font-semibold text-indigo-200">Focus session: 45 min</span>
             </div>
           </div>
-          <div className="pointer-events-none absolute right-[5%] top-[37%] hidden xl:block animate-float" style={{ animationDelay: "1.1s" }}>
+          <div aria-hidden="true" className="pointer-events-none absolute right-[5%] top-[37%] hidden xl:block animate-float" style={{ animationDelay: "1.1s" }}>
             <div className="flex items-center gap-3 rounded-2xl bg-rose-500/10 px-5 py-3.5 ring-1 ring-rose-400/20">
               <div className="h-2.5 w-2.5 rounded-full bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.6)]" />
               <span className="text-base font-semibold text-rose-200">Math exam — 3 days left</span>
             </div>
           </div>
-          <div className="pointer-events-none absolute right-[11%] top-[48%] hidden xl:block animate-float" style={{ animationDelay: "1.4s" }}>
+          <div aria-hidden="true" className="pointer-events-none absolute right-[11%] top-[48%] hidden xl:block animate-float" style={{ animationDelay: "1.4s" }}>
             <div className="rounded-2xl bg-indigo-500/10 px-5 py-3.5 ring-1 ring-indigo-400/20 text-center min-w-[100px]">
               <p className="text-xs font-semibold text-indigo-400 tracking-wide">This week</p>
               <p className="mt-1 text-3xl font-black text-white leading-none">76%</p>
             </div>
           </div>
-          <div className="pointer-events-none absolute right-[5%] top-[59%] hidden xl:block animate-float" style={{ animationDelay: "2.1s" }}>
+          <div aria-hidden="true" className="pointer-events-none absolute right-[5%] top-[59%] hidden xl:block animate-float" style={{ animationDelay: "2.1s" }}>
             <div className="flex items-center gap-3 rounded-2xl bg-amber-500/10 px-5 py-3.5 ring-1 ring-amber-400/20">
               <FlameIcon className="text-amber-400" style={{ width: "20px", height: "20px" }} />
               <span className="text-base font-bold text-amber-200">9 day streak</span>
             </div>
           </div>
-          <div className="pointer-events-none absolute right-[13%] top-[70%] hidden xl:block animate-float" style={{ animationDelay: "2.8s" }}>
+          <div aria-hidden="true" className="pointer-events-none absolute right-[13%] top-[70%] hidden xl:block animate-float" style={{ animationDelay: "2.8s" }}>
             <div className="flex items-center gap-3 rounded-2xl bg-violet-500/10 px-5 py-3.5 ring-1 ring-violet-400/20">
               <Sparkles className="text-violet-400" style={{ width: "18px", height: "18px" }} />
               <span className="text-base font-semibold text-violet-200">AI quiz: 9/10 ✓</span>
             </div>
           </div>
-          <div className="pointer-events-none absolute right-[5%] top-[80%] hidden xl:block animate-float" style={{ animationDelay: "1.8s" }}>
+          <div aria-hidden="true" className="pointer-events-none absolute right-[5%] top-[80%] hidden xl:block animate-float" style={{ animationDelay: "1.8s" }}>
             <div className="flex items-center gap-3 rounded-2xl bg-emerald-500/10 px-5 py-3.5 ring-1 ring-emerald-400/20">
               <CheckCircle2 className="text-emerald-400" style={{ width: "18px", height: "18px" }} />
               <span className="text-base font-semibold text-emerald-200">Essay submitted ✓</span>
@@ -170,7 +170,7 @@ export default function LandingPage() {
 
               <motion.p variants={heroItem} className="mt-10 max-w-lg text-xl leading-8 text-zinc-400">
                 {APP_NAME} is a study OS with proof-backed accountability, an intelligent
-                dashboard, and AI tools that work at every price point.
+                dashboard, and AI study tools on paid plans.
               </motion.p>
 
               <motion.div variants={heroItem} className="mt-10 flex flex-wrap gap-4">
@@ -184,9 +184,9 @@ export default function LandingPage() {
               </motion.div>
 
               <motion.div variants={heroItem} className="mt-8 flex flex-wrap gap-x-7 gap-y-2">
-                {["Free forever core", "Proof-backed tasks", "AI study tools"].map((item) => (
+                {["Free plan available", "Proof-backed tasks", "AI study tools"].map((item) => (
                   <div key={item} className="flex items-center gap-2 text-sm text-zinc-500">
-                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400/60" />
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
                     {item}
                   </div>
                 ))}
@@ -197,12 +197,12 @@ export default function LandingPage() {
 
         {/* ── Wave divider ── */}
         <div className="relative z-10 overflow-hidden" style={{ height: "90px" }}>
-          <svg viewBox="0 0 1440 90" className="absolute bottom-0 w-full" preserveAspectRatio="none" style={{ height: "90px" }}>
+          <svg aria-hidden="true" viewBox="0 0 1440 90" className="absolute bottom-0 w-full" preserveAspectRatio="none" style={{ height: "90px" }}>
             <path d="M0,55 C480,90 960,0 1440,55 L1440,90 L0,90 Z" fill="rgba(255,255,255,0.012)" />
           </svg>
         </div>
 
-        {/* ── STATS (keep 50K+ etc.) — single scroll reveal ── */}
+        {/* ── STATS (verifiable product facts) — single scroll reveal ── */}
         <section className="py-24" style={{ background: "rgba(255,255,255,0.01)" }}>
           <div className="mx-auto max-w-7xl px-6">
             <motion.div
@@ -229,7 +229,7 @@ export default function LandingPage() {
 
         {/* ── Wave divider (flipped) ── */}
         <div className="relative z-10 overflow-hidden" style={{ height: "90px" }}>
-          <svg viewBox="0 0 1440 90" className="absolute top-0 w-full" preserveAspectRatio="none" style={{ height: "90px" }}>
+          <svg aria-hidden="true" viewBox="0 0 1440 90" className="absolute top-0 w-full" preserveAspectRatio="none" style={{ height: "90px" }}>
             <path d="M0,35 C480,0 960,90 1440,35 L1440,0 L0,0 Z" fill="rgba(255,255,255,0.01)" />
           </svg>
         </div>
@@ -245,8 +245,8 @@ export default function LandingPage() {
               <span className="text-zinc-500">One system.</span>
             </h2>
             <p className="mt-6 text-lg leading-8 text-zinc-400">
-              {APP_NAME} is designed like a startup-grade productivity product — built for
-              students who need clarity under pressure.
+              {APP_NAME} brings your deadlines, proof, and AI study help into one place,
+              built for students who need clarity under pressure.
             </p>
           </div>
 
@@ -266,7 +266,7 @@ export default function LandingPage() {
 
         {/* ── PREMIUM AI — immersive full section ── */}
         <section id="premium" className="relative overflow-hidden py-36">
-          <div className="pointer-events-none absolute inset-0">
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0">
             <div className="orb orb-violet absolute" style={{ width: "700px", height: "700px", top: "-150px", right: "-200px", opacity: 0.45 }} />
             <div className="orb orb-indigo absolute" style={{ width: "500px", height: "500px", bottom: "-100px", left: "-80px", opacity: 0.38 }} />
             <div
@@ -299,7 +299,7 @@ export default function LandingPage() {
                 </h2>
                 <p className="mt-8 text-xl leading-8 text-zinc-400">
                   Premium is intentionally $5/month for everyday use. Power at $20/month
-                  gives serious users best-model routing and bigger limits.
+                  uses our most capable AI model with 4× the monthly credits.
                 </p>
                 <div className="mt-10 flex flex-wrap gap-3">
                   <LinkButton to="/pricing" variant="primary">
@@ -365,7 +365,7 @@ export default function LandingPage() {
                   {accent.highlight && (
                     <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
                       <span className="rounded-full bg-indigo-500 px-4 py-1 text-xs font-bold text-white shadow-[0_0_24px_rgba(99,102,241,0.5)]">
-                        Most popular
+                        Recommended
                       </span>
                     </div>
                   )}
@@ -397,7 +397,7 @@ export default function LandingPage() {
 
         {/* ── BOTTOM CTA — scroll reveal (once) ── */}
         <section className="relative overflow-hidden py-40">
-          <div className="pointer-events-none absolute inset-0">
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0">
             <div className="orb orb-indigo absolute" style={{ width: "600px", height: "600px", top: "-180px", left: "5%", opacity: 0.36 }} />
             <div className="orb orb-violet absolute" style={{ width: "520px", height: "520px", bottom: "-140px", right: "5%", opacity: 0.33 }} />
             <div

@@ -3,12 +3,14 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import "../App.css";
 import { AppShell, LoadingScreen, ProtectedRoute, PublicOnlyRoute } from "../components/layout";
 import { useAuth } from "../contexts/AuthContext";
+import { CookieNotice } from "../components/CookieNotice";
 
 const LandingPage  = lazy(() => import("../pages/LandingPage"));
 const PricingPage  = lazy(() => import("../pages/PricingPage"));
 const TermsPage    = lazy(() => import("../pages/TermsPage"));
 const PrivacyPage  = lazy(() => import("../pages/PrivacyPage"));
 const CookiesPage  = lazy(() => import("../pages/CookiesPage"));
+const RefundPage   = lazy(() => import("../pages/RefundPage"));
 const SupportPage  = lazy(() => import("../pages/SupportPage"));
 const AuthPage     = lazy(() => import("../pages/AuthPage"));
 const DashboardPage = lazy(() => import("../pages/DashboardPage"));
@@ -49,6 +51,7 @@ function AppRoutes() {
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/cookies" element={<CookiesPage />} />
+        <Route path="/refunds" element={<RefundPage />} />
         <Route path="/support" element={<SupportPage />} />
         <Route
           path="/login"
@@ -89,5 +92,11 @@ export default function AppRoot() {
     return <LoadingScreen label="Loading your StudySync workspace..." />;
   }
 
-  return <AppRoutes />;
+  return (
+    <>
+      <a href="#main-content" className="skip-link">Skip to main content</a>
+      <AppRoutes />
+      <CookieNotice />
+    </>
+  );
 }
