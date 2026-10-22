@@ -118,11 +118,12 @@ export default async function handler(req, res) {
 
   try {
     const { profile, userRef, decoded } = await requireUser(req);
-    const { taskTitle, course, description, proofLink, imageStoragePath } = req.body || {};
+    const { taskTitle, course, description, completionNote, proofLink, imageStoragePath } = req.body || {};
     const taskContext = {
-      taskTitle: `${taskTitle ?? ""}`.trim(),
-      course: `${course ?? ""}`.trim(),
-      description: `${description ?? ""}`.trim(),
+      taskTitle: `${taskTitle ?? ""}`.trim().slice(0, 300),
+      course: `${course ?? ""}`.trim().slice(0, 200),
+      description: `${description ?? ""}`.trim().slice(0, 2000),
+      completionNote: `${completionNote ?? ""}`.trim().slice(0, 1000),
     };
 
     if (!proofLink?.trim() && !imageStoragePath?.trim()) {

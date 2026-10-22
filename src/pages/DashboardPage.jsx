@@ -381,10 +381,6 @@ function TaskCard({ task, onEdit, onDelete, onOpenCompletion, onMarkIncomplete, 
         </div>
       )}
 
-      {task.imageProofUrl && (
-        <img src={task.imageProofUrl} alt={`${task.title} proof`} className="pb-3 ml-8 max-h-44 rounded-xl border border-white/[0.06] object-cover" />
-      )}
-
       <div className="pb-4 flex flex-wrap gap-2 pl-8">
         {task.completed ? (
           <Button variant="secondary" size="sm" onClick={() => onMarkIncomplete(task)}>
@@ -846,6 +842,7 @@ export default function DashboardPage() {
             taskTitle: completionTask.title,
             course: completionTask.course,
             description: completionTask.description,
+            completionNote: completionProof.completionNote.trim(),
             imageStoragePath: uploaded.path,
           });
           proofVerification = response.verification;

@@ -113,14 +113,20 @@ export async function verifyTaskProofImageMatch(payload, options = {}) {
     model: getModelForTier(options.tier),
     max_output_tokens: 500,
     instructions:
-      "Decide whether the supplied image is genuine proof that the student actually worked on or completed this task (for example their notes, worked problems, an essay draft, a submission confirmation, or study material with visible progress) and that it matches the task's subject and course. Reject images unrelated to the subject, blank or near-blank pages, memes, selfies, generic stock or web images, and images with no visible evidence of the student's own work. Return only JSON with schema: {\"matches\":boolean,\"confidence\":\"low | medium | high\",\"reason\":\"string\",\"matchedSubject\":\"string\"}. The reason is shown to the student: one short, friendly sentence saying what was missing if rejected. Allow minor wording differences and typical photos or screenshots of student work.",
+      "Decide whether the supplied image is genuine proof that the student actually worked on or completed THIS specific task (for example their notes, worked problems, an essay draft, a submission confirmation, or study material with visible progress). Check the image against all of the task details: it must match the course and subject in the title, and when the description names specific work (chapters, problem numbers, topics, page counts, a particular assignment), the image should show that work. An image on the right subject but clearly for different work than the description asks for should be rejected. If the description is empty or vague, judge by the title and course and don't penalize missing detail. The student's completion note is context only; the image itself must show the evidence. Reject images unrelated to the task, blank or near-blank pages, memes, selfies, generic stock or web images, and images with no visible evidence of the student's own work. Return only JSON with schema: {\"matches\":boolean,\"confidence\":\"low | medium | high\",\"reason\":\"string\",\"matchedSubject\":\"string\"}. The reason is shown to the student: one short, friendly sentence. If rejected, say what was missing compared to the task. Allow minor wording differences and typical photos or screenshots of student work.",
     input: [
       {
         role: "user",
         content: [
           {
             type: "input_text",
-            text: `Task title: ${payload.taskTitle || ""}\nCourse: ${payload.course || ""}\nDescription: ${payload.description || ""}\nJudge whether the image looks like proof for this subject.`,
+            text: [
+              `Task title: ${payload.taskTitle || "(none)"}`,
+              `Course: ${payload.course || "(none)"}`,
+              `Task description (what the student had to do): ${payload.description || "(none)"}`,
+              `Student's completion note: ${payload.completionNote || "(none)"}`,
+              "Does this image prove the student did this specific task?",
+            ].join("\n"),
           },
           {
             type: "input_image",
