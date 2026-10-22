@@ -191,6 +191,9 @@ POWER_AI_PER_MINUTE_LIMIT=12
 ## Changelog
 
 ### Latest
+- **Launch review:** Firestore rules stop clients from creating a profile with a paid tier, fake Stripe IDs, or altered credit counters. They're tested with 23 emulator cases. The AI endpoint only forwards each tool's own fields, and a credit is refunded if generation fails. Unexpected API errors stay in the server logs instead of reaching the browser. Login errors are shown in plain English. An app-wide error screen auto-recovers after deploys. New StudySync app icons (the template Vite logo is gone), PNG and maskable icons, social share image and meta tags, and `robots.txt` and `sitemap.xml`
+- **Billing:** the Stripe webhook syncs from the customer's best subscription. The Power price lives in the same Stripe account as Premium, and the portal allows switching between them
+- **Proof:** uploaded images are checked by AI against the task title, course, and description
 - **Compliance pass:** legal pages, signup consent and age gate, cookie notice, full server-side account deletion, removal of unsupported claims, contrast and keyboard accessibility fixes, self-hosted fonts, and SPA rewrites for every route (fixes 404s on `/cookies`)
 - **Fixed:** on mobile, typing in a modal (for example, creating or editing a task) closed the keyboard after every letter. The modal re-ran its focus logic on every keystroke and moved focus to the close button. It now sets focus only when it opens.
 - Redesign: borderless indigo theme, double-S clock logo, new catchphrase ("Show up. And level up.")

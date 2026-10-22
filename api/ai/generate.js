@@ -3,6 +3,15 @@ import { admin } from "../_lib/firebaseAdmin.js";
 import { generateStudyArtifact } from "../_lib/openai.js";
 import { getAiLimitForTier } from "../_lib/subscriptions.js";
 
+// Mirrors the form fields in src/lib/constants.js (AI_TOOLS).
+const TOOL_FIELDS = {
+  planner: ["assignments", "examDate", "availableHours"],
+  quiz: ["topic", "questionCount", "format", "notes"],
+  flashcards: ["topic", "notes"],
+  explainer: ["topic", "context"],
+  breakdown: ["goal", "constraints"],
+};
+
 function monthKey() {
   return new Date().toISOString().slice(0, 7);
 }
@@ -81,12 +90,14 @@ export default async function handler(req, res) {
       throw new HttpError(400, "Missing AI tool payload.");
     }
 
-    if (!["planner", "quiz", "flashcards", "explainer", "breakdown"].includes(tool)) {
+    const allowedFields = TOOL_FIELDS[tool];
+    if (!allowedFields) {
       throw new HttpError(400, "Unsupported AI tool.");
     }
 
+    // Only the tool's own form fields are forwarded, so one credit can't carry an arbitrarily large prompt.
     const normalizedPayload = Object.fromEntries(
-      Object.entries(payload).map(([key, value]) => [key, `${value ?? ""}`.trim().slice(0, 6000)]),
+      allowedFields.map((key) => [key, `${payload[key] ?? ""}`.trim().slice(0, 6000)]),
     );
 
     if (tool === "quiz") {
@@ -99,14 +110,22 @@ export default async function handler(req, res) {
 
     const { db, decoded, userRef, profile } = await requireUser(req);
     const usage = await reserveAiUsage(userRef, profile);
-    const result = await generateStudyArtifact(tool, {
-      ...normalizedPayload,
-      studentContext: {
-        preferredStudyWindow: profile.settings?.preferredStudyWindow,
-        availableStudyHours: profile.settings?.availableStudyHours,
-        weeklyGoalHours: profile.settings?.weeklyGoalHours,
-      },
-    }, { tier: profile.plan?.tier });
+    let result;
+    try {
+      result = await generateStudyArtifact(tool, {
+        ...normalizedPayload,
+        studentContext: {
+          preferredStudyWindow: profile.settings?.preferredStudyWindow,
+          availableStudyHours: profile.settings?.availableStudyHours,
+          weeklyGoalHours: profile.settings?.weeklyGoalHours,
+        },
+      }, { tier: profile.plan?.tier });
+    } catch (error) {
+      // Don't charge a credit for a generation the student never received.
+      await userRef.update({ "usage.aiGenerationsUsed": admin.firestore.FieldValue.increment(-1) }).catch(() => {});
+      console.error("AI generation failed", error);
+      throw new HttpError(502, "The AI couldn't finish that request. Your credit wasn't used. Please try again.");
+    }
 
     const sharedPayload = {
       tool,

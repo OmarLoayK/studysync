@@ -27,7 +27,6 @@ import {
   calculateStreak,
   formatDateLabel,
   getCompletionRate,
-  getPriorityTone,
   getTaskBadges,
   isPremiumPlan,
   sortTasks,

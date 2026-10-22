@@ -12,9 +12,19 @@ export function sendJson(res, status, payload) {
 }
 
 export function sendError(res, error) {
-  const status = error.status || 500;
-  const message = error.message || "Unexpected server error.";
-  return sendJson(res, status, { error: message });
+  // Messages we wrote for users (HttpError) are safe to show.
+  if (error instanceof HttpError) {
+    return sendJson(res, error.status, { error: error.message });
+  }
+
+  // Expired or invalid Firebase ID tokens.
+  if (`${error?.code || ""}`.startsWith("auth/")) {
+    return sendJson(res, 401, { error: "Your session expired. Please log in again." });
+  }
+
+  // Anything else (OpenAI, Stripe, config) stays in the server logs, not the browser.
+  console.error("Unhandled API error", error);
+  return sendJson(res, 500, { error: "Something went wrong on our side. Please try again in a moment." });
 }
 
 export async function requireUser(req) {

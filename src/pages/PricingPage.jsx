@@ -98,7 +98,7 @@ export default function PricingPage() {
                       variant={isPopular ? "primary" : "secondary"}
                       className="w-full justify-center"
                     >
-                      {key === "free" ? "Start free" : `Start with ${plan.name.toLowerCase()} later`}
+                      {key === "free" ? "Start free" : `Sign up for ${plan.name}`}
                       <ArrowRight className="h-4 w-4" />
                     </LinkButton>
                   )}

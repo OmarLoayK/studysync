@@ -33,6 +33,25 @@ const copy = {
   },
 };
 
+// Firebase's raw messages ("Firebase: Error (auth/...)") aren't meant for students.
+const AUTH_ERRORS = {
+  "auth/invalid-credential": "That email and password don't match. Check them and try again.",
+  "auth/wrong-password": "That email and password don't match. Check them and try again.",
+  "auth/user-not-found": "That email and password don't match. Check them and try again.",
+  "auth/invalid-email": "Enter a valid email address.",
+  "auth/missing-email": "Enter your email address.",
+  "auth/email-already-in-use": "An account with this email already exists. Try logging in instead.",
+  "auth/weak-password": "Choose a password with at least 6 characters.",
+  "auth/missing-password": "Enter your password.",
+  "auth/too-many-requests": "Too many attempts. Wait a few minutes and try again.",
+  "auth/network-request-failed": "Can't reach StudySync. Check your internet connection.",
+  "auth/user-disabled": "This account has been disabled. Contact support for help.",
+};
+
+function friendlyAuthError(error, fallback) {
+  return AUTH_ERRORS[error?.code] || fallback;
+}
+
 const HERO_POINTS = [
   { icon: BarChart3,  text: "Command-center dashboard with daily task planning" },
   { icon: ShieldCheck,text: "Proof-backed accountability at completion time" },
@@ -89,7 +108,7 @@ export default function AuthPage({ mode }) {
       await refreshProfile();
       navigate(from, { replace: true });
     } catch (caughtError) {
-      setError(caughtError.message || "We could not complete that request.");
+      setError(friendlyAuthError(caughtError, "We could not complete that request."));
     } finally {
       setSubmitting(false);
     }
@@ -109,7 +128,7 @@ export default function AuthPage({ mode }) {
       await sendPasswordResetEmail(auth, form.email.trim());
       setNotice("Password reset email sent. Check your inbox and spam folder.");
     } catch (caughtError) {
-      setError(caughtError.message || "We could not send a reset email.");
+      setError(friendlyAuthError(caughtError, "We could not send a reset email."));
     } finally {
       setSendingReset(false);
     }

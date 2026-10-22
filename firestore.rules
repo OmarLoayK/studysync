@@ -29,9 +29,29 @@ service cloud.firestore {
       ]) && (!changed.hasAny(['stats']) || validStatsChange());
     }
 
+    // A new profile must start on the free plan with zero usage. Paid tiers, Stripe ids,
+    // and usage counters are only ever written by the server (Admin SDK bypasses rules),
+    // otherwise a client could create its own profile as "power" and get free AI.
+    function validNewProfile() {
+      let d = request.resource.data;
+      let plan = d.get('plan', {});
+      let usage = d.get('usage', {});
+      return plan.get('tier', 'free') == 'free'
+        && plan.get('status', 'inactive') == 'inactive'
+        && plan.get('stripeCustomerId', '') == ''
+        && plan.get('stripeSubscriptionId', '') == ''
+        && plan.get('stripePriceId', '') == ''
+        && usage.get('aiGenerationsUsed', 0) == 0
+        && usage.get('aiRequestsInWindow', 0) == 0
+        && usage.get('aiMonthKey', '') == ''
+        && usage.get('aiWindowKey', '') == ''
+        && d.get('stats', {}).get('perfectQuizRuns', 0) == 0
+        && !d.keys().hasAny(['proofUsage']);
+    }
+
     match /users/{userId} {
       allow read: if isOwner(userId);
-      allow create: if isOwner(userId);
+      allow create: if isOwner(userId) && validNewProfile();
       allow update: if isOwner(userId) && allowedUserKeys();
       allow delete: if false;
 

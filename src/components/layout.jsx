@@ -219,7 +219,7 @@ function SidebarNavItem({ item, onClose }) {
 }
 
 /* ── Mobile bottom navigation ── */
-function MobileBottomNav({ tierStyles, tier, plan, hasPaidPlan, handleSignOut }) {
+function MobileBottomNav({ hasPaidPlan }) {
   return (
     <nav className="fixed bottom-0 inset-x-0 z-40 lg:hidden border-t border-white/[0.06] bg-[#08081a]/95 backdrop-blur-2xl"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
@@ -281,7 +281,8 @@ export function AppShell() {
     free:    "bg-white/[0.06] text-zinc-400 ring-white/10",
   };
 
-  const SidebarContent = () => (
+  // Plain JSX (not a component defined in render), so the sidebar isn't remounted on every render.
+  const sidebarContent = (
     <>
       <div className="flex items-center justify-between p-5">
         <BrandLockup to="/app" subtitle="Focus mode" />
@@ -361,7 +362,7 @@ export function AppShell() {
         {/* Desktop sidebar */}
         <aside className="hidden w-[260px] shrink-0 flex-col border-r border-white/[0.05] lg:flex" style={{ background: "rgba(8,8,26,0.95)" }}>
           <div className="sticky top-0 flex h-screen flex-col">
-            <SidebarContent />
+            {sidebarContent}
           </div>
         </aside>
 
@@ -373,7 +374,7 @@ export function AppShell() {
               onClick={() => setMobileSidebarOpen(false)}
             />
             <aside className="absolute inset-y-0 left-0 flex w-[280px] flex-col border-r border-white/[0.06] shadow-2xl" style={{ background: "#08081a" }}>
-              <SidebarContent />
+              {sidebarContent}
             </aside>
           </div>
         )}
@@ -425,13 +426,7 @@ export function AppShell() {
       </div>
 
       {/* Mobile bottom navigation */}
-      <MobileBottomNav
-        tierStyles={tierStyles}
-        tier={tier}
-        plan={plan}
-        hasPaidPlan={hasPaidPlan}
-        handleSignOut={handleSignOut}
-      />
+      <MobileBottomNav hasPaidPlan={hasPaidPlan} />
     </div>
   );
 }

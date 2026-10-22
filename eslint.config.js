@@ -26,7 +26,8 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // Capitalized names and `motion` are used as JSX tags, which core ESLint doesn't count as usage.
+      'no-unused-vars': ['error', { varsIgnorePattern: '^([A-Z_]|motion$)', argsIgnorePattern: '^[A-Z_]' }],
       'react-refresh/only-export-components': 'off',
     },
   },
