@@ -4,7 +4,7 @@ StudySync is a production-oriented study SaaS built for students who want a poli
 
 Live demo: [https://studysync-pearl.vercel.app](https://studysync-pearl.vercel.app)
 
-![StudySync dashboard](studysync.png)
+![StudySync dashboard](studysync1.png)
 
 ## Product overview
 
@@ -48,22 +48,22 @@ Live demo: [https://studysync-pearl.vercel.app](https://studysync-pearl.vercel.a
 ```text
 studysync/
 +- api/
-¦  +- ai/generate.js
-¦  +- billing/create-checkout-session.js
-¦  +- billing/create-portal-session.js
-¦  +- billing/webhook.js
-¦  +- _lib/
+Â¦  +- ai/generate.js
+Â¦  +- billing/create-checkout-session.js
+Â¦  +- billing/create-portal-session.js
+Â¦  +- billing/webhook.js
+Â¦  +- _lib/
 +- docs/
-¦  +- architecture.md
-¦  +- firestore-schema.md
+Â¦  +- architecture.md
+Â¦  +- firestore-schema.md
 +- src/
-¦  +- app/
-¦  +- components/
-¦  +- contexts/
-¦  +- pages/
-¦  +- services/
-¦  +- lib/
-¦  +- firebase/
+Â¦  +- app/
+Â¦  +- components/
+Â¦  +- contexts/
+Â¦  +- pages/
+Â¦  +- services/
+Â¦  +- lib/
+Â¦  +- firebase/
 +- firestore.rules
 +- vercel.json
 +- .env.example
