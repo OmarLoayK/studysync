@@ -840,7 +840,20 @@ export default function DashboardPage() {
           throw new Error("Upload an image proof before completing this task.");
         }
         if (completionProofImage) {
-          imageProofUrl = await uploadTaskProofImage(user.uid, completionProofImage);
+          const uploaded = await uploadTaskProofImage(user.uid, completionProofImage);
+          // AI check that the image is real, on-subject proof (rejected uploads are deleted server-side).
+          const response = await verifyTaskProof(user, {
+            taskTitle: completionTask.title,
+            course: completionTask.course,
+            description: completionTask.description,
+            imageStoragePath: uploaded.path,
+          });
+          proofVerification = response.verification;
+
+          if (!proofVerification?.matches) {
+            throw new Error(proofVerification?.reason || "That image doesn't look like proof for this task. Upload a photo or screenshot of your work.");
+          }
+          imageProofUrl = uploaded.url;
         }
       } else if (completionProof.proofLink.trim()) {
         const response = await verifyTaskProof(user, {

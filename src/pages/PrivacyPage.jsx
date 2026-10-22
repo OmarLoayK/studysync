@@ -8,7 +8,7 @@ const SECTIONS = [
     icon: AtSign,
     title: "Who we are",
     blocks: [
-      `${APP_NAME} ("we", "us") is a study-planning web app. We are the data controller for the personal information described in this policy. You can reach us about anything privacy-related at ${SUPPORT_EMAIL}.`,
+      `${APP_NAME} ("we", "us") is a study-planning web app operated from California, United States of America. We are the data controller for the personal information described in this policy. You can reach us about anything privacy-related at ${SUPPORT_EMAIL}.`,
     ],
   },
   {
@@ -50,7 +50,7 @@ const SECTIONS = [
     title: "AI features and proof verification",
     blocks: [
       "When you use an AI tool, the text you enter and your study-time preferences are sent to OpenAI to generate a result. We do not send your name or email address. Requests are made with storage turned off, and OpenAI's API terms say API data is not used to train its models. OpenAI may keep request data for up to 30 days for abuse monitoring.",
-      "When you complete a task with proof, we check that the proof matches the task. For a Google Doc link, our server downloads the document's public text and images and sends them to OpenAI for the check. For an uploaded image, the image is sent to OpenAI for the same check.",
+      "When you complete a task with proof, we check that the proof matches the task. For a Google Doc link, our server downloads the document's public text and images and sends them to OpenAI for the check. Proof images you upload are sent to OpenAI for the same check. Images that fail the check are deleted right away. Images that pass are stored in your account.",
       "AI results are saved to your account so you can see them again. They are deleted when you delete your account.",
       "Please don't put sensitive information (such as health details or ID numbers) into AI tools or proof documents.",
     ],
@@ -115,7 +115,21 @@ const SECTIONS = [
         "Not be discriminated against for exercising these rights.",
         "Complain to your local data protection authority.",
       ],
-      `To make a request, email ${SUPPORT_EMAIL} from the address on your account. We will respond within 30 days. We may need to confirm your identity first.`,
+      `To make a request, email ${SUPPORT_EMAIL} from the address on your account. We will respond within 30 days. California residents get a response within 45 days, as the CCPA allows. We may need to confirm your identity first. You can also use an authorized agent.`,
+    ],
+  },
+  {
+    id: "california",
+    icon: Scale,
+    title: "California residents",
+    blocks: [
+      [
+        "Categories collected in the last 12 months: identifiers (email address), customer records (Stripe customer ID and subscription status), internet activity (request logs), and the education-related content you choose to add (tasks and proof). The sources, purposes, and recipients are described above.",
+        "We do not sell or share personal information as the CCPA defines those terms. We do not use or disclose sensitive personal information to infer characteristics about you.",
+        "Shine the Light (Civil Code § 1798.83): we do not disclose personal information to third parties for their own direct marketing.",
+        "Do Not Track: we do not track you across other websites, so our behavior is the same whether or not your browser sends a Do Not Track or Global Privacy Control signal.",
+        "Minors (Business & Professions Code § 22581): users under 18 can delete any task, proof, or other content they posted, or their whole account, at any time in the app. They can also email us to have it removed.",
+      ],
     ],
   },
   {

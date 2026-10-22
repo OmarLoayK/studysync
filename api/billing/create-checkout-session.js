@@ -83,6 +83,9 @@ export default async function handler(req, res) {
         firebaseUid: decoded.uid,
         requestedTier,
       },
+      subscription_data: {
+        metadata: { firebaseUid: decoded.uid },
+      },
     });
 
     return sendJson(res, 200, { url: session.url });

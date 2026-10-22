@@ -1,4 +1,4 @@
-import { createContext, startTransition, useContext, useEffect, useRef, useState } from "react";
+import { createContext, startTransition, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../firebase/config";
 import { ensureUserProfile, getUserProfile, updateUserProfile } from "../services/firestore";
@@ -58,18 +58,20 @@ export function AuthProvider({ children }) {
     return unsubscribe;
   }, []);
 
-  async function refreshProfile() {
+  // Stable identities: pages use these in effect dependencies, so a new function per
+  // render would re-run those effects in a loop (e.g. the billing status refresh).
+  const refreshProfile = useCallback(async () => {
     if (!auth.currentUser) return null;
     const nextProfile = await getUserProfile(auth.currentUser);
     setProfile(nextProfile);
     return nextProfile;
-  }
+  }, []);
 
-  async function saveProfile(patch) {
+  const saveProfile = useCallback(async (patch) => {
     if (!auth.currentUser) return;
     await updateUserProfile(auth.currentUser.uid, patch);
     await refreshProfile();
-  }
+  }, [refreshProfile]);
 
   async function signOutUser() {
     await signOut(auth);

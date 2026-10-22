@@ -3,7 +3,8 @@ import { updateProfile as updateFirebaseProfile } from "firebase/auth";
 import { User, Mail, Calendar, Flame, Trophy, LogOut, CreditCard, Trash2, AlertTriangle } from "lucide-react";
 import { auth } from "../firebase/config";
 import { useAuth } from "../contexts/AuthContext";
-import { formatDateTime, isPremiumPlan } from "../lib/utils";
+import { calculateStreak, formatDateTime, isPremiumPlan } from "../lib/utils";
+import { listTasks } from "../services/firestore";
 import { AlertBox, Badge, Button, LinkButton, SectionHeading, TextInput } from "../components/ui";
 
 function StatRow({ icon: Icon, label, value }) {
@@ -19,7 +20,21 @@ function StatRow({ icon: Icon, label, value }) {
 }
 
 export default function AccountPage() {
-  const { profile, refreshProfile, saveProfile, signOutUser, deleteAccount } = useAuth();
+  const { user, profile, refreshProfile, saveProfile, signOutUser, deleteAccount } = useAuth();
+  // Streak is derived from tasks (same as the dashboard); it isn't stored on the profile.
+  const [currentStreak, setCurrentStreak] = useState(null);
+  const uid = user?.uid;
+
+  useEffect(() => {
+    if (!uid) return;
+    let active = true;
+    listTasks(uid)
+      .then((tasks) => active && setCurrentStreak(calculateStreak(tasks)))
+      .catch(() => active && setCurrentStreak(null));
+    return () => {
+      active = false;
+    };
+  }, [uid]);
   const hasPaidPlan = isPremiumPlan(profile);
   const [displayName, setDisplayName] = useState(profile?.displayName || "");
   const [saving, setSaving] = useState(false);
@@ -136,7 +151,7 @@ export default function AccountPage() {
             <StatRow icon={Mail}       label="Email"             value={profile?.email || "—"} />
             <StatRow icon={CreditCard} label="Plan"              value={tierName} />
             <StatRow icon={Calendar}   label="Joined"            value={formatDateTime(profile?.createdAt)} />
-            <StatRow icon={Flame}      label="Current streak"    value={`${profile?.stats?.currentStreak ?? 0} days`} />
+            <StatRow icon={Flame}      label="Current streak"    value={currentStreak === null ? "…" : `${currentStreak} ${currentStreak === 1 ? "day" : "days"}`} />
             <StatRow icon={Trophy}     label="Perfect quiz runs" value={profile?.stats?.perfectQuizRuns ?? 0} />
           </div>
 

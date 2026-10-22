@@ -113,7 +113,7 @@ export async function verifyTaskProofImageMatch(payload, options = {}) {
     model: getModelForTier(options.tier),
     max_output_tokens: 500,
     instructions:
-      "Decide whether the supplied study-proof image is relevant to the task and course. Return only JSON with schema: {\"matches\":boolean,\"confidence\":\"low | medium | high\",\"reason\":\"string\",\"matchedSubject\":\"string\"}. Be strict about subject mismatch, but allow minor wording differences and typical student-work screenshots.",
+      "Decide whether the supplied image is genuine proof that the student actually worked on or completed this task (for example their notes, worked problems, an essay draft, a submission confirmation, or study material with visible progress) and that it matches the task's subject and course. Reject images unrelated to the subject, blank or near-blank pages, memes, selfies, generic stock or web images, and images with no visible evidence of the student's own work. Return only JSON with schema: {\"matches\":boolean,\"confidence\":\"low | medium | high\",\"reason\":\"string\",\"matchedSubject\":\"string\"}. The reason is shown to the student: one short, friendly sentence saying what was missing if rejected. Allow minor wording differences and typical photos or screenshots of student work.",
     input: [
       {
         role: "user",

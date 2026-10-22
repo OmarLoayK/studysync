@@ -46,7 +46,7 @@ export default function SupportPage() {
                   },
                   {
                     plan: "Premium & Power",
-                    desc: "Upload image proof directly inside the completion flow. This is the cleaner and more reliable path for photo- or screenshot-based proof.",
+                    desc: "Upload a photo or screenshot of your work inside the completion flow. AI checks that it shows real progress on the task's subject. Unrelated images are rejected.",
                   },
                 ].map(({ plan, desc }) => (
                   <div key={plan} className="rounded-xl bg-white/[0.025] p-4">

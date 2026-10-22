@@ -106,7 +106,7 @@ const SECTIONS = [
     icon: Scale,
     title: "Governing law and disputes",
     blocks: [
-      `Please contact us first at ${SUPPORT_EMAIL}. Most problems can be fixed quickly that way. These Terms are governed by the laws of the place where ${APP_NAME}'s operator is based. If you are a consumer, you also keep the protection of the mandatory laws of the country where you live, and you can bring claims in your local courts.`,
+      `Please contact us first at ${SUPPORT_EMAIL}. Most problems can be fixed quickly that way. ${APP_NAME} is operated from California, United States of America. These Terms are governed by the laws of the State of California and applicable U.S. federal law, without regard to conflict-of-law rules. Disputes will be heard in the state or federal courts located in California, unless the law where you live gives you the right to sue in your local courts. If you are a consumer outside the United States, you also keep the protection of the mandatory consumer laws of the country where you live.`,
     ],
   },
   {

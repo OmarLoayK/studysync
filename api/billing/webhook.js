@@ -1,6 +1,6 @@
 import { sendError, sendJson } from "../_lib/auth.js";
 import { getAdminDb } from "../_lib/firebaseAdmin.js";
-import { buildPlanFromSubscription } from "../_lib/subscriptions.js";
+import { buildPlanFromSubscription, pickBestSubscription } from "../_lib/subscriptions.js";
 import { getStripe } from "../_lib/stripe.js";
 
 export const config = {
@@ -17,14 +17,35 @@ async function readRawBody(req) {
   return Buffer.concat(chunks);
 }
 
-async function syncUserPlanByCustomer(customerId, subscription) {
+async function findUserRef(stripe, customerId, uidHint) {
   const db = getAdminDb();
   const snapshot = await db.collection("users").where("plan.stripeCustomerId", "==", customerId).limit(1).get();
-  if (snapshot.empty) return;
-  const userDoc = snapshot.docs[0];
-  const current = userDoc.data();
+  if (!snapshot.empty) return snapshot.docs[0].ref;
+
+  // Fall back to the Firebase uid recorded at checkout, in case the customer id was never saved.
+  let uid = uidHint;
+  if (!uid) {
+    const customer = await stripe.customers.retrieve(customerId);
+    uid = customer.deleted ? "" : customer.metadata?.firebaseUid;
+  }
+  if (!uid) return null;
+  const userRef = db.collection("users").doc(uid);
+  return (await userRef.get()).exists ? userRef : null;
+}
+
+// Events can arrive out of order and can concern a stale subscription (e.g. an abandoned
+// incomplete checkout expiring), so always sync from the customer's best current subscription.
+async function syncUserPlanByCustomer(stripe, customerId, uidHint) {
+  const userRef = await findUserRef(stripe, customerId, uidHint);
+  if (!userRef) return;
+
+  const subscriptions = await stripe.subscriptions.list({ customer: customerId, status: "all", limit: 10 });
+  const subscription = pickBestSubscription(subscriptions.data);
+  if (!subscription) return;
+
+  const current = (await userRef.get()).data();
   const nextState = buildPlanFromSubscription(subscription, current.plan, current.usage);
-  await userDoc.ref.set(
+  await userRef.set(
     {
       ...nextState,
       updatedAt: new Date().toISOString(),
@@ -51,14 +72,13 @@ export default async function handler(req, res) {
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
       if (session.customer && session.subscription) {
-        const subscription = await stripe.subscriptions.retrieve(session.subscription);
-        await syncUserPlanByCustomer(session.customer, subscription);
+        await syncUserPlanByCustomer(stripe, session.customer, session.client_reference_id);
       }
     }
 
     if (event.type === "customer.subscription.created" || event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted") {
       const subscription = event.data.object;
-      await syncUserPlanByCustomer(subscription.customer, subscription);
+      await syncUserPlanByCustomer(stripe, subscription.customer, subscription.metadata?.firebaseUid);
     }
 
     return sendJson(res, 200, { received: true });

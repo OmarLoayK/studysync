@@ -1,8 +1,8 @@
 export const APP_NAME = "StudySync";
 export const SUPPORT_EMAIL = "omarkhalafbusiness@gmail.com";
 // Bump LEGAL_VERSION whenever the Terms, Privacy, Refund, or Cookie policies change materially.
-export const LEGAL_VERSION = "2026-10-21";
-export const LEGAL_UPDATED_LABEL = "October 21, 2026";
+export const LEGAL_VERSION = "2026-10-22";
+export const LEGAL_UPDATED_LABEL = "October 22, 2026";
 export const MINIMUM_AGE = 13;
 
 export const LEGAL_LINKS = [

@@ -1,9 +1,27 @@
 import { HttpError, requireUser, sendError, sendJson } from "../_lib/auth.js";
-import { getAdminDb } from "../_lib/firebaseAdmin.js";
+import { getAdminBucket, getAdminDb } from "../_lib/firebaseAdmin.js";
 import { verifyTaskProofImageMatch, verifyTaskProofMatch } from "../_lib/openai.js";
 import { admin } from "../_lib/firebaseAdmin.js";
 
 const PROOF_HOURLY_LIMIT = 10;
+
+// Uploaded proof is passed as a Storage path (never a URL) so it can only be the
+// caller's own file; the server reads it and sends it to the model as a data URL.
+async function loadUploadedProofImage(uid, storagePath) {
+  if (!storagePath.startsWith(`users/${uid}/proof-images/`) || storagePath.includes("..")) {
+    throw new HttpError(400, "Invalid proof image.");
+  }
+  const file = getAdminBucket().file(storagePath);
+  const [exists] = await file.exists();
+  if (!exists) {
+    throw new HttpError(400, "Proof image not found. Try uploading it again.");
+  }
+  const [[metadata], [buffer]] = await Promise.all([file.getMetadata(), file.download()]);
+  if (!`${metadata.contentType}`.startsWith("image/")) {
+    throw new HttpError(400, "Proof uploads must be image files.");
+  }
+  return { file, dataUrl: `data:${metadata.contentType};base64,${buffer.toString("base64")}` };
+}
 
 function extractGoogleDocId(url) {
   const match = url.match(/docs\.google\.com\/document\/d\/([a-zA-Z0-9_-]+)/);
@@ -99,14 +117,29 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { profile, userRef } = await requireUser(req);
-    const { taskTitle, course, description, proofLink } = req.body || {};
+    const { profile, userRef, decoded } = await requireUser(req);
+    const { taskTitle, course, description, proofLink, imageStoragePath } = req.body || {};
+    const taskContext = {
+      taskTitle: `${taskTitle ?? ""}`.trim(),
+      course: `${course ?? ""}`.trim(),
+      description: `${description ?? ""}`.trim(),
+    };
 
-    if (!proofLink?.trim()) {
-      throw new HttpError(400, "A Google Docs proof link is required.");
+    if (!proofLink?.trim() && !imageStoragePath?.trim()) {
+      throw new HttpError(400, "A Google Docs proof link or proof image is required.");
     }
 
     await checkAndIncrementProofRateLimit(userRef);
+
+    if (imageStoragePath?.trim()) {
+      const { file, dataUrl } = await loadUploadedProofImage(decoded.uid, imageStoragePath.trim());
+      const verification = await verifyTaskProofImageMatch({ ...taskContext, imageUrl: dataUrl }, { tier: profile.plan?.tier });
+      if (!verification?.matches) {
+        // Don't keep rejected uploads around.
+        await file.delete({ ignoreNotFound: true });
+      }
+      return sendJson(res, 200, { verification });
+    }
 
     const trimmedLink = proofLink.trim();
     const html = await fetchGoogleDocHtml(trimmedLink);

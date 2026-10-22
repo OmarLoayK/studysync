@@ -18,6 +18,25 @@ export async function uploadTaskProofImage(uid, file) {
 
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
   const objectRef = ref(storage, `users/${uid}/proof-images/${Date.now()}-${safeName}`);
-  await uploadBytes(objectRef, file);
-  return getDownloadURL(objectRef);
+  try {
+    await uploadBytes(objectRef, file);
+    return { url: await getDownloadURL(objectRef), path: objectRef.fullPath };
+  } catch (error) {
+    throw new Error(friendlyStorageError(error));
+  }
+}
+
+// Firebase's raw messages (bucket names, pricing links) aren't meant for students.
+function friendlyStorageError(error) {
+  switch (error?.code) {
+    case "storage/quota-exceeded":
+      return "Image uploads are temporarily unavailable. Please try again later.";
+    case "storage/unauthorized":
+      return "Your account isn't allowed to upload this file. Make sure it's an image under 5 MB.";
+    case "storage/retry-limit-exceeded":
+    case "storage/canceled":
+      return "The upload didn't finish. Check your connection and try again.";
+    default:
+      return "Could not upload the image. Please try again.";
+  }
 }

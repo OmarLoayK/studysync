@@ -311,6 +311,19 @@ export default function AiToolsPage() {
   const activeTool = useMemo(() => AI_TOOLS.find((tool) => tool.key === selectedTool), [selectedTool]);
   const isPremium = isPremiumPlan(profile);
 
+  // Must stay above the early return below: hooks can't be skipped when the plan
+  // changes from Free to Premium while this page is open.
+  useEffect(() => {
+    setFormState((current) => {
+      const next = { ...current };
+      for (const field of activeTool.fields) {
+        if (typeof next[field.name] === "undefined") next[field.name] = field.defaultValue ?? "";
+      }
+      return next;
+    });
+    setError("");
+  }, [activeTool]);
+
   if (!isPremium) {
     return (
       <div className="flex min-h-[70vh] flex-col items-center justify-center px-6 text-center">
@@ -364,17 +377,6 @@ export default function AiToolsPage() {
   const aiUsed = profile?.usage?.aiGenerationsUsed ?? 0;
   const aiLimit = profile?.usage?.aiGenerationsLimit ?? 60;
 
-  useEffect(() => {
-    setFormState((current) => {
-      const next = { ...current };
-      for (const field of activeTool.fields) {
-        if (typeof next[field.name] === "undefined") next[field.name] = field.defaultValue ?? "";
-      }
-      return next;
-    });
-    setError("");
-  }, [activeTool]);
-
   async function handleSubmit(event) {
     event.preventDefault();
     setSubmitting(true);
@@ -402,6 +404,9 @@ export default function AiToolsPage() {
         stats: { ...profile?.stats, perfectQuizRuns: (profile?.stats?.perfectQuizRuns ?? 0) + 1 },
       });
       await refreshProfile();
+    } catch (error) {
+      // Non-critical: the quiz result still shows even if the counter can't be saved.
+      console.error("Could not record perfect quiz run", error);
     } finally {
       setRewardingPerfectRun(false);
     }

@@ -25,7 +25,6 @@ export default function BillingPage() {
   const { user, profile, refreshProfile } = useAuth();
   const [loadingAction, setLoadingAction] = useState("");
   const [error, setError] = useState("");
-  const [syncing, setSyncing] = useState(false);
 
   const currentTier = profile?.plan?.tier || "free";
   const currentPlan = PLAN_DETAILS[currentTier] || PLAN_DETAILS.free;
@@ -36,25 +35,20 @@ export default function BillingPage() {
   const aiLimit = profile?.usage?.aiGenerationsLimit ?? currentPlan.monthlyAiLimit;
   const planStatus = profile?.plan?.status || "inactive";
 
+  // Quietly re-sync the plan from Stripe once per visit (catches webhook delays).
+  // No spinner or error banner: the page already shows the last known plan.
+  const uid = user?.uid;
   useEffect(() => {
+    if (!uid) return;
     let active = true;
 
-    async function syncPlan() {
-      if (!user) return;
-      setSyncing(true);
-      try {
-        await syncBillingStatus(user);
-        if (active) await refreshProfile();
-      } catch (caughtError) {
-        if (active) setError(caughtError.message || "Could not refresh billing status.");
-      } finally {
-        if (active) setSyncing(false);
-      }
-    }
+    syncBillingStatus(user)
+      .then(() => active && refreshProfile())
+      .catch((caughtError) => console.warn("Background billing sync failed", caughtError));
 
-    void syncPlan();
     return () => { active = false; };
-  }, [refreshProfile, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once per signed-in user, not per user object
+  }, [uid, refreshProfile]);
 
   async function handleCheckout(tier) {
     setLoadingAction(tier);
@@ -130,12 +124,6 @@ export default function BillingPage() {
             </p>
             {profile?.plan?.cancelAtPeriodEnd && (
               <p className="text-amber-400">Paid access ends at the current billing period.</p>
-            )}
-            {syncing && (
-              <p className="flex items-center gap-1.5 text-slate-600">
-                <RefreshCw className="h-3 w-3 animate-spin" />
-                Refreshing Stripe status...
-              </p>
             )}
           </div>
 

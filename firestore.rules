@@ -9,14 +9,24 @@ service cloud.firestore {
       return signedIn() && request.auth.uid == userId;
     }
 
+    // The only stats change a client may make: +1 perfect quiz run (from the AI quiz tool).
+    function validStatsChange() {
+      let before = resource.data.get('stats', {});
+      let after = request.resource.data.stats;
+      return after.diff(before).affectedKeys().hasOnly(['perfectQuizRuns'])
+        && after.perfectQuizRuns == before.get('perfectQuizRuns', 0) + 1;
+    }
+
     function allowedUserKeys() {
-      return request.resource.data.diff(resource.data).changedKeys().hasOnly([
+      let changed = request.resource.data.diff(resource.data).changedKeys();
+      return changed.hasOnly([
         'displayName',
         'updatedAt',
         'settings',
         'studyProfile',
-        'onboarding'
-      ]);
+        'onboarding',
+        'stats'
+      ]) && (!changed.hasAny(['stats']) || validStatsChange());
     }
 
     match /users/{userId} {

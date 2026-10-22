@@ -108,7 +108,7 @@ export function buildWeeklyTrend(tasks) {
     const current = new Date(base);
     current.setDate(base.getDate() - (6 - offset));
     const key = toDateKey(current);
-    const completed = tasks.filter((task) => task.completedAt?.slice(0, 10) === key).length;
+    const completed = tasks.filter((task) => task.completedAt && toDateKey(task.completedAt) === key).length;
     return {
       key,
       label: new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(current),
@@ -122,7 +122,7 @@ export function calculateStreak(tasks) {
     new Set(
       tasks
         .filter((task) => task.completedAt)
-        .map((task) => task.completedAt.slice(0, 10))
+        .map((task) => toDateKey(task.completedAt))
         .sort((left, right) => right.localeCompare(left)),
     ),
   );
